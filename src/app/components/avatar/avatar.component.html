@@ -1,0 +1,24 @@
+<nz-badge [nzDot]="isNewMessage">
+  <i
+    nz-icon
+    nzType="mail"
+    nzTheme="outline"
+    class="cursor-pointer text-[1.5rem] !text-white"
+    (click)="log('click mail')"
+  ></i>
+</nz-badge>
+<nz-avatar nzIcon="user" nz-dropdown [nzDropdownMenu]="menu" class="cursor-pointer"></nz-avatar>
+<nz-dropdown-menu #menu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item (click)="log('Profile Click')">
+      <i nz-icon nzType="user" nzTheme="outline"></i> Profile
+    </li>
+    <li nz-menu-item (click)="log('Settings Click')">
+      <i nz-icon nzType="setting" nzTheme="outline"></i> Settings
+    </li>
+    <li nz-menu-divider></li>
+    <li nz-menu-item (click)="log('Logout Click')" class="!text-red-600">
+      <i nz-icon nzType="logout" nzTheme="outline"></i> Logout
+    </li>
+  </ul>
+</nz-dropdown-menu>
