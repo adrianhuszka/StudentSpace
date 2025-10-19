@@ -1,1 +1,65 @@
-<p>login works!</p>
+<div class="h-screen w-screen flex justify-center items-center bg-gray-100">
+  <div class="bg-white p-10 rounded shadow-md rounded-lg login-container w-96">
+    <!-- Display error message from auth service -->
+    @if (authService.errorMessage()) {
+    <nz-alert
+      class="mb-4"
+      nzType="error"
+      [nzMessage]="authService.errorMessage()"
+      nzShowIcon
+      nzCloseable
+      (nzOnClose)="authService.errorMessage.set(null)"
+    ></nz-alert>
+    }
+
+    <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
+      <nz-form-item class="w-full">
+        <nz-form-control [nzErrorTip]="getUsernameErrorMessage()">
+          <nz-input-group nzPrefixIcon="user">
+            <input
+              type="text"
+              nz-input
+              formControlName="username"
+              placeholder="Username"
+              (input)="validateForm.get('username')?.updateValueAndValidity()"
+            />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item class="w-full">
+        <nz-form-control [nzErrorTip]="getPasswordErrorMessage()" class="max-h-12 overflow-hidden">
+          <nz-input-group nzPrefixIcon="lock">
+            <input
+              type="password"
+              nz-input
+              formControlName="password"
+              placeholder="Password"
+              (input)="validateForm.get('password')?.updateValueAndValidity()"
+            />
+          </nz-input-group>
+        </nz-form-control>
+      </nz-form-item>
+      <div nz-row class="mb-4">
+        <div nz-col [nzSpan]="12">
+          <label nz-checkbox formControlName="remember">
+            <span>Remember me</span>
+          </label>
+        </div>
+        <div nz-col [nzSpan]="12">
+          <a class="float-right">Forgot password</a>
+        </div>
+      </div>
+      <button
+        nz-button
+        class="w-full !mb-4"
+        [nzType]="'primary'"
+        [nzLoading]="authService.isLoading()"
+        [disabled]="authService.isLoading()"
+      >
+        Log in
+      </button>
+      Or
+      <a>register now!</a>
+    </form>
+  </div>
+</div>

@@ -2,31 +2,12 @@
   <nz-sider nzCollapsible nzWidth="200px" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
     <div class="logo"></div>
     <ul nz-menu nzTheme="dark" nzMode="inline">
+      @for (subject of professionSubjects; track $index) {
       <li nz-menu-item>
-        <nz-icon nzType="pie-chart" />
-        <span>Option 1</span>
+        <nz-icon nzType="book" />
+        <span>{{ subject.name }}</span>
       </li>
-      <li nz-menu-item>
-        <nz-icon nzType="desktop" />
-        <span>Option 2</span>
-      </li>
-      <li nz-submenu nzTitle="User" nzIcon="user">
-        <ul>
-          <li nz-menu-item>Tom</li>
-          <li nz-menu-item>Bill</li>
-          <li nz-menu-item>Alex</li>
-        </ul>
-      </li>
-      <li nz-submenu nzTitle="Team" nzIcon="team">
-        <ul>
-          <li nz-menu-item>Team 1</li>
-          <li nz-menu-item>Team 2</li>
-        </ul>
-      </li>
-      <li nz-menu-item>
-        <nz-icon nzType="file" />
-        <span>File</span>
-      </li>
+      }
     </ul>
   </nz-sider>
   <nz-layout>
@@ -44,8 +25,6 @@
       </div>
       <ul nz-menu class="top-nav" nzTheme="dark" nzMode="horizontal">
         <li nz-menu-item routerLinkActive="ant-menu-item-selected" routerLink="/home">Home</li>
-        <li nz-menu-item>Account</li>
-        <li nz-menu-item>Profile</li>
       </ul>
       <app-avatar class="ml-auto flex flex-row justify-end items-center gap-4"></app-avatar>
     </nz-header>

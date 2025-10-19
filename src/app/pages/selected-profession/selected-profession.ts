@@ -17,6 +17,28 @@ export class SelectedProfession {
   protected readonly date = new Date();
   isCollapsed = false;
 
+  professionSubjects: {
+    name: string;
+    class: string;
+    id: number;
+  }[] = [
+    {
+      name: 'Programozás alapjai',
+      class: '10',
+      id: 1,
+    },
+    {
+      name: 'Webprogramozás I.',
+      class: '11',
+      id: 2,
+    },
+    {
+      name: 'Adatbázis-kezelés I.',
+      class: '11',
+      id: 3,
+    },
+  ];
+
   constructor(private route: ActivatedRoute) {
     this.route.params.subscribe((params) => {
       const id = params['id'];
