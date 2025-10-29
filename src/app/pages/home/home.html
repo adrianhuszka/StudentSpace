@@ -1,89 +1,80 @@
 <nz-layout class="layout">
-  <nz-header>
-    <div class="logo"></div>
-    <ul nz-menu nzTheme="dark" nzMode="horizontal">
-      <li nz-menu-item>nav 1</li>
-      <li nz-menu-item>nav 2</li>
-      <li nz-menu-item>nav 3</li>
-    </ul>
-  </nz-header>
-  <nz-content>
-    <div class="inner-content">
-      <div class="flex flex-row justify-center items-center gap-4 w-full h-full relative px-4">
-        <!-- Left Arrow -->
-        <button
-          (click)="prevCard()"
-          class="absolute left-2 sm:left-4 md:left-8 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/80 hover:bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
-        >
-          <span
-            nz-icon
-            nzType="left"
-            nzTheme="outline"
-            class="text-xl sm:text-2xl text-gray-800"
-          ></span>
-        </button>
+  <div class="w-full flex flex-row justify-end items-center p-4 md:p-6 lg:p-8">
+    <app-avatar></app-avatar>
+  </div>
+  <div class="inner-content">
+    <div class="flex flex-row justify-center items-center gap-4 w-full h-full relative px-4">
+      <!-- Left Arrow -->
+      <button
+        (click)="prevCard()"
+        class="cursor-pointer absolute left-2 sm:left-4 md:left-8 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/80 hover:bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+      >
+        <span
+          nz-icon
+          nzType="left"
+          nzTheme="outline"
+          class="text-xl sm:text-2xl text-gray-800"
+        ></span>
+      </button>
 
-        <!-- Cards Container -->
+      <!-- Cards Container -->
+      <div
+        class="relative w-full max-w-[280px] h-[380px] sm:max-w-[320px] sm:h-[420px] md:max-w-[400px] md:h-[500px]"
+      >
+        @for (szakma of szakmak; track szakma.id; let i = $index) { @let position =
+        getCardPosition(i);
         <div
-          class="relative w-full max-w-[280px] h-[380px] sm:max-w-[320px] sm:h-[420px] md:max-w-[400px] md:h-[500px]"
+          class="absolute w-full h-full rounded-2xl md:rounded-3xl bg-cover bg-center cursor-pointer shadow-2xl select-none group transition-all duration-500"
+          [class.z-10]="position === 0"
+          [class.z-0]="position !== 0"
+          [class.pointer-events-none]="position === 2"
+          [style.transform]="getCardTransform(position)"
+          [style.opacity]="getCardOpacity(position)"
+          [style.background-image]="
+            'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(' + szakma.image + ')'
+          "
+          (click)="
+            position === 0
+              ? navigateToProfession(szakma.id)
+              : position === 1
+              ? nextCard()
+              : position === -1
+              ? prevCard()
+              : null
+          "
         >
-          @for (szakma of szakmak; track szakma.id; let i = $index) { @let position =
-          getCardPosition(i);
           <div
-            class="absolute w-full h-full rounded-2xl md:rounded-3xl bg-cover bg-center cursor-pointer shadow-2xl select-none group transition-all duration-500"
-            [class.z-10]="position === 0"
-            [class.z-0]="position !== 0"
-            [class.pointer-events-none]="position === 2"
-            [style.transform]="getCardTransform(position)"
-            [style.opacity]="getCardOpacity(position)"
-            [style.background-image]="
-              'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(' +
-              szakma.imageUrl +
-              ')'
-            "
-            (click)="
-              position === 0
-                ? navigateToProfession(szakma.id)
-                : position === 1
-                ? nextCard()
-                : position === -1
-                ? prevCard()
-                : null
-            "
+            class="w-full h-full flex flex-col justify-around items-center p-4 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl transition-all duration-300"
+            [class.group-hover:backdrop-blur-sm]="position === 0"
           >
-            <div
-              class="w-full h-full flex flex-col justify-around items-center p-4 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl transition-all duration-300"
-              [class.group-hover:backdrop-blur-sm]="position === 0"
+            <h1 class="!text-white text-lg sm:text-xl md:text-2xl font-bold text-center">
+              {{ szakma.name }}
+            </h1>
+            <p
+              class="!text-white transition-opacity duration-300 text-sm sm:text-base text-center"
+              [class.opacity-0]="true"
+              [class.group-hover:opacity-100]="position === 0"
             >
-              <h1 class="!text-white text-lg sm:text-xl md:text-2xl font-bold text-center">
-                {{ szakma.name }}
-              </h1>
-              <p
-                class="!text-white transition-opacity duration-300 text-sm sm:text-base text-center"
-                [class.opacity-0]="true"
-                [class.group-hover:opacity-100]="position === 0"
-              >
-                {{ szakma.description }}
-              </p>
-            </div>
+              {{ szakma.description }}
+            </p>
           </div>
-          }
         </div>
-
-        <!-- Right Arrow -->
-        <button
-          (click)="nextCard()"
-          class="absolute right-2 sm:right-4 md:right-8 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/80 hover:bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
-        >
-          <span
-            nz-icon
-            nzType="right"
-            nzTheme="outline"
-            class="text-xl sm:text-2xl text-gray-800"
-          ></span>
-        </button>
+        }
       </div>
+
+      <!-- Right Arrow -->
+      <button
+        (click)="nextCard()"
+        class="cursor-pointer absolute right-2 sm:right-4 md:right-8 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/80 hover:bg-white shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110"
+      >
+        <span
+          nz-icon
+          nzType="right"
+          nzTheme="outline"
+          class="text-xl sm:text-2xl text-gray-800"
+        ></span>
+      </button>
     </div>
-  </nz-content>
+  </div>
   <nz-footer>Ant Design ©{{ date.getFullYear() }} Implement By Angular</nz-footer>
 </nz-layout>

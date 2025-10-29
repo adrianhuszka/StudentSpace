@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
   selector: 'app-avatar',
   imports: [NzBadgeModule, NzAvatarModule, NzIconModule, NzDropDownModule],
   templateUrl: './avatar.component.html',
+  styleUrls: ['./avatar.component.scss'],
 })
 export class AvatarComponent {
   isNewMessage: boolean = false;

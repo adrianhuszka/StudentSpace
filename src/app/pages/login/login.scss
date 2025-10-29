@@ -1,3 +1,255 @@
+.login-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37), inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.auth-tabs {
+  ::ng-deep {
+    .ant-tabs-nav {
+      margin-bottom: 2rem;
+
+      &::before {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    .ant-tabs-tab {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 16px;
+      font-weight: 500;
+      padding: 12px 24px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      &.ant-tabs-tab-active {
+        .ant-tabs-tab-btn {
+          color: white;
+          text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      background: linear-gradient(90deg, var(--color-tertiary), var(--color-accent));
+      height: 3px;
+      border-radius: 3px;
+    }
+
+    .ant-tabs-content-holder {
+      padding-top: 1rem;
+    }
+  }
+}
+
+.login-form {
+  ::ng-deep {
+    .ant-input-affix-wrapper,
+    .ant-input {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      &:hover,
+      &:focus {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+
+      &.ant-input-status-error,
+      &.ant-input-affix-wrapper-status-error {
+        background: rgba(255, 59, 48, 0.15);
+        border-color: #ff6b6b;
+
+        &:focus {
+          border-color: #ff8787;
+          box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+        }
+      }
+    }
+
+    .ant-input-prefix {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .ant-form-item-explain-error {
+      color: #ffb3b3 !important;
+      font-weight: 500;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      min-height: 24px;
+      margin-top: 4px;
+    }
+
+    .ant-form-item-label > label {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .ant-form-item-has-error {
+      .ant-form-item-label > label {
+        color: #ffb3b3 !important;
+      }
+
+      .ant-input-affix-wrapper:hover,
+      .ant-input:hover {
+        background: rgba(255, 59, 48, 0.2) !important;
+        border-color: #ff8787 !important;
+      }
+    }
+
+    .ant-form-item {
+      margin-bottom: 20px;
+    }
+
+    .ant-form-item-control {
+      min-height: 32px;
+    }
+
+    .ant-checkbox-wrapper {
+      color: rgba(255, 255, 255, 0.9);
+
+      .ant-checkbox {
+        .ant-checkbox-inner {
+          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        &.ant-checkbox-checked .ant-checkbox-inner {
+          background-color: var(--color-accent);
+          border-color: var(--color-accent);
+        }
+      }
+    }
+
+    a {
+      color: rgba(255, 255, 255, 0.9);
+
+      &:hover {
+        color: white;
+      }
+    }
+  }
+}
+
+.login-button {
+  ::ng-deep {
+    &.ant-btn-primary {
+      position: relative;
+      background: linear-gradient(
+        135deg,
+        var(--color-tertiary) 0%,
+        var(--color-accent) 50%,
+        var(--color-tertiary) 100%
+      );
+      background-size: 200% 200%;
+      border: none;
+      height: 52px;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(44, 116, 179, 0.5), 0 0 30px rgba(44, 116, 179, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      animation: gradientShift 3s ease infinite;
+
+      @keyframes gradientShift {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+      // Shine effect overlay
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -60%;
+        width: 20%;
+        height: 200%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+        transform: rotate(25deg);
+        transition: left 0.7s ease;
+      }
+
+      // Animated gradient background
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--color-accent), #3d8fd1, var(--color-tertiary));
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+
+      span {
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        display: inline-block;
+        transition: all 0.3s ease;
+      }
+
+      &:hover:not(:disabled) {
+        transform: translateY(-4px) scale(1.03);
+        animation: none;
+        background-position: 100% 50%;
+        box-shadow: 0 12px 35px rgba(44, 116, 179, 0.7), 0 0 60px rgba(44, 116, 179, 0.5),
+          inset 0 2px 10px rgba(255, 255, 255, 0.2), 0 0 0 3px rgba(44, 116, 179, 0.3);
+
+        &::before {
+          left: 140%;
+        }
+
+        &::after {
+          opacity: 1;
+        }
+
+        span {
+          transform: scale(1.05);
+          letter-spacing: 2px;
+        }
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(-1px) scale(0.99);
+        box-shadow: 0 5px 20px rgba(44, 116, 179, 0.6), 0 0 30px rgba(44, 116, 179, 0.4),
+          inset 0 4px 8px rgba(0, 0, 0, 0.2);
+
+        span {
+          transform: scale(0.98);
+        }
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        animation: none;
+        box-shadow: 0 4px 10px rgba(44, 116, 179, 0.3);
+      }
+    }
+  }
+}
+
 .login-form-button {
   width: 100%;
 }

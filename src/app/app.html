@@ -1,1 +1,7 @@
+@if (authService.authInitialized()) {
 <router-outlet></router-outlet>
+} @else {
+<div class="loading-container">
+  <div class="loading-spinner"></div>
+</div>
+}

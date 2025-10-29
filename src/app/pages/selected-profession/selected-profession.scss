@@ -4,15 +4,66 @@
 
 .app-layout {
   height: 100vh;
+  background: radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--color-tertiary) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background-attachment: fixed;
 }
 
 nz-header {
   display: flex;
   align-items: center;
+  background: rgba(10, 38, 71, 0.8) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 0 24px;
+
+  .trigger {
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0 12px;
+
+    &:hover {
+      color: var(--color-accent);
+      transform: scale(1.1);
+    }
+  }
 }
 
 .top-nav {
   line-height: 64px;
+  background: transparent !important;
+
+  ::ng-deep {
+    .ant-menu-item {
+      color: rgba(255, 255, 255, 0.85) !important;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: white !important;
+        border-bottom-color: var(--color-accent);
+      }
+
+      &.ant-menu-item-selected {
+        color: white !important;
+        background: linear-gradient(
+          135deg,
+          rgba(32, 82, 149, 0.2),
+          rgba(44, 116, 179, 0.3)
+        ) !important;
+        border-bottom-color: var(--color-accent);
+      }
+
+      &::after {
+        display: none;
+      }
+    }
+  }
 }
 
 .logo {
@@ -20,7 +71,7 @@ nz-header {
   height: 64px;
   padding-right: 24px;
   line-height: 64px;
-  background: #001529;
+  background: transparent;
 }
 
 .logo img {
@@ -28,6 +79,7 @@ nz-header {
   height: 32px;
   width: 32px;
   vertical-align: middle;
+  filter: drop-shadow(0 2px 8px rgba(44, 116, 179, 0.6));
 }
 
 .logo h1 {
@@ -38,14 +90,151 @@ nz-header {
   font-size: 20px;
   font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
   vertical-align: middle;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 nz-content {
   padding: 24px 50px;
+  background: transparent;
 }
 
 .inner-content {
   padding: 24px;
-  background: #fff;
+  background: rgba(10, 38, 71, 0.7);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   height: 100%;
+  color: white;
+}
+
+// Sidebar styling
+::ng-deep {
+  .ant-layout-sider {
+    background: rgba(10, 38, 71, 0.8) !important;
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+
+    .ant-layout-sider-trigger {
+      background: rgba(20, 66, 114, 0.9) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(32, 82, 149, 0.9) !important;
+      }
+    }
+  }
+
+  .ant-menu-dark {
+    background: transparent !important;
+
+    .ant-menu-item {
+      color: rgba(255, 255, 255, 0.85);
+      transition: all 0.3s ease;
+      margin: 4px 8px;
+      border-radius: 8px;
+
+      &:hover {
+        background: rgba(44, 116, 179, 0.2) !important;
+        color: white !important;
+      }
+
+      &.ant-menu-item-selected {
+        background: linear-gradient(
+          135deg,
+          rgba(32, 82, 149, 0.3),
+          rgba(44, 116, 179, 0.4)
+        ) !important;
+        color: white !important;
+        box-shadow: 0 4px 12px rgba(44, 116, 179, 0.3);
+
+        &::after {
+          border-right-color: var(--color-accent);
+        }
+      }
+
+      .anticon {
+        color: var(--color-accent);
+      }
+    }
+  }
+}
+
+// Footer styling
+nz-footer {
+  background: rgba(10, 38, 71, 0.6) !important;
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+// Loading and Error States
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background: radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--color-tertiary) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background-attachment: fixed;
+
+  ::ng-deep {
+    .ant-spin {
+      color: white;
+    }
+
+    .ant-spin-text {
+      color: white;
+      font-size: 16px;
+      margin-top: 16px;
+    }
+
+    .ant-spin-dot-item {
+      background-color: var(--color-accent);
+    }
+  }
+}
+
+.loading-content {
+  min-height: 200px;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  text-align: center;
+  padding: 40px;
+  background: radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--color-tertiary) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background-attachment: fixed;
+
+  .error-icon {
+    font-size: 72px;
+    color: #ff4d4f;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 16px;
+  }
 }

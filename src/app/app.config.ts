@@ -2,8 +2,9 @@ import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
+  APP_INITIALIZER,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideNzIcons } from 'ng-zorro-antd/icon';
 import { UserOutline, LeftOutline, RightOutline } from '@ant-design/icons-angular/icons';
@@ -13,20 +14,46 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { en_US, provideNzI18n } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authInterceptor } from '@services/auth.interceptor';
+import { AuthService } from '@services/auth-service';
+import { MERMAID_OPTIONS, provideMarkdown } from 'ngx-markdown';
 
 registerLocaleData(en);
+
+// Initialize auth before app starts
+export function initializeAuth(authService: AuthService) {
+  return () => {
+    // Auth service constructor already loads from cookies
+    // This just ensures it's initialized before routing
+    return Promise.resolve();
+  };
+}
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
-    provideRouter(routes),
+    provideRouter(routes, withPreloading(PreloadAllModules)),
     provideClientHydration(withEventReplay()),
     provideNzI18n(en_US),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor]), withFetch()),
     provideAnimationsAsync(),
     provideNzIcons([UserOutline, LeftOutline, RightOutline]),
+    provideMarkdown({
+      mermaidOptions: {
+        provide: MERMAID_OPTIONS,
+        useValue: {
+          darkMode: true,
+          look: 'handDrawn',
+        },
+      },
+    }),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeAuth,
+      deps: [AuthService],
+      multi: true,
+    },
   ],
 };

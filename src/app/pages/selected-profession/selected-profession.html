@@ -1,11 +1,34 @@
 <nz-layout class="app-layout">
-  <nz-sider nzCollapsible nzWidth="200px" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
+  @if (isLoading()) {
+  <div class="loading-container">
+    <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading profession data...">
+      <div class="loading-content"></div>
+    </nz-spin>
+  </div>
+  } @else if (loadError()) {
+  <div class="error-container">
+    <nz-icon nzType="exclamation-circle" nzTheme="outline" class="error-icon"></nz-icon>
+    <h2>{{ loadError() }}</h2>
+    <p>Please check your connection and try again.</p>
+  </div>
+  } @else {
+  <nz-sider nzCollapsible nzWidth="300px" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
     <div class="logo"></div>
     <ul nz-menu nzTheme="dark" nzMode="inline">
-      @for (subject of professionSubjects; track $index) {
-      <li nz-menu-item>
-        <nz-icon nzType="book" />
-        <span>{{ subject.name }}</span>
+      @for (subject of professionSubjects(); track $index) {
+      <li nz-submenu nzTitle="{{ subject.name }}" nzIcon="book">
+        <ul>
+          @for (module of subject.module; track $index) {
+          <li
+            nz-menu-item
+            routerLinkActive="ant-menu-item-selected"
+            nzOpen
+            (click)="selectModule(module)"
+          >
+            {{ module.title }}
+          </li>
+          }
+        </ul>
       </li>
       }
     </ul>
@@ -17,22 +40,29 @@
         [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
         (click)="isCollapsed = !isCollapsed"
       />
-      <div class="logo">
-        <a>
-          <img src="https://ng.ant.design/assets/img/logo.svg" alt="logo" />
-          <h1>NG-ZORRO</h1>
-        </a>
-      </div>
+
       <ul nz-menu class="top-nav" nzTheme="dark" nzMode="horizontal">
         <li nz-menu-item routerLinkActive="ant-menu-item-selected" routerLink="/home">Home</li>
       </ul>
+      <p class="w-full text-center text-lg font-bold !my-auto text-white">
+        {{ selectedProfession()?.name }}
+      </p>
       <app-avatar class="ml-auto flex flex-row justify-end items-center gap-4"></app-avatar>
     </nz-header>
     <nz-content>
       <div class="inner-content">
-        {{ profession }}
+        @if (selectedModule()?.moduleType === 'MD') { @if (markdownContent) {
+        <markdown lineNumbers [start]="5" [data]="markdownContent"></markdown>
+        } @else {
+        <p>No markdown content available</p>
+        } } @else if (selectedModule()) {
+        <p>Selected module type: {{ selectedModule()?.moduleType }}</p>
+        } @else {
+        <p>Please select a module from the sidebar</p>
+        }
       </div>
     </nz-content>
     <nz-footer>Ant Design ©{{ date.getFullYear() }} Implement By Angular</nz-footer>
   </nz-layout>
+  }
 </nz-layout>

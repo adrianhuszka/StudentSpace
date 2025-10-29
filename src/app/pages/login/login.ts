@@ -7,6 +7,7 @@ import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzAlertModule } from 'ng-zorro-antd/alert';
+import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { AuthService } from '@services/auth-service';
 
 @Component({
@@ -18,6 +19,7 @@ import { AuthService } from '@services/auth-service';
     NzFormModule,
     NzInputModule,
     NzAlertModule,
+    NzTabsModule,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -36,7 +38,6 @@ export class Login {
 
   getPasswordErrorMessage(): string {
     const passwordControl = this.validateForm.controls.password;
-    console.log(passwordControl);
     if (passwordControl.hasError('required')) {
       return 'Password is required';
     }
@@ -74,9 +75,5 @@ export class Login {
         }
       });
     }
-  }
-
-  log(str: any): void {
-    console.log(str);
   }
 }

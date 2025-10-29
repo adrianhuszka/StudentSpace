@@ -1,60 +1,71 @@
-import { Component, PLATFORM_ID, inject } from '@angular/core';
+import { Component, Inject, PLATFORM_ID, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { Router } from '@angular/router';
 import { NzLayoutModule } from 'ng-zorro-antd/layout';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { AuthService } from '@services/auth-service';
+import { AvatarComponent } from '@components/avatar/avatar.component';
+
+export interface Profession {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+}
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, NzIconModule, NzLayoutModule, NzMenuModule],
+  imports: [CommonModule, NzIconModule, NzLayoutModule, NzMenuModule, AvatarComponent],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })
-export class Home {
+export class Home implements OnInit {
   protected readonly date = new Date();
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
+  private apiUrl = environment.apiUrl;
+  szakmak: Profession[] = [];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit() {
+    this.loadProfessions();
+  }
+
+  private loadProfessions() {
+    this.http
+      .get<Profession[]>(`${this.apiUrl}/professions`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.authService.getToken() || '',
+        },
+      })
+      .subscribe({
+        next: (data) => {
+          console.log('Professions loaded:', data);
+          if (data && data.length > 0) {
+            this.szakmak = data;
+            this.cdr.markForCheck(); // Explicitly trigger change detection
+          }
+        },
+        error: (error) => {
+          console.error('Error loading professions:', error);
+        },
+      });
+  }
 
   navigateToProfession(id: number) {
     this.router.navigate(['/selected-profession', id]);
   }
   currentIndex = 0;
-
-  szakmak = [
-    {
-      id: 1,
-      name: 'Informatikai rendszerüzemeltető',
-      description: 'Hálózatok, szerverek, üzemeltetés',
-      imageUrl: '/rendszeruzemelteto.jpg',
-    },
-    {
-      id: 2,
-      name: 'Szoftverfejlesztő és tesztelő',
-      description: 'Szoftverfejlesztés, tesztelés',
-      imageUrl: '/szoftver.jpg',
-    },
-    {
-      id: 3,
-      name: 'Elektronika és Elektrotechnika',
-      description: 'Áramkörök, digitális technika',
-      imageUrl: '/elektro.jpg',
-    },
-    {
-      id: 4,
-      name: 'Automatikai technikus',
-      description: 'Ipar, robotika, automatizálás',
-      imageUrl: '/automatikaiTechnikus.jpg',
-    },
-    {
-      id: 5,
-      name: 'Távközlési technikus',
-      description: 'Hálózatok, távközlés, rendszerek',
-      imageUrl: '/tavkozlesi.jpg',
-    },
-  ];
 
   nextCard() {
     this.currentIndex = (this.currentIndex + 1) % this.szakmak.length;
