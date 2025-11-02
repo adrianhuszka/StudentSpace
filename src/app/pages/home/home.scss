@@ -106,3 +106,113 @@ button {
     }
   }
 }
+
+// Admin Controls
+::ng-deep {
+  .ant-btn-primary.ant-btn-ghost {
+    border-color: rgba(255, 255, 255, 0.8);
+    color: white;
+
+    &:hover {
+      border-color: white;
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+  }
+
+  .ant-modal-content {
+    background: rgba(10, 38, 71, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    .ant-modal-header {
+      background: transparent;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+      .ant-modal-title {
+        color: white;
+      }
+    }
+
+    .ant-modal-body {
+      color: white;
+
+      .ant-form-item-label > label {
+        color: rgba(255, 255, 255, 0.85);
+      }
+
+      .ant-input,
+      .ant-input-number,
+      textarea.ant-input {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: white;
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.4);
+        }
+
+        &:focus,
+        &:hover {
+          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.4);
+        }
+      }
+
+      // File input styling
+      input[type='file'] {
+        color: rgba(255, 255, 255, 0.85);
+
+        &::file-selector-button {
+          margin-right: 16px;
+          padding: 8px 16px;
+          border-radius: 6px;
+          border: none;
+          font-size: 14px;
+          font-weight: 600;
+          background-color: #1890ff;
+          color: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background-color: #40a9ff;
+          }
+        }
+      }
+
+      // Image preview styling
+      img {
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    .ant-modal-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: transparent;
+    }
+  }
+}
+
+// Edit Mode Card Overlay
+.card-edit-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+
+  &.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+}
