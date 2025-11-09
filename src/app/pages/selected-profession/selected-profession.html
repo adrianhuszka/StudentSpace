@@ -147,14 +147,6 @@
               <span nz-icon nzType="file-pdf" nzTheme="outline"></span>
               {{ selectedModule()?.title }}
             </h3>
-            <button
-              nz-button
-              nzType="primary"
-              (click)="downloadPdf(selectedModule()!.id, selectedModule()!.title + '.pdf')"
-            >
-              <span nz-icon nzType="download"></span>
-              Download PDF
-            </button>
           </div>
           @if (pdfBlobUrl()) {
           <iframe [src]="pdfBlobUrl()" class="pdf-viewer" title="PDF Viewer"></iframe>

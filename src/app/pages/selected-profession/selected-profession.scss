@@ -94,26 +94,24 @@ nz-header {
 }
 
 nz-content {
-  padding: 24px 50px;
   background: transparent;
 }
 
 .inner-content {
-  padding: 24px;
-  background: rgba(10, 38, 71, 0.7);
   backdrop-filter: blur(10px);
-  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   height: 100%;
   color: white;
   overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2);
 }
 
 .markdown-content-display {
   background: white;
   padding: 32px;
-  border-radius: 8px;
   color: #333;
   min-height: 400px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -821,7 +819,6 @@ nz-footer {
   display: flex;
   flex-direction: column;
   background: white;
-  border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 

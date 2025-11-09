@@ -38,6 +38,15 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
+// Import new reusable components and services
+import { SubjectModalComponent } from '@components/subject-modal/subject-modal.component';
+import {
+  ModuleModalComponent,
+  ModuleFormData,
+} from '@components/module-modal/module-modal.component';
+import { SubjectService } from '@services/subject.service';
+import { ConfirmDialogService } from '@services/confirm-dialog.service';
+
 interface Subject {
   id: number;
   name: string;
@@ -86,6 +95,10 @@ export class SelectedProfession implements OnDestroy {
   private message = inject(NzMessageService);
   private router = inject(Router);
   private sanitizer = inject(DomSanitizer);
+
+  // New service injections
+  private subjectService = inject(SubjectService);
+  private confirmDialog = inject(ConfirmDialogService);
 
   professionSubjects = signal<Subject[]>([]);
   selectedProfession = signal<Profession | null>(null);
@@ -459,36 +472,30 @@ export class SelectedProfession implements OnDestroy {
       });
   }
 
-  deleteSubject(subject: Subject, event: Event) {
+  async deleteSubject(subject: Subject, event: Event) {
     event.stopPropagation();
 
-    if (!confirm(`Are you sure you want to delete "${subject.name}"?`)) {
-      return;
-    }
+    const confirmed = await this.confirmDialog.confirmDelete(subject.name);
+    if (!confirmed) return;
 
-    this.http
-      .delete(`${this.apiUrl}/subjects/${subject.id}`, {
-        observe: 'response',
-        responseType: 'text',
-      })
-      .subscribe({
-        next: () => {
-          this.message.success('Subject deleted successfully!');
-          // Remove the subject from local state
-          this.professionSubjects.update((subjects) => subjects.filter((s) => s.id !== subject.id));
-          // Clear selected module if it belongs to the deleted subject
-          if (
-            this.selectedModule() &&
-            subject.module.some((m) => m.id === this.selectedModule()?.id)
-          ) {
-            this.selectedModule.set(null);
-          }
-        },
-        error: (error) => {
-          console.error('Error deleting subject:', error);
-          this.message.error('Failed to delete subject. Please try again.');
-        },
-      });
+    this.subjectService.deleteSubject(subject.id).subscribe({
+      next: () => {
+        this.message.success('Subject deleted successfully!');
+        // Remove the subject from local state
+        this.professionSubjects.update((subjects) => subjects.filter((s) => s.id !== subject.id));
+        // Clear selected module if it belongs to the deleted subject
+        if (
+          this.selectedModule() &&
+          subject.module.some((m) => m.id === this.selectedModule()?.id)
+        ) {
+          this.selectedModule.set(null);
+        }
+      },
+      error: (error) => {
+        console.error('Error deleting subject:', error);
+        this.message.error('Failed to delete subject. Please try again.');
+      },
+    });
   }
 
   // Module modal methods
@@ -691,37 +698,31 @@ export class SelectedProfession implements OnDestroy {
       });
   }
 
-  deleteModule(module: Module, subject: Subject, event: Event) {
+  async deleteModule(module: Module, subject: Subject, event: Event) {
     event.stopPropagation();
 
-    if (!confirm(`Are you sure you want to delete "${module.title}"?`)) {
-      return;
-    }
+    const confirmed = await this.confirmDialog.confirmDelete(module.title);
+    if (!confirmed) return;
 
-    this.http
-      .delete(`${this.apiUrl}/modules/${module.id}`, {
-        observe: 'response',
-        responseType: 'text',
-      })
-      .subscribe({
-        next: () => {
-          this.message.success('Module deleted successfully!');
-          // Remove the module from local state
-          this.professionSubjects.update((subjects) =>
-            subjects.map((s) =>
-              s.id === subject.id ? { ...s, module: s.module.filter((m) => m.id !== module.id) } : s
-            )
-          );
-          // Clear selected module if it's the one being deleted
-          if (this.selectedModule()?.id === module.id) {
-            this.selectedModule.set(null);
-          }
-        },
-        error: (error) => {
-          console.error('Error deleting module:', error);
-          this.message.error('Failed to delete module. Please try again.');
-        },
-      });
+    this.subjectService.deleteModule(module.id).subscribe({
+      next: () => {
+        this.message.success('Module deleted successfully!');
+        // Remove the module from local state
+        this.professionSubjects.update((subjects) =>
+          subjects.map((s) =>
+            s.id === subject.id ? { ...s, module: s.module.filter((m) => m.id !== module.id) } : s
+          )
+        );
+        // Clear selected module if it's the one being deleted
+        if (this.selectedModule()?.id === module.id) {
+          this.selectedModule.set(null);
+        }
+      },
+      error: (error) => {
+        console.error('Error deleting module:', error);
+        this.message.error('Failed to delete module. Please try again.');
+      },
+    });
   }
 
   // Link subject modal methods
@@ -787,29 +788,22 @@ export class SelectedProfession implements OnDestroy {
       });
   }
 
-  unlinkSubjectFromProfession(subject: Subject, event: Event) {
+  async unlinkSubjectFromProfession(subject: Subject, event: Event) {
     event.stopPropagation();
 
-    if (!confirm(`Are you sure you want to unlink "${subject.name}" from this profession?`)) {
-      return;
-    }
+    const confirmed = await this.confirmDialog.confirm(
+      'Unlink Subject',
+      `Are you sure you want to unlink "${subject.name}" from this profession?`
+    );
+    if (!confirmed) return;
 
     if (!this.selectedProfession()?.id) {
       this.message.error('No profession selected');
       return;
     }
 
-    this.http
-      .put(
-        `${this.apiUrl}/subjects/unlink-subject-from-profession?subjectId=${
-          subject.id
-        }&professionId=${this.selectedProfession()!.id}`,
-        null,
-        {
-          observe: 'response',
-          responseType: 'text',
-        }
-      )
+    this.subjectService
+      .unlinkSubjectFromProfession(subject.id, this.selectedProfession()!.id)
       .subscribe({
         next: () => {
           this.message.success('Subject unlinked successfully!');
