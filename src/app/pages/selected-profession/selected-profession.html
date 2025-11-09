@@ -12,12 +12,12 @@
     <p>Please check your connection and try again.</p>
   </div>
   } @else {
-  <nz-sider nzCollapsible nzWidth="300px" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
+  <nz-sider nzCollapsible nzWidth="350px" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
     <div class="logo"></div>
     <ul nz-menu nzTheme="dark" nzMode="inline">
       @for (subject of professionSubjects(); track subject.id) {
       <li nz-submenu nzIcon="book">
-        <span title>
+        <span title class="subject-item">
           {{ subject.name }}
           @if (isEditMode() && canEdit()) {
           <span class="subject-actions">
@@ -52,7 +52,7 @@
           @for (module of subject.module; track module.id) {
           <li
             nz-menu-item
-            routerLinkActive="ant-menu-item-selected"
+            [class.ant-menu-item-selected]="selectedModule()?.id === module.id"
             nzOpen
             (click)="selectModule(module)"
           >
@@ -131,8 +131,61 @@
     </nz-header>
     <nz-content>
       <div class="inner-content">
-        @if (selectedModule()?.moduleType === 'MD') { @if (markdownContent()) {
+        @if (showForumView()) {
+        <div class="forum-container">
+          <div class="forum-header">
+            <h2>
+              <span nz-icon nzType="message" nzTheme="outline"></span>
+              Discussion Forum - {{ selectedProfession()?.name }}
+            </h2>
+            <button
+              nz-button
+              nzType="text"
+              class="close-forum-button"
+              (click)="closeForumView()"
+              nz-tooltip="Close forum"
+            >
+              <span nz-icon nzType="close" nzTheme="outline"></span>
+            </button>
+          </div>
+          <div class="forum-content">
+            <div class="forum-subjects-list">
+              <h3>Available Forums</h3>
+              @if (professionSubjects().length > 0) { @for (subject of professionSubjects(); track
+              subject.id) { @if (subject.forum) {
+              <div class="forum-subject-card">
+                <div class="forum-subject-info">
+                  <h4>
+                    <span nz-icon nzType="book" nzTheme="outline"></span>
+                    {{ subject.name }}
+                  </h4>
+                  <p>{{ subject.description }}</p>
+                </div>
+                <button nz-button nzType="primary" class="join-forum-btn">
+                  <span nz-icon nzType="team" nzTheme="outline"></span>
+                  Join Discussion
+                </button>
+              </div>
+              } } } @else {
+              <div class="no-forums">
+                <span nz-icon nzType="inbox" nzTheme="outline"></span>
+                <p>No forums available yet</p>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+        } @else if (selectedModule()?.moduleType === 'MD') { @if (markdownContent()) {
         <div class="markdown-content-display">
+          <button
+            nz-button
+            nzType="text"
+            class="close-module-button"
+            (click)="selectModule(selectedModule()!)"
+            nz-tooltip="Close module"
+          >
+            <span nz-icon nzType="close" nzTheme="outline"></span>
+          </button>
           <markdown [data]="markdownContent()"></markdown>
         </div>
         } @else {
@@ -147,6 +200,15 @@
               <span nz-icon nzType="file-pdf" nzTheme="outline"></span>
               {{ selectedModule()?.title }}
             </h3>
+            <button
+              nz-button
+              nzType="text"
+              class="close-module-button-pdf"
+              (click)="selectModule(selectedModule()!)"
+              nz-tooltip="Close module"
+            >
+              <span nz-icon nzType="close" nzTheme="outline"></span>
+            </button>
           </div>
           @if (pdfBlobUrl()) {
           <iframe [src]="pdfBlobUrl()" class="pdf-viewer" title="PDF Viewer"></iframe>
@@ -157,9 +219,29 @@
           }
         </div>
         } @else {
-        <div class="empty-state">
-          <span nz-icon nzType="book" nzTheme="outline" class="empty-icon"></span>
-          <p>Please select a module from the sidebar</p>
+        <div class="empty-state forum-welcome">
+          <div class="forum-welcome-content">
+            <span nz-icon nzType="message" nzTheme="outline" class="forum-icon"></span>
+            <h2>Welcome to {{ selectedProfession()?.name }}</h2>
+            <p>Select a module from the sidebar to start learning, or join the discussion forum</p>
+            <button
+              nz-button
+              nzType="primary"
+              nzSize="large"
+              class="forum-open-button"
+              (click)="openForumList()"
+            >
+              <span nz-icon nzType="team" nzTheme="outline"></span>
+              Open Forum
+            </button>
+            <div class="divider-with-text">
+              <span>or</span>
+            </div>
+            <p class="secondary-text">
+              <span nz-icon nzType="book" nzTheme="outline"></span>
+              Choose a module to begin your learning journey
+            </p>
+          </div>
         </div>
         }
       </div>
@@ -195,6 +277,18 @@
             placeholder="Enter subject description"
             [nzAutosize]="{ minRows: 3, maxRows: 6 }"
           ></textarea>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="!isEditingSubject()">
+        <nz-form-control>
+          <label nz-checkbox formControlName="createForum">
+            <span>Create a forum for this subject</span>
+          </label>
+          <div class="forum-hint">
+            <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+            <span>Students can discuss and ask questions about this subject in the forum</span>
+          </div>
         </nz-form-control>
       </nz-form-item>
     </form>

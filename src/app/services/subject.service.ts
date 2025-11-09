@@ -10,6 +10,7 @@ export interface Subject {
   description: string;
   professions: Profession[];
   module: Module[];
+  forumId?: number;
 }
 
 export interface Module {

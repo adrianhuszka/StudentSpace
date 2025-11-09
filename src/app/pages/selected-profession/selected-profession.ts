@@ -23,6 +23,7 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { forkJoin } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -53,6 +54,7 @@ interface Subject {
   description: string;
   professions: Profession[];
   module: Module[];
+  forum?: Forum;
 }
 
 interface Module {
@@ -60,6 +62,11 @@ interface Module {
   title: string;
   content: string | File;
   moduleType: 'MD' | 'PDF';
+}
+
+interface Forum {
+  forumMessages: any[];
+  id: string;
 }
 
 @Component({
@@ -81,6 +88,7 @@ interface Module {
     NzSelectModule,
     NzTabsModule,
     NzToolTipModule,
+    NzCheckboxModule,
     ReactiveFormsModule,
     FormsModule,
   ],
@@ -144,6 +152,9 @@ export class SelectedProfession implements OnDestroy {
   availableSubjects = signal<Subject[]>([]);
   selectedSubjectToLink: number | null = null;
 
+  // Forum view state
+  showForumView = signal(false);
+
   // Check if user can edit (ADMIN, SUPERADMIN, or TEACHER)
   canEdit = computed(() => {
     const roles = this.authService.userRoles();
@@ -165,6 +176,7 @@ export class SelectedProfession implements OnDestroy {
     this.subjectForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
+      createForum: [true], // Default to true for new subjects
     });
 
     this.moduleForm = this.fb.group({
@@ -245,7 +257,15 @@ export class SelectedProfession implements OnDestroy {
   }
 
   selectModule(module: Module) {
+    // Toggle selection - if clicking the same module, deselect it
+    if (this.selectedModule()?.id === module.id) {
+      this.selectedModule.set(null);
+      this.cleanupPdfBlob();
+      return;
+    }
+
     this.selectedModule.set(module);
+    this.showForumView.set(false); // Close forum view when selecting a module
 
     // If it's a PDF module, load the PDF blob with authentication
     if (module.moduleType === 'PDF') {
@@ -412,8 +432,15 @@ export class SelectedProfession implements OnDestroy {
   }
 
   private addSubject(data: any) {
+    const subjectData = {
+      name: data.name,
+      description: data.description,
+      professions: data.professions,
+      createForum: data.createForum ?? false,
+    };
+
     this.http
-      .post(`${this.apiUrl}/subjects`, data, {
+      .post(`${this.apiUrl}/subjects`, subjectData, {
         observe: 'response',
         responseType: 'text',
       })
@@ -822,6 +849,16 @@ export class SelectedProfession implements OnDestroy {
           this.message.error('Failed to unlink subject. Please try again.');
         },
       });
+  }
+
+  openForumList() {
+    this.showForumView.set(true);
+    this.selectedModule.set(null);
+    this.cleanupPdfBlob();
+  }
+
+  closeForumView() {
+    this.showForumView.set(false);
   }
 
   navigateToHome() {
