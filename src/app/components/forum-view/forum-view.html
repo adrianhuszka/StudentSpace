@@ -1,1 +1,81 @@
-<p>forum-view works!</p>
+<div class="forum-container">
+  <div class="forum-header">
+    <h2>
+      <span nz-icon nzType="message" nzTheme="outline"></span>
+      Discussion Forum - {{ selectedProfession()?.name }}
+    </h2>
+    <button
+      nz-button
+      nzType="text"
+      class="close-forum-button"
+      (click)="closeForumView()"
+      nz-tooltip="Close forum"
+    >
+      <span nz-icon nzType="close" nzTheme="outline"></span>
+    </button>
+  </div>
+  <div class="forum-content">
+    @if (selectedForum()) {
+    <div class="forum-messages">
+      <h3>
+        <span nz-icon nzType="team" nzTheme="outline"></span>
+        {{ selectedSubject()?.name }}
+      </h3>
+      <div class="messages-list">
+        @for (message of selectedForum()?.forumMessages; track message.id) {
+        <div class="message-card">
+          <div class="message-header">
+            <strong>{{ message.authorName }}</strong>
+            <span class="message-timestamp">{{ message.createdAt | date : 'short' }}</span>
+          </div>
+          <div class="message-content">
+            <p>{{ message.content }}</p>
+          </div>
+        </div>
+        }
+      </div>
+      <div class="message-input">
+        <textarea
+          nz-input
+          [(ngModel)]="newMessageContent"
+          placeholder="Type your message here..."
+          rows="3"
+        ></textarea>
+        <button
+          nz-button
+          nzType="primary"
+          (click)="sendMessage()"
+          [disabled]="!newMessageContent.trim()"
+        >
+          Send
+        </button>
+      </div>
+    </div>
+    } @else {
+    <div class="forum-subjects-list">
+      <h3>Available Forums</h3>
+      @if (professionSubjects().length > 0) { @for (subject of professionSubjects(); track
+      subject.id) { @if (subject.forum) {
+      <div class="forum-subject-card">
+        <div class="forum-subject-info">
+          <h4>
+            <span nz-icon nzType="book" nzTheme="outline"></span>
+            {{ subject.name }} Subject Forum
+          </h4>
+          <p>{{ subject.description }}</p>
+        </div>
+        <button nz-button nzType="primary" class="join-forum-btn" (click)="selectForumId(subject)">
+          <span nz-icon nzType="team" nzTheme="outline"></span>
+          Join Discussion
+        </button>
+      </div>
+      } } } @else {
+      <div class="no-forums">
+        <span nz-icon nzType="inbox" nzTheme="outline"></span>
+        <p>No forums available yet</p>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>

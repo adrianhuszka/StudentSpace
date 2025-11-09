@@ -1,0 +1,331 @@
+<nz-layout class="app-layout">
+  @if (isLoading) {
+  <div class="loading-container">
+    <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading profession data...">
+      <div class="loading-content"></div>
+    </nz-spin>
+  </div>
+  } @else if (loadError) {
+  <div class="error-container">
+    <nz-icon nzType="exclamation-circle" nzTheme="outline" class="error-icon"></nz-icon>
+    <h2>{{ loadError }}</h2>
+    <p>Please check your connection and try again.</p>
+  </div>
+  } @else {
+  <nz-sider nzCollapsible nzWidth="350px" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
+    <div class="logo"></div>
+    <ul nz-menu nzTheme="dark" nzMode="inline">
+      @for (subject of professionSubjects(); track subject.id) {
+      <li nz-submenu nzIcon="book">
+        <span title class="subject-item">
+          {{ subject.name }}
+          @if (isEditMode() && canEdit()) {
+          <span class="subject-actions">
+            <span
+              nz-icon
+              nzType="edit"
+              nzTheme="outline"
+              class="edit-icon"
+              (click)="openEditSubjectModal(subject); $event.stopPropagation()"
+              nz-tooltip="Edit Subject"
+            ></span>
+            <span
+              nz-icon
+              nzType="disconnect"
+              nzTheme="outline"
+              class="unlink-icon"
+              (click)="unlinkSubjectFromProfession(subject, $event)"
+              nz-tooltip="Unlink from Profession"
+            ></span>
+            <span
+              nz-icon
+              nzType="delete"
+              nzTheme="outline"
+              class="delete-icon"
+              (click)="deleteSubject(subject, $event)"
+              nz-tooltip="Delete Subject"
+            ></span>
+          </span>
+          }
+        </span>
+        <ul>
+          @for (module of subject.module; track module.id) {
+          <li
+            nz-menu-item
+            [class.ant-menu-item-selected]="selectedModule()?.id === module.id"
+            nzOpen
+            (click)="selectModule(module)"
+          >
+            <span class="module-item">
+              {{ module.title }}
+              @if (isEditMode() && canEdit()) {
+              <span class="module-actions">
+                <span
+                  nz-icon
+                  nzType="edit"
+                  nzTheme="outline"
+                  class="edit-icon"
+                  (click)="openEditModuleModal(module, subject); $event.stopPropagation()"
+                ></span>
+                <span
+                  nz-icon
+                  nzType="delete"
+                  nzTheme="outline"
+                  class="delete-icon"
+                  (click)="deleteModule(module, subject, $event)"
+                ></span>
+              </span>
+              }
+            </span>
+          </li>
+          } @if (isEditMode() && canEdit()) {
+          <li nz-menu-item (click)="openAddModuleModal(subject)" class="add-module-item">
+            <span nz-icon nzType="plus"></span>
+            Add Module
+          </li>
+          }
+        </ul>
+      </li>
+      }
+    </ul>
+  </nz-sider>
+  <nz-layout>
+    <nz-header class="w-full">
+      <nz-icon
+        class="trigger"
+        [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"
+        (click)="isCollapsed = !isCollapsed"
+      />
+
+      @if (canEdit()) {
+      <button
+        nz-button
+        [nzType]="isEditMode() ? 'primary' : 'default'"
+        (click)="toggleEditMode()"
+        class="ml-4 mr-2"
+      >
+        <span nz-icon [nzType]="isEditMode() ? 'check' : 'edit'"></span>
+        {{ isEditMode() ? 'Done' : 'Edit' }}
+      </button>
+      @if (isEditMode()) {
+      <button nz-button nzType="primary" (click)="openAddSubjectModal()" class="mr-2">
+        <span nz-icon nzType="plus"></span>
+        Add Subject
+      </button>
+      <button nz-button nzType="default" (click)="openLinkSubjectModal()">
+        <span nz-icon nzType="link"></span>
+        Link Existing Subject
+      </button>
+      } }
+
+      <ul nz-menu class="top-nav" nzTheme="dark" nzMode="horizontal">
+        <li nz-menu-item (click)="navigateToHome()">
+          <span nz-icon nzType="home" nzTheme="outline"></span>
+          Home
+        </li>
+      </ul>
+      <p class="w-full text-center text-lg font-bold !my-auto text-white">
+        {{ selectedProfession()?.name }}
+      </p>
+      <app-avatar class="ml-auto flex flex-row justify-end items-center gap-4"></app-avatar>
+    </nz-header>
+    <nz-content>
+      <ng-content></ng-content>
+    </nz-content>
+  </nz-layout>
+  }
+</nz-layout>
+
+<!-- Link Subject Modal -->
+<nz-modal
+  [nzVisible]="isLinkSubjectModalVisible()"
+  nzTitle="Link Existing Subject to Profession"
+  (nzOnCancel)="handleLinkSubjectCancel()"
+  (nzOnOk)="handleLinkSubjectSubmit()"
+  nzOkText="Link Subject"
+  [nzWidth]="500"
+>
+  <ng-container *nzModalContent>
+    <div class="link-subject-content">
+      <p class="mb-4">
+        Select a subject to link to <strong>{{ selectedProfession()?.name }}</strong
+        >:
+      </p>
+
+      <nz-select
+        [(ngModel)]="selectedSubjectToLink"
+        nzPlaceHolder="Select a subject"
+        nzShowSearch
+        nzAllowClear
+        class="w-full"
+      >
+        @for (subject of availableSubjects(); track subject.id) {
+        <nz-option [nzValue]="subject.id" [nzLabel]="subject.name">
+          <div class="subject-option">
+            <div class="subject-name">{{ subject.name }}</div>
+            <div class="subject-description">{{ subject.description }}</div>
+          </div>
+        </nz-option>
+        }
+      </nz-select>
+
+      @if (availableSubjects().length === 0) {
+      <p class="mt-4 text-gray-400 italic">
+        No available subjects to link. All subjects are already linked to this profession.
+      </p>
+      }
+    </div>
+  </ng-container>
+</nz-modal>
+
+<!-- Module Modal -->
+<nz-modal
+  [nzVisible]="isModuleModalVisible()"
+  [nzTitle]="isEditingModule() ? 'Edit Module' : 'Add New Module'"
+  (nzOnCancel)="handleModuleCancel()"
+  (nzOnOk)="handleModuleSubmit()"
+  [nzOkText]="isEditingModule() ? 'Update' : 'Add'"
+  [nzWidth]="900"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="moduleForm" nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>Module Title</nz-form-label>
+        <nz-form-control nzErrorTip="Please enter a module title (min 3 characters)">
+          <input nz-input formControlName="title" placeholder="e.g., Introduction to Algebra" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Module Type</nz-form-label>
+        <nz-form-control nzErrorTip="Please select a module type">
+          <nz-select formControlName="moduleType" nzPlaceHolder="Select module type">
+            <nz-option nzValue="MD" nzLabel="Markdown (MD)"></nz-option>
+            <nz-option nzValue="PDF" nzLabel="PDF Document"></nz-option>
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      @if (moduleForm.get('moduleType')?.value === 'MD') {
+      <nz-form-item>
+        <nz-form-label nzRequired>Content</nz-form-label>
+        <nz-form-control nzErrorTip="Please enter module content">
+          <nz-tabset nzType="card" class="markdown-editor-tabs">
+            <nz-tab nzTitle="✏️ Editor">
+              <div class="markdown-editor-container">
+                <div class="markdown-toolbar">
+                  <span class="toolbar-hint">
+                    <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+                    Quick syntax: <code># H1</code> <code>## H2</code> <code>**bold**</code>
+                    <code>*italic*</code> <code>[link](url)</code> <code>- list</code>
+                  </span>
+                </div>
+                <textarea
+                  nz-input
+                  formControlName="content"
+                  placeholder="Enter markdown content here...
+
+# Example Heading
+## Subheading
+
+**Bold text** and *italic text*
+
+- List item 1
+- List item 2
+
+```javascript
+// Code block
+console.log('Hello World');
+```
+
+[Link text](https://example.com)"
+                  class="markdown-textarea"
+                  rows="15"
+                ></textarea>
+              </div>
+            </nz-tab>
+            <nz-tab nzTitle="👁️ Preview">
+              <div class="markdown-preview">
+                @if (modulePreviewContent()) {
+                <markdown [data]="modulePreviewContent()"></markdown>
+                } @else {
+                <p class="empty-preview">No content to preview. Start writing in the Editor tab.</p>
+                }
+              </div>
+            </nz-tab>
+          </nz-tabset>
+        </nz-form-control>
+      </nz-form-item>
+      } @else if (moduleForm.get('moduleType')?.value === 'PDF') {
+      <nz-form-item>
+        <nz-form-label nzRequired>PDF File</nz-form-label>
+        <nz-form-control nzErrorTip="Please upload a PDF file">
+          <input
+            type="file"
+            accept=".pdf,application/pdf"
+            (change)="onFileSelected($event)"
+            class="file-upload-input"
+          />
+          @if (selectedFileName()) {
+          <div class="file-info">
+            <span nz-icon nzType="file-pdf" nzTheme="outline"></span>
+            <span class="file-name">{{ selectedFileName() }}</span>
+            <button nz-button nzType="text" nzSize="small" nzDanger (click)="clearFile()">
+              <span nz-icon nzType="close"></span>
+            </button>
+          </div>
+          }
+          <p class="upload-hint">
+            <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+            Upload a PDF file (max 10MB)
+          </p>
+        </nz-form-control>
+      </nz-form-item>
+      }
+    </form>
+  </ng-container>
+</nz-modal>
+
+<!-- Subject Modal -->
+<nz-modal
+  [nzVisible]="isSubjectModalVisible()"
+  [nzTitle]="isEditingSubject() ? 'Edit Subject' : 'Add New Subject'"
+  (nzOnCancel)="handleSubjectCancel()"
+  (nzOnOk)="handleSubjectSubmit()"
+  [nzOkText]="isEditingSubject() ? 'Update' : 'Add'"
+>
+  <ng-container *nzModalContent>
+    <form nz-form [formGroup]="subjectForm" nzLayout="vertical">
+      <nz-form-item>
+        <nz-form-label nzRequired>Subject Name</nz-form-label>
+        <nz-form-control nzErrorTip="Please enter a subject name (min 3 characters)">
+          <input nz-input formControlName="name" placeholder="e.g., Matematika - 1" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label nzRequired>Description</nz-form-label>
+        <nz-form-control nzErrorTip="Please enter a description (min 10 characters)">
+          <textarea
+            nz-input
+            formControlName="description"
+            placeholder="Enter subject description"
+            [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+          ></textarea>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="!isEditingSubject()">
+        <nz-form-control>
+          <label nz-checkbox formControlName="createForum">
+            <span>Create a forum for this subject</span>
+          </label>
+          <div class="forum-hint">
+            <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+            <span>Students can discuss and ask questions about this subject in the forum</span>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+</nz-modal>

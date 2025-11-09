@@ -29,6 +29,7 @@
                   formControlName="username"
                   placeholder="Username"
                   (input)="validateForm.get('username')?.updateValueAndValidity()"
+                  style="border-radius: 5px; padding: 5px"
                 />
               </nz-input-group>
             </nz-form-control>
@@ -41,6 +42,7 @@
                   nz-input
                   formControlName="password"
                   placeholder="Password"
+                  style="border-radius: 5px; padding: 5px"
                   (input)="validateForm.get('password')?.updateValueAndValidity()"
                 />
               </nz-input-group>
