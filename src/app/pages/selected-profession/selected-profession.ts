@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   OnDestroy,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -137,7 +138,8 @@ export class SelectedProfession implements OnDestroy {
     private route: ActivatedRoute,
     private http: HttpClient,
     private authService: AuthService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
   ) {
     this.route.params.subscribe((params) => {
       this.loadData(params['id']);
@@ -302,7 +304,9 @@ export class SelectedProfession implements OnDestroy {
   }
 
   closeForumView() {
+    console.log('closeForumView called in parent');
     this.showForumView.set(false);
+    this.cdr.markForCheck();
   }
 
   navigateToHome() {

@@ -8,7 +8,7 @@
       nz-button
       nzType="text"
       class="close-forum-button"
-      (click)="closeForumView()"
+      (click)="onCloseForumView()"
       nz-tooltip="Close forum"
     >
       <span nz-icon nzType="close" nzTheme="outline"></span>
@@ -23,13 +23,69 @@
       </h3>
       <div class="messages-list">
         @for (message of selectedForum()?.forumMessages; track message.id) {
-        <div class="message-card">
-          <div class="message-header">
-            <strong>{{ message.authorName }}</strong>
-            <span class="message-timestamp">{{ message.createdAt | date : 'short' }}</span>
-          </div>
-          <div class="message-content">
-            <p>{{ message.content }}</p>
+        <div
+          class="message-wrapper"
+          [class.message-right]="isCurrentUserMessage(message)"
+          [class.message-left]="!isCurrentUserMessage(message)"
+        >
+          <div class="message-card">
+            <div class="message-header">
+              <div class="message-author-info">
+                <strong>@{{ message.author.username }}</strong>
+                <span class="message-timestamp">
+                  {{ message.createdAt | date : 'short' }}
+                  @if (message.updatedAt && message.updatedAt !== message.createdAt) {
+                  <span class="message-edited"
+                    >(edited {{ message.updatedAt | date : 'short' }})</span
+                  >
+                  }
+                </span>
+              </div>
+              @if (isCurrentUserMessage(message) && !isEditing(message.id)) {
+              <button
+                nz-button
+                nzType="text"
+                nzSize="small"
+                class="edit-message-btn"
+                (click)="startEditMessage(message)"
+                nz-tooltip="Edit message"
+              >
+                <span nz-icon nzType="edit" nzTheme="outline"></span>
+              </button>
+              }
+            </div>
+            @if (isEditing(message.id)) {
+            <div class="message-edit-mode">
+              <textarea
+                nz-input
+                [(ngModel)]="editingMessageContent"
+                rows="3"
+                (keydown)="onEditTextareaKeydown($event, message.id)"
+                placeholder="Edit your message... (Enter to save, Esc to cancel)"
+                class="edit-textarea"
+              ></textarea>
+              <div class="edit-actions">
+                <button
+                  nz-button
+                  nzType="primary"
+                  nzSize="small"
+                  (click)="saveEditMessage(message.id)"
+                  [disabled]="!editingMessageContent.trim()"
+                >
+                  <span nz-icon nzType="check" nzTheme="outline"></span>
+                  Save
+                </button>
+                <button nz-button nzType="default" nzSize="small" (click)="cancelEditMessage()">
+                  <span nz-icon nzType="close" nzTheme="outline"></span>
+                  Cancel
+                </button>
+              </div>
+            </div>
+            } @else {
+            <div class="message-content">
+              <p>{{ message.message }}</p>
+            </div>
+            }
           </div>
         </div>
         }
@@ -38,8 +94,9 @@
         <textarea
           nz-input
           [(ngModel)]="newMessageContent"
-          placeholder="Type your message here..."
+          placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)"
           rows="3"
+          (keydown)="onTextareaKeydown($event)"
         ></textarea>
         <button
           nz-button

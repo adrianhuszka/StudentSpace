@@ -322,10 +322,6 @@ export class Home implements OnInit {
       next: () => {
         this.message.success('Profession deleted successfully!');
         this.szakmak = this.szakmak.filter((p) => p.id !== id);
-        // Adjust current index if needed
-        if (this.currentIndex >= this.szakmak.length) {
-          this.currentIndex = Math.max(0, this.szakmak.length - 1);
-        }
         this.cdr.markForCheck();
       },
       error: (error) => {
@@ -352,50 +348,5 @@ export class Home implements OnInit {
 
   navigateToProfession(id: number) {
     this.router.navigate(['/selected-profession', id]);
-  }
-  currentIndex = 0;
-
-  nextCard() {
-    this.currentIndex = (this.currentIndex + 1) % this.szakmak.length;
-  }
-
-  prevCard() {
-    this.currentIndex = (this.currentIndex - 1 + this.szakmak.length) % this.szakmak.length;
-  }
-
-  getCardPosition(index: number): number {
-    let diff = index - this.currentIndex;
-
-    // Normalize the difference to be within [-length/2, length/2]
-    if (diff > this.szakmak.length / 2) {
-      diff -= this.szakmak.length;
-    } else if (diff < -this.szakmak.length / 2) {
-      diff += this.szakmak.length;
-    }
-
-    if (diff === 0) return 0; // center
-    if (diff === 1) return 1; // right
-    if (diff === -1) return -1; // left
-    return 2; // hidden
-  }
-
-  getCardTransform(position: number): string {
-    const isMobile = this.isBrowser ? window.innerWidth < 768 : false;
-
-    if (position === 0) {
-      return 'translateX(0) scale(1)';
-    } else if (position === 1) {
-      return isMobile ? 'translateX(15%) scale(0.85)' : 'translateX(60%) scale(0.85)';
-    } else if (position === -1) {
-      return isMobile ? 'translateX(-15%) scale(0.85)' : 'translateX(-60%) scale(0.85)';
-    } else {
-      return 'translateX(0) scale(0.7)';
-    }
-  }
-
-  getCardOpacity(position: number): string {
-    if (position === 0) return '1';
-    if (position === 2) return '0';
-    return this.isBrowser && window.innerWidth < 768 ? '0.4' : '0.75';
   }
 }

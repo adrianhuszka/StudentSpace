@@ -44,6 +44,67 @@ nz-content {
   padding: 24px;
   flex: 1;
   display: flex;
+  overflow: hidden;
+}
+
+.cards-grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 16px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 40px;
+    padding: 0 24px;
+  }
+
+  @media (min-width: 1280px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.profession-card {
+  position: relative;
+  height: 400px;
+  min-height: 380px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+
+  @media (min-width: 640px) {
+    height: 440px;
+  }
+
+  @media (min-width: 1024px) {
+    height: 480px;
+  }
+
+  &:hover {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  // Keep the admin buttons visible and styled
+  .absolute {
+    position: absolute;
+  }
 }
 
 nz-footer {
@@ -56,45 +117,11 @@ nz-footer {
   font-size: 14px;
 }
 
-// Enhanced navigation buttons
-button {
-  &.rounded-full {
-    background: rgba(255, 255, 255, 0.2) !important;
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(44, 116, 179, 0);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.3) !important;
-      border-color: rgba(255, 255, 255, 0.6);
-      box-shadow: 0 8px 30px rgba(44, 116, 179, 0.5), 0 0 0 4px rgba(44, 116, 179, 0.2);
-      transform: scale(1.15) !important;
-    }
-
-    &:active {
-      transform: scale(1.08) !important;
-      box-shadow: 0 4px 20px rgba(44, 116, 179, 0.4), 0 0 0 2px rgba(44, 116, 179, 0.3);
-    }
-
-    span {
-      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
-      transition: all 0.3s ease;
-    }
-
-    &:hover span {
-      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
-    }
-  }
-}
-
 // Card enhancements
 .rounded-2xl,
 .rounded-3xl {
   &.bg-cover {
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.3);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 
