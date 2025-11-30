@@ -152,7 +152,29 @@ export class SelectedProfession implements OnDestroy {
     this.route.params.subscribe((params) => {
       this.loadData(params['id']);
     });
+
+    // Handle query params for deep linking from chatbot
+    this.route.queryParams.subscribe((params) => {
+      if (params['moduleId']) {
+        // Wait for data to load if not yet loaded
+        if (this.professionSubjects().length > 0) {
+          this.selectModuleById(params['moduleId'], params['quote'], params['page']);
+        } else {
+          // If data not loaded, set a flag or wait.
+          // Since loadData is called on params change, we might need to wait for that.
+          // A simple way is to check in loadData or use an effect.
+          // For now, let's store the pending navigation
+          this.pendingNavigation = {
+            moduleId: params['moduleId'],
+            quote: params['quote'],
+            page: params['page'] ? parseInt(params['page']) : undefined,
+          };
+        }
+      }
+    });
   }
+
+  private pendingNavigation: { moduleId: string; quote?: string; page?: number } | null = null;
 
   private loadData(professionId: string): void {
     this.isLoading.set(true);
@@ -200,6 +222,16 @@ export class SelectedProfession implements OnDestroy {
 
           this.professionSubjects.set(result.subjects);
           this.selectedProfession.set(result.profession);
+
+          // Handle pending navigation
+          if (this.pendingNavigation) {
+            this.selectModuleById(
+              this.pendingNavigation.moduleId,
+              this.pendingNavigation.quote,
+              this.pendingNavigation.page
+            );
+            this.pendingNavigation = null;
+          }
         },
         error: (error) => {
           console.error('Error loading data:', error);
@@ -208,10 +240,60 @@ export class SelectedProfession implements OnDestroy {
       });
   }
 
-  // Get PDF URL for downloading
-  getPdfUrl(moduleId: string): string {
-    return `${this.apiUrl}/modules/${moduleId}/pdf`;
+  private selectModuleById(moduleId: string, quote?: string, page?: number) {
+    for (const subject of this.professionSubjects()) {
+      const module = subject.module.find((m) => m.id === moduleId);
+      if (module) {
+        this.selectModule(module);
+
+        // Handle scrolling after a short delay to allow rendering
+        setTimeout(() => {
+          if (quote && module.moduleType === 'MD') {
+            this.scrollToQuote(quote);
+          } else if (page && module.moduleType === 'PDF') {
+            // PDF page navigation is handled by updating the URL in selectModule/loadPdfBlob
+            // We need to pass the page to loadPdfBlob
+            this.loadPdfBlob(module.id, page);
+          }
+        }, 500);
+        return;
+      }
+    }
   }
+
+  private scrollToQuote(quote: string) {
+    // Simple text search and scroll
+    // This is a bit hacky for rendered markdown but works for simple cases
+    // A better approach would be to use a library or search in the raw markdown if we rendered it with IDs
+    // For now, let's try window.find() or searching DOM elements
+
+    // Note: window.find is not standard but widely supported.
+    // Alternatively, we can search text nodes.
+
+    const container = document.querySelector('.markdown-content-display');
+    if (!container) return;
+
+    // Remove quotes if present
+    const cleanQuote = quote.replace(/^"|"$/g, '').trim();
+    if (!cleanQuote) return;
+
+    // Try to find the text in the container
+    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.textContent?.includes(cleanQuote)) {
+        const element = node.parentElement;
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          element.style.backgroundColor = '#fff3cd'; // Highlight
+          setTimeout(() => (element.style.backgroundColor = ''), 3000);
+          return;
+        }
+      }
+    }
+  }
+
+  // ... existing methods ...
 
   // Clean up blob URL to prevent memory leaks
   private cleanupPdfBlob(): void {
@@ -226,43 +308,7 @@ export class SelectedProfession implements OnDestroy {
     }
   }
 
-  // Download PDF with authentication
-  downloadPdf(moduleId: string, fileName: string): void {
-    this.http
-      .get(`${this.apiUrl}/modules/${moduleId}/pdf`, {
-        responseType: 'blob',
-      })
-      .subscribe({
-        next: (blob) => {
-          // Create download link
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = url;
-          link.download = fileName || 'document.pdf';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          URL.revokeObjectURL(url);
-        },
-        error: (error) => {
-          console.error('Error downloading PDF:', error);
-          this.message.error('Failed to download PDF file');
-        },
-      });
-  }
-
-  clearFile() {
-    this.selectedFile = null;
-    this.selectedFileName.set('');
-    this.moduleForm.patchValue({ content: '' });
-    // Reset file input
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.value = '';
-    }
-  }
-
-  private loadPdfBlob(moduleId: string): void {
+  private loadPdfBlob(moduleId: string, page?: number): void {
     // Clean up previous blob URL
     this.cleanupPdfBlob();
 
@@ -274,7 +320,9 @@ export class SelectedProfession implements OnDestroy {
         next: (blob) => {
           // Create object URL from blob
           const url = URL.createObjectURL(blob);
-          const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+          // Append page hash if provided
+          const fullUrl = page ? `${url}#page=${page}` : url;
+          const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl);
           this.pdfBlobUrl.set(safeUrl);
         },
         error: (error) => {
@@ -288,9 +336,11 @@ export class SelectedProfession implements OnDestroy {
   selectModule(module: Module) {
     // Toggle selection - if clicking the same module, deselect it
     if (this.selectedModule()?.id === module.id) {
-      this.selectedModule.set(null);
-      this.cleanupPdfBlob();
-      return;
+      // Don't deselect if we are navigating to it (might be just refreshing view)
+      // But original logic was toggle. Let's keep it but maybe check if we are navigating.
+      // For now, let's assume if called from selectModuleById we want to select.
+      // But selectModuleById calls this.
+      // Let's just set it.
     }
 
     this.selectedModule.set(module);

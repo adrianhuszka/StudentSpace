@@ -1,0 +1,55 @@
+<div class="chatbot-container" [class.open]="isOpen()">
+  <!-- Floating Button -->
+  <button nz-button nzType="primary" nzShape="circle" class="chatbot-toggle" (click)="toggleChat()">
+    <span nz-icon [nzType]="isOpen() ? 'close' : 'message'" nzTheme="outline"></span>
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chat-window" *ngIf="isOpen()">
+    <div class="chat-header">
+      <h3>EduBot</h3>
+      <span nz-icon nzType="close" class="close-icon" (click)="toggleChat()"></span>
+    </div>
+
+    <div class="chat-messages">
+      <div *ngFor="let msg of messages()" class="message" [class.user]="msg.sender === 'user'">
+        <div class="message-content">
+          <markdown [data]="msg.text"></markdown>
+
+          <div *ngIf="msg.module" class="source-link">
+            <div class="source-info">
+              <span
+                nz-icon
+                [nzType]="msg.module.moduleType === 'PDF' ? 'file-pdf' : 'file-markdown'"
+              ></span>
+              <span>{{ msg.module.moduleTitle }}</span>
+            </div>
+            <button nz-button nzType="default" nzSize="small" (click)="goToSource(msg)">
+              <span nz-icon nzType="arrow-right"></span> Ugrás a válaszhoz
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading()" class="message bot loading">
+        <nz-spin nzSimple [nzSize]="'small'"></nz-spin>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <nz-input-group [nzSuffix]="suffixIconSend">
+        <input
+          type="text"
+          nz-input
+          [(ngModel)]="userInput"
+          (keyup.enter)="sendMessage()"
+          placeholder="Kérdezz valamit..."
+          [disabled]="isLoading()"
+        />
+      </nz-input-group>
+      <ng-template #suffixIconSend>
+        <span nz-icon nzType="send" class="send-icon" (click)="sendMessage()"></span>
+      </ng-template>
+    </div>
+  </div>
+</div>
