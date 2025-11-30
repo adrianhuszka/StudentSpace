@@ -73,7 +73,7 @@ export class ForumViewComponent {
    */
   isCurrentUserMessage(message: any): boolean {
     const currentUser = this.authService.getUser();
-    return currentUser?.id === message.author?.username;
+    return currentUser?.username === message.author?.username;
   }
 
   /**

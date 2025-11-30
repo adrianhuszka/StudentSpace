@@ -81,6 +81,7 @@ nz-avatar {
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 20px rgba(44, 116, 179, 0.1);
     padding: 8px;
     overflow: hidden;
+    color: black;
 
     .ant-dropdown-menu-item {
       border-radius: 8px;
@@ -91,6 +92,7 @@ nz-avatar {
       display: flex;
       align-items: center;
       gap: 12px;
+      color: black;
 
       i {
         font-size: 16px;

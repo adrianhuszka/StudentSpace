@@ -33,6 +33,7 @@ import { CommonModule } from '@angular/common';
 
 import { SelectedProfessionLayout } from '@app/layout/selected-profession/selected-profession.layout';
 import { ForumViewComponent } from '@components/forum-view/forum-view.component';
+import { GeminiService } from '@services/gemini.service';
 
 export interface Subject {
   id: number;
@@ -133,6 +134,13 @@ export class SelectedProfession implements OnDestroy {
   showForumView = signal(false);
 
   // Check if user can edit (ADMIN, SUPERADMIN, or TEACHER)
+
+  // Gemini Summarization
+  isSummarizing = signal(false);
+  summaryResult = signal<string | null>(null);
+  isSummaryModalVisible = signal(false);
+
+  private geminiService = inject(GeminiService);
 
   constructor(
     private route: ActivatedRoute,
@@ -311,6 +319,123 @@ export class SelectedProfession implements OnDestroy {
 
   navigateToHome() {
     this.router.navigate(['/home']);
+  }
+
+  // Gemini Summarization Logic
+  async summarizeModule() {
+    const module = this.selectedModule();
+    if (!module) return;
+
+    this.isSummarizing.set(true);
+    this.summaryResult.set(null);
+
+    try {
+      if (module.moduleType === 'MD') {
+        const content = this.markdownContent();
+        if (content) {
+          this.geminiService
+            .generateContent(
+              `Kérlek, foglald össze az alábbi tananyagot magyar nyelven:\n\n${content}`
+            )
+            .subscribe({
+              next: (summary: string) => {
+                this.summaryResult.set(summary);
+                this.isSummaryModalVisible.set(true);
+                this.isSummarizing.set(false);
+              },
+              error: (err: any) => {
+                console.error('Gemini error:', err);
+                this.message.error('Nem sikerült létrehozni az összefoglalót.');
+                this.isSummarizing.set(false);
+              },
+            });
+        } else {
+          this.isSummarizing.set(false);
+        }
+      } else if (module.moduleType === 'PDF') {
+        // Fetch the PDF blob again to process it
+        this.http
+          .get(`${this.apiUrl}/modules/${module.id}/pdf`, {
+            responseType: 'blob',
+          })
+          .subscribe({
+            next: async (blob) => {
+              try {
+                const images = await this.convertPdfToImages(blob);
+                this.geminiService
+                  .generateContent(
+                    'Kérlek, foglald össze ezt a dokumentumot magyar nyelven. Tartalmazhat szöveget, képeket és grafikonokat. Elemezz minden vizuális és szöveges információt.',
+                    images
+                  )
+                  .subscribe({
+                    next: (summary: string) => {
+                      this.summaryResult.set(summary);
+                      this.isSummaryModalVisible.set(true);
+                      this.isSummarizing.set(false);
+                    },
+                    error: (err: any) => {
+                      console.error('Gemini error:', err);
+                      this.message.error('Nem sikerült létrehozni az összefoglalót.');
+                      this.isSummarizing.set(false);
+                    },
+                  });
+              } catch (err) {
+                console.error('PDF processing error:', err);
+                this.message.error('Nem sikerült feldolgozni a PDF-et az összefoglaláshoz.');
+                this.isSummarizing.set(false);
+              }
+            },
+            error: (err: any) => {
+              console.error('Error fetching PDF for summary:', err);
+              this.message.error('Nem sikerült betölteni a PDF-et az összefoglaláshoz.');
+              this.isSummarizing.set(false);
+            },
+          });
+      }
+    } catch (e) {
+      console.error('Summarization error:', e);
+      this.isSummarizing.set(false);
+    }
+  }
+
+  private async convertPdfToImages(blob: Blob): Promise<string[]> {
+    const arrayBuffer = await blob.arrayBuffer();
+    // Dynamically import pdfjs-dist to avoid build issues if not used
+    const pdfjsLib = await import('pdfjs-dist');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
+
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const images: string[] = [];
+    const numPages = pdf.numPages;
+    // Limit pages to avoid payload too large if necessary, but for now process all (or first 10?)
+    // Let's process up to 5 pages for performance/cost in this demo, or all if small.
+    // User wants "summarize content", so let's try all.
+
+    for (let i = 1; i <= numPages; i++) {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 1.5 }); // 1.5 scale for decent quality
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      if (context) {
+        const renderContext: any = {
+          canvasContext: context,
+          viewport: viewport,
+        };
+        await page.render(renderContext).promise;
+        // Convert to base64 jpeg
+        const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+        images.push(base64);
+      }
+    }
+    return images;
+  }
+
+  closeSummaryModal() {
+    this.isSummaryModalVisible.set(false);
+    this.summaryResult.set(null);
   }
 
   ngOnDestroy(): void {

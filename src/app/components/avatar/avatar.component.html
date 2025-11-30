@@ -7,15 +7,28 @@
     (click)="log('click mail')"
   ></i>
 </nz-badge>
-<nz-avatar nzIcon="user" nz-dropdown [nzDropdownMenu]="menu" class="cursor-pointer"></nz-avatar>
+<nz-avatar
+  nzText="{{ userName.charAt(0).toUpperCase() }}"
+  nz-dropdown
+  [nzDropdownMenu]="menu"
+  class="cursor-pointer"
+></nz-avatar>
 <nz-dropdown-menu #menu="nzDropdownMenu">
   <ul nz-menu>
-    <li nz-menu-item (click)="log('Profile Click')">
+    <li>@{{ userName }}</li>
+    <li nz-menu-divider></li>
+    <li nz-menu-item routerLink="/profile">
       <i nz-icon nzType="user" nzTheme="outline"></i> Profile
     </li>
-    <li nz-menu-item (click)="log('Settings Click')">
+    <li nz-menu-item routerLink="/settings">
       <i nz-icon nzType="setting" nzTheme="outline"></i> Settings
     </li>
+    @if (isAdmin) {
+    <li nz-menu-divider></li>
+    <li nz-menu-item routerLink="/admin">
+      <i nz-icon nzType="dashboard" nzTheme="outline"></i> Admin Dashboard
+    </li>
+    }
     <li nz-menu-divider></li>
     <li nz-menu-item class="!text-red-600" (click)="logout()">
       <i nz-icon nzType="logout" nzTheme="outline"></i> Logout

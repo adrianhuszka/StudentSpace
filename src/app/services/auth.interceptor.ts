@@ -19,7 +19,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // If token exists and request is to the API, add Authorization header
   let authReq = req;
-  if (token && !req.headers.has('Authorization')) {
+  // Exclude external APIs like Gemini
+  const isExternalApi = req.url.includes('generativelanguage.googleapis.com');
+
+  if (token && !req.headers.has('Authorization') && !isExternalApi) {
     authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,

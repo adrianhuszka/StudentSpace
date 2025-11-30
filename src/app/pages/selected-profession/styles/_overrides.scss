@@ -1,0 +1,172 @@
+::ng-deep {
+  // Select dropdown styling to match dark theme
+  .ant-select-dropdown {
+    background: rgba(10, 38, 71, 0.95) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+
+    .ant-select-item {
+      color: rgba(255, 255, 255, 0.85);
+      border-radius: 6px;
+      margin: 4px 8px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(44, 116, 179, 0.3) !important;
+        color: white;
+      }
+
+      &.ant-select-item-option-selected {
+        background: linear-gradient(
+          135deg,
+          rgba(44, 116, 179, 0.4),
+          rgba(32, 82, 149, 0.4)
+        ) !important;
+        color: white;
+        font-weight: 600;
+      }
+    }
+
+    .subject-option {
+      .subject-name {
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .subject-description {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-top: 4px;
+      }
+    }
+
+    .ant-select-item-empty {
+      color: rgba(255, 255, 255, 0.65);
+    }
+  }
+
+  // Style the select input to match dark theme
+  .link-subject-content {
+    .ant-select {
+      .ant-select-selector {
+        background: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(255, 255, 255, 0.3) !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.15) !important;
+          border-color: var(--color-accent) !important;
+        }
+      }
+
+      &.ant-select-focused .ant-select-selector {
+        background: rgba(255, 255, 255, 0.15) !important;
+        border-color: var(--color-accent) !important;
+        box-shadow: 0 0 0 2px rgba(44, 116, 179, 0.2);
+      }
+
+      .ant-select-selection-placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+      }
+
+      .ant-select-selection-item {
+        color: rgba(255, 255, 255, 0.9) !important;
+      }
+
+      .ant-select-arrow {
+        color: rgba(255, 255, 255, 0.65) !important;
+      }
+
+      .ant-select-clear {
+        background: rgba(0, 0, 0, 0.3);
+        color: rgba(255, 255, 255, 0.65) !important;
+
+        &:hover {
+          color: white !important;
+        }
+      }
+    }
+  }
+}
+
+// Edit mode styling
+.subject-actions,
+.module-actions {
+  float: right;
+
+  .edit-icon,
+  .unlink-icon,
+  .delete-icon {
+    margin-left: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+
+  .edit-icon:hover {
+    color: var(--color-accent);
+  }
+
+  .unlink-icon:hover {
+    color: #faad14;
+  }
+
+  .delete-icon:hover {
+    color: #ff4d4f;
+  }
+}
+.module-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+}
+
+.add-module-item {
+  color: var(--color-accent) !important;
+  font-style: italic;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+
+  &:hover {
+    opacity: 1;
+    background: rgba(44, 116, 179, 0.1) !important;
+  }
+}
+
+::ng-deep {
+  .ant-menu-dark .ant-menu-submenu-title {
+    .subject-actions {
+      .anticon {
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Link Subject Modal styling
+.link-subject-content {
+  .subject-option {
+    .subject-name {
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.85);
+    }
+
+    .subject-description {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.45);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 400px;
+    }
+  }
+}

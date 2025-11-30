@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authenticatedLoginGuard, authGuard } from './guards/auth.guard';
+import { authenticatedLoginGuard, authGuard, roleGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
@@ -25,5 +25,20 @@ export const routes: Routes = [
         (m) => m.SELECTED_PROFESSION_ROUTES
       ),
     canActivate: [authGuard],
+  },
+  {
+    path: 'admin',
+    loadChildren: () => import('./pages/admin/admin.routes').then((m) => m.ADMIN_ROUTES),
+    canActivate: [roleGuard, authGuard],
+    data: { roles: ['ADMIN', 'SUPERADMIN'] },
+  },
+  {
+    path: 'profile',
+    loadChildren: () => import('./pages/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
+    canActivate: [authGuard],
+  },
+  {
+    path: '**',
+    redirectTo: '/home',
   },
 ];

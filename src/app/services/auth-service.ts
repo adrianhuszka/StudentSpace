@@ -6,8 +6,9 @@ import { CookieService } from './cookie.service';
 import { Router } from '@angular/router';
 
 interface User {
-  id: number;
-  name: string;
+  id: string;
+  username: string;
+  fullName: string;
   roles: string[];
 }
 
@@ -198,9 +199,10 @@ export class AuthService {
       const tokenParts = response.accessToken.split('.');
       const payload = JSON.parse(atob(tokenParts[1]));
       const user: User = {
-        id: payload.sub || payload.userId,
-        name: payload.name || payload.username,
+        username: payload.sub || payload.userId,
+        fullName: payload.fullName || payload.username,
         roles: payload.roles || ['user'],
+        id: payload.userId,
       };
 
       // Update state with new tokens
@@ -270,10 +272,12 @@ export class AuthService {
       // Parse JWT to extract user info
       const tokenParts = response.accessToken.split('.');
       const payload = JSON.parse(atob(tokenParts[1]));
+      console.log(payload);
       const user: User = {
-        id: payload.sub || payload.userId,
-        name: payload.name || payload.username,
+        username: payload.sub || payload.userId,
+        fullName: payload.fullName || payload.username,
         roles: payload.roles || ['user'],
+        id: payload.userId,
       };
 
       // Update state with user info and token

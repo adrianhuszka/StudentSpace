@@ -5,20 +5,24 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { AuthService } from '@services/auth-service';
-import { Router } from '@angular/router';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-avatar',
-  imports: [NzBadgeModule, NzAvatarModule, NzIconModule, NzDropDownModule],
+  imports: [NzBadgeModule, NzAvatarModule, NzIconModule, NzDropDownModule, RouterLink],
   templateUrl: './avatar.component.html',
   styleUrls: ['./avatar.component.scss'],
 })
 export class AvatarComponent {
   isNewMessage: boolean = false;
   userName: string = 'John Doe';
+  isAdmin: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {
-    this.userName = this.authService.getUser()?.name ?? 'Guest';
+  constructor(private authService: AuthService) {
+    this.userName = this.authService.getUser()?.username ?? 'Guest';
+    this.isAdmin =
+      this.authService.getUser()?.roles.some((role) => role === 'ADMIN' || role === 'SUPERADMIN') ??
+      false;
   }
 
   log(data: string): void {
@@ -27,6 +31,6 @@ export class AvatarComponent {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/']);
+    location.reload();
   }
 }

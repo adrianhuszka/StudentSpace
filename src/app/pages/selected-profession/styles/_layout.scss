@@ -1,0 +1,264 @@
+// Layout Styles
+:host {
+  display: flex;
+}
+
+.app-layout {
+  height: 100vh;
+  background: radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, var(--color-tertiary) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  background-attachment: fixed;
+}
+
+nz-header {
+  display: flex;
+  align-items: center;
+  background: rgba(10, 38, 71, 0.8) !important;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  padding: 0 24px;
+
+  .trigger {
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0 12px;
+
+    &:hover {
+      color: var(--color-accent);
+      transform: scale(1.1);
+    }
+  }
+
+  // Forum button styling
+  .forum-button {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 10px;
+
+    &:hover {
+      background: rgba(44, 116, 179, 0.3) !important;
+      border-color: var(--color-accent) !important;
+      color: white !important;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(44, 116, 179, 0.4);
+    }
+
+    .anticon {
+      color: var(--color-accent);
+      transition: all 0.3s ease;
+    }
+
+    &:hover .anticon {
+      color: white;
+      transform: scale(1.1);
+    }
+  }
+}
+
+.top-nav {
+  line-height: 64px;
+  background: transparent !important;
+
+  ::ng-deep {
+    .ant-menu-item {
+      color: rgba(255, 255, 255, 0.85) !important;
+      border-bottom: 2px solid transparent;
+      transition: all 0.3s ease;
+
+      &:hover {
+        color: white !important;
+        border-bottom-color: var(--color-accent);
+      }
+
+      &.ant-menu-item-selected {
+        color: white !important;
+        background: linear-gradient(
+          135deg,
+          rgba(32, 82, 149, 0.2),
+          rgba(44, 116, 179, 0.3)
+        ) !important;
+        border-bottom-color: var(--color-accent);
+      }
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+}
+
+.logo {
+  float: left;
+  height: 64px;
+  padding-right: 24px;
+  line-height: 64px;
+  background: transparent;
+}
+
+.logo img {
+  display: inline-block;
+  height: 32px;
+  width: 32px;
+  vertical-align: middle;
+  filter: drop-shadow(0 2px 8px rgba(44, 116, 179, 0.6));
+}
+
+.logo h1 {
+  display: inline-block;
+  margin: 0 0 0 15px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 20px;
+  font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+  vertical-align: middle;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+nz-content {
+  background: transparent;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.inner-content {
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  color: white;
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2);
+}
+
+// Enhanced Sidebar Styling
+nz-sider {
+  background: rgba(10, 38, 71, 0.95) !important;
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+  overflow-x: hidden;
+
+  ::ng-deep {
+    .ant-layout-sider-children {
+      background: transparent;
+    }
+
+    .ant-menu {
+      background: transparent;
+      border-right: none;
+
+      .ant-menu-item,
+      .ant-menu-submenu-title {
+        color: rgba(255, 255, 255, 0.8);
+        margin: 4px 8px;
+        border-radius: 10px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+
+        &:hover {
+          color: white;
+          background: rgba(44, 116, 179, 0.3) !important;
+          transform: translateX(4px);
+        }
+
+        &.ant-menu-item-selected {
+          background: linear-gradient(
+            135deg,
+            rgba(44, 116, 179, 0.4),
+            rgba(32, 82, 149, 0.4)
+          ) !important;
+          color: white;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(44, 116, 179, 0.3);
+
+          &::after {
+            display: none;
+          }
+        }
+      }
+
+      .ant-menu-submenu {
+        .ant-menu-submenu-title {
+          display: flex;
+          align-items: center;
+
+          &:hover {
+            .subject-actions {
+              opacity: 1;
+            }
+          }
+        }
+
+        &.ant-menu-submenu-open > .ant-menu-submenu-title {
+          color: white;
+        }
+      }
+
+      .ant-menu-sub {
+        background: rgba(0, 0, 0, 0.2) !important;
+        border-radius: 8px;
+        margin: 4px 12px;
+
+        .ant-menu-item {
+          padding-left: 48px !important;
+          margin: 2px 4px;
+
+          &:hover {
+            transform: translateX(8px);
+
+            .module-actions {
+              opacity: 1;
+            }
+          }
+        }
+      }
+
+      // Collapsed menu styling
+      &.ant-menu-inline-collapsed {
+        .ant-menu-item,
+        .ant-menu-submenu-title {
+          padding-left: 24px !important;
+          text-align: center;
+
+          .anticon {
+            font-size: 18px;
+          }
+        }
+      }
+    }
+
+    // Trigger button
+    .ant-layout-sider-trigger {
+      background: rgba(44, 116, 179, 0.8);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(44, 116, 179, 1);
+      }
+    }
+  }
+}
+
+// Footer styling
+nz-footer {
+  background: rgba(10, 38, 71, 0.6) !important;
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+}
+
+app-selected-profession-layout {
+  width: 100%;
+}

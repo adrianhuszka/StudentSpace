@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "EduCloud": {
+    "StudentSpace": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -54,13 +54,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "2MB",
+                  "maximumError": "4MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "50kB",
+                  "maximumError": "100kB"
                 }
               ],
               "outputHashing": "all"
@@ -77,10 +77,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "EduCloud:build:production"
+              "buildTarget": "StudentSpace:build:production"
             },
             "development": {
-              "buildTarget": "EduCloud:build:development"
+              "buildTarget": "StudentSpace:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -99,9 +99,7 @@
                 "input": "public"
               }
             ],
-            "styles": [
-              "src/styles.scss"
-            ]
+            "styles": ["src/styles.scss"]
           }
         }
       }

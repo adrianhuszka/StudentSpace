@@ -1,0 +1,198 @@
+<div class="profile-page">
+  <div class="profile-header">
+    <button nz-button nzType="text" class="back-button" (click)="navigateBack()">
+      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+      Back
+    </button>
+    <h1>
+      <span nz-icon nzType="user" nzTheme="outline"></span>
+      My Profile
+    </h1>
+  </div>
+
+  @if (isLoading()) {
+  <div class="loading-container">
+    <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+  </div>
+  } @else {
+  <div class="profile-content">
+    <!-- User Info Card -->
+    <nz-card class="profile-card user-info-card">
+      <div class="user-avatar-section">
+        <nz-avatar [nzSize]="120" [nzText]="getInitials()" class="user-avatar"></nz-avatar>
+        <div class="user-basic-info">
+          <h2>{{ userProfile()?.fullName }}</h2>
+          <p class="username">@{{ userProfile()?.username }}</p>
+          <div class="roles-container">
+            @for (role of userProfile()?.roles; track role) {
+            <span class="role-badge" [style.background-color]="getRoleBadgeColor(role)">
+              {{ role }}
+            </span>
+            }
+          </div>
+        </div>
+      </div>
+    </nz-card>
+
+    <!-- Profile Information Card -->
+    <nz-card class="profile-card" [nzTitle]="'Profile Information'">
+      <div class="card-actions" slot="extra">
+        @if (!isEditMode()) {
+        <button nz-button nzType="primary" (click)="toggleEditMode()">
+          <span nz-icon nzType="edit" nzTheme="outline"></span>
+          Edit Profile
+        </button>
+        }
+      </div>
+
+      <form nz-form [formGroup]="profileForm" nzLayout="vertical">
+        <div class="form-grid">
+          <nz-form-item>
+            <nz-form-label nzRequired>Username</nz-form-label>
+            <nz-form-control nzErrorTip="Username cannot be changed">
+              <input nz-input formControlName="username" [disabled]="true" />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label nzRequired>Full Name</nz-form-label>
+            <nz-form-control nzErrorTip="Please enter your full name (min 2 characters)">
+              <input
+                nz-input
+                formControlName="fullName"
+                placeholder="John Doe"
+                [disabled]="!isEditMode()"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label>Email Address</nz-form-label>
+            <nz-form-control nzErrorTip="Please enter a valid email address">
+              <input
+                nz-input
+                formControlName="email"
+                type="email"
+                placeholder="john.doe@example.com"
+                [disabled]="!isEditMode()"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label>OM Code</nz-form-label>
+            <nz-form-control>
+              <input
+                nz-input
+                formControlName="omCode"
+                placeholder="Your OM code"
+                [disabled]="!isEditMode()"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        @if (isEditMode()) {
+        <nz-divider></nz-divider>
+        <div class="form-actions">
+          <button nz-button nzType="default" (click)="toggleEditMode()">
+            <span nz-icon nzType="close" nzTheme="outline"></span>
+            Cancel
+          </button>
+          <button
+            nz-button
+            nzType="primary"
+            (click)="saveProfile()"
+            [disabled]="profileForm.invalid"
+          >
+            <span nz-icon nzType="save" nzTheme="outline"></span>
+            Save Changes
+          </button>
+        </div>
+        }
+      </form>
+    </nz-card>
+
+    <!-- Change Password Card -->
+    <nz-card class="profile-card" [nzTitle]="'Security'">
+      @if (!isChangingPassword()) {
+      <p class="security-info">
+        <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+        Keep your account secure by regularly updating your password.
+      </p>
+      <div class="card-actions password-toggle" slot="extra">
+        <button nz-button nzType="default" (click)="togglePasswordChange()">
+          <span nz-icon nzType="lock" nzTheme="outline"></span>
+          Change Password
+        </button>
+      </div>
+      } @else {
+      <form nz-form [formGroup]="passwordForm" nzLayout="vertical">
+        <nz-form-item>
+          <nz-form-label nzRequired>Current Password</nz-form-label>
+          <nz-form-control nzErrorTip="Please enter your current password">
+            <input
+              nz-input
+              type="password"
+              [disabled]="!isChangingPassword()"
+              formControlName="currentPassword"
+              placeholder="Enter current password"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>New Password</nz-form-label>
+          <nz-form-control nzErrorTip="Password must be at least 6 characters">
+            <input
+              nz-input
+              type="password"
+              formControlName="newPassword"
+              [disabled]="!isChangingPassword()"
+              placeholder="Enter new password"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Confirm New Password</nz-form-label>
+          <nz-form-control
+            [nzErrorTip]="
+              passwordForm.hasError('passwordMismatch')
+                ? 'Passwords do not match'
+                : 'Please confirm your new password'
+            "
+          >
+            <input
+              nz-input
+              type="password"
+              formControlName="confirmPassword"
+              [disabled]="!isChangingPassword()"
+              placeholder="Confirm new password"
+            />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-divider></nz-divider>
+        <div class="form-actions">
+          <button nz-button nzType="default" (click)="togglePasswordChange()">
+            <span nz-icon nzType="close" nzTheme="outline"></span>
+            Cancel
+          </button>
+          <button
+            nz-button
+            nzType="primary"
+            nzDanger
+            (click)="changePassword()"
+            [disabled]="passwordForm.invalid"
+          >
+            <span nz-icon nzType="lock" nzTheme="outline"></span>
+            Change Password
+          </button>
+        </div>
+      </form>
+      }
+    </nz-card>
+  </div>
+  }
+</div>
