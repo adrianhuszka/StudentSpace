@@ -33,6 +33,7 @@ import {
 } from '@angular/forms';
 import { Profession } from '@pages/home/home';
 import { Router } from '@angular/router';
+import { Quiz } from '@services/quiz.service';
 
 @Component({
   selector: 'app-selected-profession-layout',
@@ -64,12 +65,16 @@ export class SelectedProfessionLayout {
   @Input() professionSubjects: WritableSignal<Subject[]> = signal<Subject[]>([]);
   @Input() selectedModule: WritableSignal<Module | null> = signal<Module | null>(null);
   @Input() pdfBlobUrl: WritableSignal<SafeResourceUrl | null> = signal<SafeResourceUrl | null>(
-    null
+    null,
   );
   @Input() showForumView: WritableSignal<boolean> = signal<boolean>(false);
   @Input() selectedProfession: WritableSignal<Profession | null> = signal<Profession | null>(null);
+  @Input() subjectQuizzes: WritableSignal<Map<number, Quiz[]>> = signal<Map<number, Quiz[]>>(
+    new Map(),
+  );
 
   @Input() selectModule: (module: Module) => void = () => {};
+  @Input() navigateToQuiz: (quizId: string) => void = () => {};
 
   private apiUrl = environment.apiUrl;
 
@@ -100,7 +105,7 @@ export class SelectedProfessionLayout {
     private message: NzMessageService,
     private http: HttpClient,
     private sanitizer: DomSanitizer,
-    private router: Router
+    private router: Router,
   ) {
     this.initForms();
   }
@@ -156,8 +161,8 @@ export class SelectedProfessionLayout {
         // Remove the module from local state
         this.professionSubjects.update((subjects) =>
           subjects.map((s) =>
-            s.id === subject.id ? { ...s, module: s.module.filter((m) => m.id !== module.id) } : s
-          )
+            s.id === subject.id ? { ...s, module: s.module.filter((m) => m.id !== module.id) } : s,
+          ),
         );
         // Clear selected module if it's the one being deleted
         if (this.selectedModule()?.id === module.id) {
@@ -285,8 +290,8 @@ export class SelectedProfessionLayout {
             subjects.map((s) =>
               s.id === this.selectedSubjectId
                 ? { ...s, name: data.name, description: data.description }
-                : s
-            )
+                : s,
+            ),
           );
           this.handleSubjectCancel();
         },
@@ -448,8 +453,8 @@ export class SelectedProfessionLayout {
             subjects.map((s) =>
               s.id === this.currentSubjectForModule?.id
                 ? { ...s, module: [...s.module, newModule] }
-                : s
-            )
+                : s,
+            ),
           );
           this.handleModuleCancel();
         },
@@ -499,11 +504,11 @@ export class SelectedProfessionLayout {
                             content: data.content,
                             moduleType: data.moduleType,
                           }
-                        : m
+                        : m,
                     ),
                   }
-                : s
-            )
+                : s,
+            ),
           );
           // Update selected module if it's the one being edited
           if (this.selectedModule()?.id === this.selectedModuleId) {
@@ -578,7 +583,7 @@ export class SelectedProfessionLayout {
         {
           observe: 'response',
           responseType: 'text',
-        }
+        },
       )
       .subscribe({
         next: () => {
@@ -602,7 +607,7 @@ export class SelectedProfessionLayout {
 
     const confirmed = await this.confirmDialog.confirm(
       'Unlink Subject',
-      `Are you sure you want to unlink "${subject.name}" from this profession?`
+      `Are you sure you want to unlink "${subject.name}" from this profession?`,
     );
     if (!confirmed) return;
 

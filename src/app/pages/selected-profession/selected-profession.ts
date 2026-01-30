@@ -34,6 +34,7 @@ import { CommonModule } from '@angular/common';
 import { SelectedProfessionLayout } from '@app/layout/selected-profession/selected-profession.layout';
 import { ForumViewComponent } from '@components/forum-view/forum-view.component';
 import { GeminiService } from '@services/gemini.service';
+import { QuizService, Quiz } from '@services/quiz.service';
 
 export interface Subject {
   id: number;
@@ -85,6 +86,9 @@ export class SelectedProfession implements OnDestroy {
   private apiUrl = environment.apiUrl;
   private message = inject(NzMessageService);
   private router = inject(Router);
+  private quizService = inject(QuizService);
+
+  subjectQuizzes = signal<Map<number, Quiz[]>>(new Map());
 
   professionSubjects = signal<Subject[]>([]);
   selectedProfession = signal<Profession | null>(null);
@@ -147,7 +151,7 @@ export class SelectedProfession implements OnDestroy {
     private http: HttpClient,
     private authService: AuthService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.route.params.subscribe((params) => {
       this.loadData(params['id']);
@@ -186,7 +190,7 @@ export class SelectedProfession implements OnDestroy {
         headers: {
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
 
     const profession$ = this.http.get<Profession>(`${this.apiUrl}/professions/${professionId}`, {
@@ -203,7 +207,7 @@ export class SelectedProfession implements OnDestroy {
         finalize(() => {
           console.log('Finalize called - setting isLoading to false');
           this.isLoading.set(false);
-        })
+        }),
       )
       .subscribe({
         next: (result) => {
@@ -228,16 +232,44 @@ export class SelectedProfession implements OnDestroy {
             this.selectModuleById(
               this.pendingNavigation.moduleId,
               this.pendingNavigation.quote,
-              this.pendingNavigation.page
+              this.pendingNavigation.page,
             );
             this.pendingNavigation = null;
           }
+
+          // Load quizzes for each subject
+          result.subjects.forEach((subject) => {
+            this.loadQuizzesForSubject(subject.id);
+          });
         },
         error: (error) => {
           console.error('Error loading data:', error);
           this.loadError.set('Failed to load profession data. Please try again.');
         },
       });
+  }
+
+  loadQuizzesForSubject(subjectId: number) {
+    this.quizService.getBySubject(subjectId.toString()).subscribe({
+      next: (quizzes) => {
+        if (quizzes && quizzes.length > 0) {
+          this.subjectQuizzes.update((map) => {
+            const newMap = new Map(map);
+            newMap.set(subjectId, quizzes);
+            return newMap;
+          });
+        }
+      },
+      error: (err) => console.error(`Failed to load quizzes for subject ${subjectId}`, err),
+    });
+  }
+
+  getQuizzesForSubject(subjectId: number): Quiz[] {
+    return this.subjectQuizzes().get(subjectId) || [];
+  }
+
+  navigateToQuiz(quizId: string) {
+    this.router.navigate(['/quiz', quizId]);
   }
 
   private selectModuleById(moduleId: string, quote?: string, page?: number) {
@@ -385,7 +417,7 @@ export class SelectedProfession implements OnDestroy {
         if (content) {
           this.geminiService
             .generateContent(
-              `Kérlek, foglald össze az alábbi tananyagot magyar nyelven:\n\n${content}`
+              `Kérlek, foglald össze az alábbi tananyagot magyar nyelven:\n\n${content}`,
             )
             .subscribe({
               next: (summary: string) => {
@@ -415,7 +447,7 @@ export class SelectedProfession implements OnDestroy {
                 this.geminiService
                   .generateContent(
                     'Kérlek, foglald össze ezt a dokumentumot magyar nyelven. Tartalmazhat szöveget, képeket és grafikonokat. Elemezz minden vizuális és szöveges információt.',
-                    images
+                    images,
                   )
                   .subscribe({
                     next: (summary: string) => {

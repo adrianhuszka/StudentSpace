@@ -6,115 +6,119 @@
   [pdfBlobUrl]="pdfBlobUrl"
   [showForumView]="showForumView"
   [selectedProfession]="selectedProfession"
+  [subjectQuizzes]="subjectQuizzes"
   [selectModule]="selectModule.bind(this)"
+  [navigateToQuiz]="navigateToQuiz.bind(this)"
 >
   <div class="inner-content">
     @if (showForumView()) {
-    <app-forum-view
-      [selectedProfession]="selectedProfession"
-      [professionSubjects]="professionSubjects"
-      (closeForumView)="closeForumView()"
-    ></app-forum-view>
-    } @else if (selectedModule()?.moduleType === 'MD') { @if (markdownContent()) {
-    <div class="viewer-container">
-      <div class="viewer-header">
-        <h3>
-          <span nz-icon nzType="file-markdown" nzTheme="outline"></span>
-          {{ selectedModule()?.title }}
-        </h3>
-        <div class="header-actions">
-          <button
-            nz-button
-            nzType="default"
-            class="summarize-button"
-            [nzLoading]="isSummarizing()"
-            (click)="summarizeModule()"
-          >
-            <span nz-icon nzType="thunderbolt" nzTheme="fill"></span>
-            Summarize with Gemini
-          </button>
-          <button
-            nz-button
-            nzType="text"
-            class="close-module-button-pdf"
-            (click)="selectModule(selectedModule()!)"
-            nz-tooltip="Close module"
-          >
-            <span nz-icon nzType="close" nzTheme="outline"></span>
-          </button>
+      <app-forum-view
+        [selectedProfession]="selectedProfession"
+        [professionSubjects]="professionSubjects"
+        (closeForumView)="closeForumView()"
+      ></app-forum-view>
+    } @else if (selectedModule()?.moduleType === 'MD') {
+      @if (markdownContent()) {
+        <div class="viewer-container">
+          <div class="viewer-header">
+            <h3>
+              <span nz-icon nzType="file-markdown" nzTheme="outline"></span>
+              {{ selectedModule()?.title }}
+            </h3>
+            <div class="header-actions">
+              <button
+                nz-button
+                nzType="default"
+                class="summarize-button"
+                [nzLoading]="isSummarizing()"
+                (click)="summarizeModule()"
+              >
+                <span nz-icon nzType="thunderbolt" nzTheme="fill"></span>
+                Summarize with Gemini
+              </button>
+              <button
+                nz-button
+                nzType="text"
+                class="close-module-button-pdf"
+                (click)="selectModule(selectedModule()!)"
+                nz-tooltip="Close module"
+              >
+                <span nz-icon nzType="close" nzTheme="outline"></span>
+              </button>
+            </div>
+          </div>
+          <div class="markdown-content-display">
+            <markdown [data]="markdownContent()"></markdown>
+          </div>
         </div>
-      </div>
-      <div class="markdown-content-display">
-        <markdown [data]="markdownContent()"></markdown>
-      </div>
-    </div>
-    } @else {
-    <div class="empty-state">
-      <span nz-icon nzType="file-markdown" nzTheme="outline" class="empty-icon"></span>
-      <p>No markdown content available</p>
-    </div>
-    } } @else if (selectedModule()?.moduleType === 'PDF') {
-    <div class="viewer-container">
-      <div class="viewer-header">
-        <h3>
-          <span nz-icon nzType="file-pdf" nzTheme="outline"></span>
-          {{ selectedModule()?.title }}
-        </h3>
-        <div class="header-actions">
-          <button
-            nz-button
-            nzType="default"
-            class="summarize-button"
-            [nzLoading]="isSummarizing()"
-            (click)="summarizeModule()"
-          >
-            <span nz-icon nzType="thunderbolt" nzTheme="fill"></span>
-            Summarize with Gemini
-          </button>
-          <button
-            nz-button
-            nzType="text"
-            class="close-module-button-pdf"
-            (click)="selectModule(selectedModule()!)"
-            nz-tooltip="Close module"
-          >
-            <span nz-icon nzType="close" nzTheme="outline"></span>
-          </button>
-        </div>
-      </div>
-      @if (pdfBlobUrl()) {
-      <iframe [src]="pdfBlobUrl()" class="pdf-viewer" title="PDF Viewer"></iframe>
       } @else {
-      <div class="pdf-loading">
-        <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading PDF..."></nz-spin>
-      </div>
-      }
-    </div>
-    } @else {
-    <div class="empty-state forum-welcome">
-      <div class="forum-welcome-content">
-        <span nz-icon nzType="message" nzTheme="outline" class="forum-icon"></span>
-        <h2>Welcome to {{ selectedProfession()?.name }}</h2>
-        <p>Select a module from the sidebar to start learning, or join the discussion forum</p>
-        <button
-          nz-button
-          nzType="primary"
-          nzSize="large"
-          class="forum-open-button"
-          (click)="openForumList()"
-        >
-          <span nz-icon nzType="team" nzTheme="outline"></span>
-          Open Forum
-        </button>
-        <div class="divider-with-text">
-          <span>or</span>
+        <div class="empty-state">
+          <span nz-icon nzType="file-markdown" nzTheme="outline" class="empty-icon"></span>
+          <p>No markdown content available</p>
         </div>
-        <p class="secondary-text">
-          <span nz-icon nzType="book" nzTheme="outline"></span>
-          Choose a module to begin your learning journey
-        </p>
+      }
+    } @else if (selectedModule()?.moduleType === 'PDF') {
+      <div class="viewer-container">
+        <div class="viewer-header">
+          <h3>
+            <span nz-icon nzType="file-pdf" nzTheme="outline"></span>
+            {{ selectedModule()?.title }}
+          </h3>
+          <div class="header-actions">
+            <button
+              nz-button
+              nzType="default"
+              class="summarize-button"
+              [nzLoading]="isSummarizing()"
+              (click)="summarizeModule()"
+            >
+              <span nz-icon nzType="thunderbolt" nzTheme="fill"></span>
+              Summarize with Gemini
+            </button>
+            <button
+              nz-button
+              nzType="text"
+              class="close-module-button-pdf"
+              (click)="selectModule(selectedModule()!)"
+              nz-tooltip="Close module"
+            >
+              <span nz-icon nzType="close" nzTheme="outline"></span>
+            </button>
+          </div>
+        </div>
+        @if (pdfBlobUrl()) {
+          <iframe [src]="pdfBlobUrl()" class="pdf-viewer" title="PDF Viewer"></iframe>
+        } @else {
+          <div class="pdf-loading">
+            <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading PDF..."></nz-spin>
+          </div>
+        }
       </div>
-    </div>
+    } @else {
+      <div class="empty-state forum-welcome">
+        <div class="forum-welcome-content">
+          <span nz-icon nzType="message" nzTheme="outline" class="forum-icon"></span>
+          <h2>Welcome to {{ selectedProfession()?.name }}</h2>
+          <p>Select a module from the sidebar to start learning, or join the discussion forum</p>
+          <button
+            nz-button
+            nzType="primary"
+            nzSize="large"
+            class="forum-open-button"
+            (click)="openForumList()"
+          >
+            <span nz-icon nzType="team" nzTheme="outline"></span>
+            Open Forum
+          </button>
+          <div class="divider-with-text">
+            <span>or</span>
+          </div>
+          <p class="secondary-text">
+            <span nz-icon nzType="book" nzTheme="outline"></span>
+            Choose a module to begin your learning journey
+          </p>
+        </div>
+      </div>
     }
   </div>
 

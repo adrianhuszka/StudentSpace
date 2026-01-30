@@ -24,6 +24,7 @@ import { AdminService, User, UserStats } from '@services/admin.service';
 import { ProfessionService, Profession, ProfessionStats } from '@services/profession.service';
 import { SubjectService, Subject } from '@services/subject.service';
 import { AuthService } from '@services/auth-service';
+import { QuizService, Quiz } from '@services/quiz.service';
 
 @Component({
   selector: 'app-admin',
@@ -54,6 +55,7 @@ export class Admin implements OnInit {
   private adminService = inject(AdminService);
   private professionService = inject(ProfessionService);
   private subjectService = inject(SubjectService);
+  private quizService = inject(QuizService);
   private authService = inject(AuthService);
   private message = inject(NzMessageService);
   private router = inject(Router);
@@ -76,13 +78,14 @@ export class Admin implements OnInit {
   users = signal<User[]>([]);
   professions = signal<Profession[]>([]);
   subjects = signal<Subject[]>([]);
+  quizzes = signal<Quiz[]>([]);
   filteredUsers = computed(() => {
     const search = this.userSearchTerm().toLowerCase();
     return this.users().filter(
       (u) =>
         u.username.toLowerCase().includes(search) ||
         u.fullName.toLowerCase().includes(search) ||
-        (u.email && u.email.toLowerCase().includes(search))
+        (u.email && u.email.toLowerCase().includes(search)),
     );
   });
 
@@ -96,6 +99,33 @@ export class Admin implements OnInit {
   editingUser = signal<User | null>(null);
   availableRoles = ['USER', 'TEACHER', 'ADMIN', 'SUPERADMIN'];
   selectedRoles: string[] = [];
+
+  // Quiz Modal State
+  isQuizModalVisible = signal(false);
+  editingQuiz = signal<Quiz | null>(null);
+  quizForm: {
+    title: string;
+    description: string;
+    subjectId: string | null;
+    timeLimit: number | null;
+    passingScore: number;
+    isActive: boolean;
+    questions: Array<{
+      type: string;
+      question: string;
+      options: string;
+      correctAnswer: string;
+      points: number;
+    }>;
+  } = {
+    title: '',
+    description: '',
+    subjectId: null,
+    timeLimit: null,
+    passingScore: 60,
+    isActive: true,
+    questions: [],
+  };
 
   // Check if current user is superadmin
   isSuperAdmin = computed(() => {
@@ -134,6 +164,8 @@ export class Admin implements OnInit {
         error: (err) => console.error('Error loading user stats:', err),
       });
 
+      this.loadAllQuizzes();
+
       this.adminService.getAll().subscribe({
         next: (data) => {
           this.users.set(data);
@@ -147,6 +179,120 @@ export class Admin implements OnInit {
     } else {
       this.loading.set(false);
     }
+  }
+
+  // Quiz methods
+  loadAllQuizzes() {
+    this.quizService.getAllAdmin().subscribe({
+      next: (data) => this.quizzes.set(data),
+      error: (err) => console.error('Error loading quizzes:', err),
+    });
+  }
+
+  openQuizModal(quiz?: Quiz) {
+    if (quiz) {
+      this.editingQuiz.set(quiz);
+      this.quizForm = {
+        title: quiz.title,
+        description: quiz.description,
+        subjectId: quiz.subjectId || null,
+        timeLimit: quiz.timeLimit || null,
+        passingScore: quiz.passingScore,
+        isActive: quiz.isActive,
+        questions:
+          quiz.questions?.map((q) => ({
+            type: q.type,
+            question: q.question,
+            options: q.options || '[]',
+            correctAnswer: q.correctAnswer,
+            points: q.points,
+          })) || [],
+      };
+    } else {
+      this.editingQuiz.set(null);
+      this.quizForm = {
+        title: '',
+        description: '',
+        subjectId: null,
+        timeLimit: null,
+        passingScore: 60,
+        isActive: true,
+        questions: [],
+      };
+    }
+    this.isQuizModalVisible.set(true);
+  }
+
+  closeQuizModal() {
+    this.isQuizModalVisible.set(false);
+    this.editingQuiz.set(null);
+  }
+
+  addQuestion() {
+    this.quizForm.questions.push({
+      type: 'MULTIPLE_CHOICE',
+      question: '',
+      options: '["Option 1", "Option 2"]',
+      correctAnswer: '',
+      points: 1,
+    });
+  }
+
+  removeQuestion(index: number) {
+    this.quizForm.questions.splice(index, 1);
+  }
+
+  saveQuiz() {
+    // Validate form basic
+    if (!this.quizForm.title || !this.quizForm.subjectId) {
+      this.message.error('Please fill in required fields (Title, Subject)');
+      return;
+    }
+
+    const quizData: Partial<Quiz> = {
+      ...this.quizForm,
+      // Map questions to match interface if needed
+    } as any;
+
+    if (this.editingQuiz()) {
+      quizData.id = this.editingQuiz()!.id;
+      this.quizService.update(quizData).subscribe({
+        next: () => {
+          this.message.success('Quiz updated successfully');
+          this.loadAllQuizzes();
+          this.closeQuizModal();
+        },
+        error: (err) => {
+          console.error('Error updating quiz:', err);
+          this.message.error('Failed to update quiz');
+        },
+      });
+    } else {
+      this.quizService.create(quizData).subscribe({
+        next: () => {
+          this.message.success('Quiz created successfully');
+          this.loadAllQuizzes();
+          this.closeQuizModal();
+        },
+        error: (err) => {
+          console.error('Error creating quiz:', err);
+          this.message.error('Failed to create quiz');
+        },
+      });
+    }
+  }
+
+  deleteQuiz(id: string) {
+    this.quizService.delete(id).subscribe({
+      next: () => {
+        this.message.success('Quiz deleted successfully');
+        this.loadAllQuizzes();
+      },
+      error: (err) => {
+        console.error('Error deleting quiz:', err);
+        this.message.error('Failed to delete quiz');
+      },
+    });
   }
 
   // User management methods
@@ -171,7 +317,7 @@ export class Admin implements OnInit {
         this.message.success('User roles updated successfully');
         // Update local user data
         const updatedUsers = this.users().map((u) =>
-          u.id === user.id ? { ...u, roles: this.selectedRoles } : u
+          u.id === user.id ? { ...u, roles: this.selectedRoles } : u,
         );
         this.users.set(updatedUsers);
         this.closeUserModal();
@@ -190,7 +336,7 @@ export class Admin implements OnInit {
         this.message.success(`User ${status} successfully`);
         // Update local user data
         const updatedUsers = this.users().map((u) =>
-          u.id === user.id ? { ...u, enabled: !u.enabled } : u
+          u.id === user.id ? { ...u, enabled: !u.enabled } : u,
         );
         this.users.set(updatedUsers);
       },

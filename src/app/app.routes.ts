@@ -22,7 +22,7 @@ export const routes: Routes = [
     path: 'selected-profession',
     loadChildren: () =>
       import('./pages/selected-profession/selected-profession.routes').then(
-        (m) => m.SELECTED_PROFESSION_ROUTES
+        (m) => m.SELECTED_PROFESSION_ROUTES,
       ),
     canActivate: [authGuard],
   },
@@ -35,6 +35,11 @@ export const routes: Routes = [
   {
     path: 'profile',
     loadChildren: () => import('./pages/profile/profile.routes').then((m) => m.PROFILE_ROUTES),
+    canActivate: [authGuard],
+  },
+  {
+    path: 'quiz',
+    loadChildren: () => import('./pages/quiz/quiz.routes').then((m) => m.QUIZ_ROUTES),
     canActivate: [authGuard],
   },
   {

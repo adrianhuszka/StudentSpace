@@ -1,0 +1,76 @@
+<div class="results-container">
+  @if (isLoading()) {
+    <div class="loading-container">
+      <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading results..."></nz-spin>
+    </div>
+  } @else if (error()) {
+    <nz-result nzStatus="error" [nzTitle]="error()" nzSubTitle="Could not load quiz results.">
+      <div nz-result-extra>
+        <button nz-button nzType="primary" (click)="router.navigate(['/home'])">
+          Back to Home
+        </button>
+      </div>
+    </nz-result>
+  } @else if (attempt()) {
+    <div class="results-content">
+      <nz-result
+        [nzStatus]="resultStatus()"
+        [nzTitle]="resultTitle()"
+        [nzSubTitle]="resultSubtitle()"
+      >
+        <div nz-result-extra>
+          <button nz-button nzType="primary" (click)="backToProfession()">Done</button>
+          <button nz-button (click)="router.navigate(['/quiz', quiz()?.id])">Retake Quiz</button>
+        </div>
+      </nz-result>
+
+      <div class="review-section">
+        <h2>Review Answers</h2>
+        <nz-collapse>
+          @for (question of questions(); track question.id) {
+            <nz-collapse-panel
+              [nzHeader]="questionsHeader"
+              [nzActive]="false"
+              [class.correct-panel]="isCorrect(question)"
+              [class.incorrect-panel]="!isCorrect(question)"
+            >
+              <ng-template #questionsHeader>
+                <div class="panel-header">
+                  <span class="question-title">Q{{ $index + 1 }}: {{ question.question }}</span>
+                  <span class="status-icon">
+                    <span
+                      nz-icon
+                      [nzType]="isCorrect(question) ? 'check-circle' : 'close-circle'"
+                      [nzTheme]="'fill'"
+                      [style.color]="isCorrect(question) ? '#52c41a' : '#ff4d4f'"
+                    ></span>
+                  </span>
+                </div>
+              </ng-template>
+
+              <div class="answer-details">
+                <p>
+                  <strong>Your Answer:</strong>
+                  <span
+                    [class.correct-text]="isCorrect(question)"
+                    [class.incorrect-text]="!isCorrect(question)"
+                    >{{ getStudentAnswer(question.id) }}</span
+                  >
+                </p>
+                @if (!isCorrect(question)) {
+                  <p>
+                    <strong>Correct Answer:</strong>
+                    <span class="correct-text">{{ question.correctAnswer }}</span>
+                  </p>
+                }
+                <p class="points">
+                  Points: {{ isCorrect(question) ? question.points : 0 }} / {{ question.points }}
+                </p>
+              </div>
+            </nz-collapse-panel>
+          }
+        </nz-collapse>
+      </div>
+    </div>
+  }
+</div>
