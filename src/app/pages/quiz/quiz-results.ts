@@ -82,7 +82,6 @@ export class QuizResultsComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       const attemptId = params['attemptId'];
       if (attemptId) {
-        // If we have quiz ID already, we could load attempt in parallel, but simplify for now
       }
     });
   }
@@ -96,12 +95,10 @@ export class QuizResultsComponent implements OnInit {
           this.questions.set(quiz.questions.sort((a, b) => a.orderIndex - b.orderIndex));
         }
 
-        // Load attempt
         const attemptId = this.route.snapshot.queryParams['attemptId'];
         if (attemptId) {
           this.loadAttempt(id, attemptId);
         } else {
-          // If no attempt ID, maybe show history? For now error
           this.error.set('No attempt specified');
           this.isLoading.set(false);
         }
@@ -149,9 +146,16 @@ export class QuizResultsComponent implements OnInit {
   }
 
   backToProfession() {
-    // Navigate back to selected profession if possible, or home
-    // We don't easily know the profession ID without loading it via subject/module
-    // For now, go home
     this.router.navigate(['/home']);
+  }
+
+  goHome() {
+    this.router.navigate(['/home']);
+  }
+
+  retakeQuiz() {
+    const quizId = this.quiz()?.id;
+    if (!quizId) return;
+    this.router.navigate(['/quiz', quizId]);
   }
 }

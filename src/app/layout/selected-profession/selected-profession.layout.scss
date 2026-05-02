@@ -4,7 +4,8 @@
 
 .app-layout {
   height: 100vh;
-  background: radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
+  background:
+    radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, var(--color-tertiary) 0%, transparent 50%),
     radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
     linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
@@ -33,7 +34,6 @@ nz-header {
     }
   }
 
-  // Forum button styling
   .forum-button {
     background: rgba(255, 255, 255, 0.1) !important;
     border-color: rgba(255, 255, 255, 0.3) !important;
@@ -116,7 +116,12 @@ nz-header {
   color: #fff;
   font-weight: 600;
   font-size: 20px;
-  font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+  font-family:
+    Avenir,
+    Helvetica Neue,
+    Arial,
+    Helvetica,
+    sans-serif;
   vertical-align: middle;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -139,7 +144,6 @@ nz-content {
   scrollbar-color: rgba(255, 255, 255, 0.2);
 }
 
-// Enhanced Sidebar Styling
 nz-sider {
   background: rgba(10, 38, 71, 0.95) !important;
   backdrop-filter: blur(20px);
@@ -222,7 +226,6 @@ nz-sider {
         }
       }
 
-      // Collapsed menu styling
       &.ant-menu-inline-collapsed {
         .ant-menu-item,
         .ant-menu-submenu-title {
@@ -236,7 +239,6 @@ nz-sider {
       }
     }
 
-    // Trigger button
     .ant-layout-sider-trigger {
       background: rgba(44, 116, 179, 0.8);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -258,7 +260,6 @@ nz-sider {
   justify-content: flex-start;
 }
 
-// Enhanced action icons in menu
 .subject-actions,
 .module-actions {
   display: flex;
@@ -590,7 +591,6 @@ nz-sider {
     }
   }
 
-  // Forum Welcome Screen
   &.forum-welcome {
     min-height: 600px;
     background: radial-gradient(circle at center, rgba(44, 116, 179, 0.15) 0%, transparent 70%);
@@ -746,7 +746,6 @@ nz-sider {
   }
 }
 
-// Sidebar styling
 ::ng-deep {
   .ant-layout-sider {
     background: rgba(10, 38, 71, 0.8) !important;
@@ -800,7 +799,6 @@ nz-sider {
   }
 }
 
-// Footer styling
 nz-footer {
   background: rgba(10, 38, 71, 0.6) !important;
   backdrop-filter: blur(10px);
@@ -809,14 +807,14 @@ nz-footer {
   text-align: center;
 }
 
-// Loading and Error States
 .loading-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   width: 100%;
-  background: radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
+  background:
+    radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, var(--color-tertiary) 0%, transparent 50%),
     radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
     linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
@@ -861,7 +859,8 @@ nz-footer {
   width: 100%;
   text-align: center;
   padding: 40px;
-  background: radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
+  background:
+    radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, var(--color-tertiary) 0%, transparent 50%),
     radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
     linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
@@ -912,7 +911,6 @@ nz-footer {
   }
 }
 
-// Edit mode styling
 .subject-actions,
 .module-actions {
   float: right;
@@ -970,7 +968,6 @@ nz-footer {
   }
 }
 
-// Link Subject Modal styling
 .link-subject-content {
   .subject-option {
     .subject-name {
@@ -991,7 +988,6 @@ nz-footer {
 }
 
 ::ng-deep {
-  // Select dropdown styling to match dark theme
   .ant-select-dropdown {
     background: rgba(10, 38, 71, 0.95) !important;
     backdrop-filter: blur(20px);
@@ -1039,7 +1035,6 @@ nz-footer {
     }
   }
 
-  // Style the select input to match dark theme
   .link-subject-content {
     .ant-select {
       .ant-select-selector {
@@ -1085,7 +1080,6 @@ nz-footer {
   }
 }
 
-// Markdown Editor styling
 .markdown-editor-tabs {
   ::ng-deep {
     .ant-tabs-nav {
@@ -1293,7 +1287,6 @@ nz-footer {
   }
 }
 
-// PDF File Upload styling
 .file-upload-input {
   width: 100%;
   padding: 8px 12px;
@@ -1374,7 +1367,6 @@ nz-footer {
   }
 }
 
-// PDF Viewer styling
 .viewer-container {
   height: 100%;
   display: flex;
@@ -1495,7 +1487,6 @@ nz-footer {
   }
 }
 
-// Forum hint styling in modals
 .forum-hint {
   display: flex;
   align-items: center;
@@ -1514,7 +1505,6 @@ nz-footer {
   }
 }
 
-// Forum View Container
 .forum-container {
   height: 100%;
   display: flex;
@@ -1663,7 +1653,7 @@ nz-footer {
             color: rgba(255, 255, 255, 0.75);
             font-size: 14px;
             line-height: 1.6;
-            padding-left: 56px; // Align with title text after icon
+            padding-left: 56px;
           }
         }
 

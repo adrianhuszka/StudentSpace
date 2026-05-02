@@ -43,7 +43,7 @@ export class ChatbotComponent {
 
   toggleChat() {
     this.isOpen.update((v) => !v);
-    // Index content when opened if not already indexed
+
     if (this.isOpen()) {
       this.chatbotService.indexContent();
     }
@@ -53,7 +53,6 @@ export class ChatbotComponent {
     const text = this.userInput().trim();
     if (!text) return;
 
-    // Add user message
     this.messages.update((msgs) => [...msgs, { sender: 'user', text }]);
     this.userInput.set('');
     this.isLoading.set(true);
@@ -84,7 +83,7 @@ export class ChatbotComponent {
   goToSource(msg: ChatMessage) {
     if (msg.module) {
       this.chatbotService.navigateToModule(msg.module, msg.quote, msg.page);
-      this.isOpen.set(false); // Close chat on navigation
+      this.isOpen.set(false);
     }
   }
 }

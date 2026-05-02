@@ -122,7 +122,7 @@ export class ForumViewComponent {
           console.log('Message updated successfully:', response);
           this.message.success('Message updated successfully!');
           this.cancelEditMessage();
-          // Refresh the forum to show the updated message
+
           const forumId = this.selectedForum()!.id;
           this.refreshForum(forumId);
         },
@@ -184,7 +184,7 @@ export class ForumViewComponent {
           console.log('Message sent successfully:', response);
           this.message.success('Message sent successfully!');
           this.newMessageContent = '';
-          // Refresh the forum to show the new message
+
           this.refreshForum(forumId);
         },
         error: (error) => {

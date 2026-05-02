@@ -60,14 +60,12 @@ export class Home implements OnInit {
 
   szakmak: Profession[] = [];
 
-  // Edit mode state
   isEditMode = signal(false);
   isModalVisible = signal(false);
   isEditing = signal(false);
   professionForm!: FormGroup;
   selectedProfessionId: number | null = null;
 
-  // Check if user is admin
   isAdmin = computed(() => {
     const roles = this.authService.userRoles();
     return roles.includes('ADMIN') || roles.includes('SUPERADMIN');
@@ -77,7 +75,7 @@ export class Home implements OnInit {
     private router: Router,
     private http: HttpClient,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {
     this.initForm();
   }
@@ -90,7 +88,7 @@ export class Home implements OnInit {
     this.professionForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      image: [''], // Will store base64 string - optional
+      image: [''],
     });
   }
 
@@ -102,19 +100,16 @@ export class Home implements OnInit {
     if (input.files && input.files[0]) {
       const file = input.files[0];
 
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         this.message.error('Please select a valid image file');
         return;
       }
 
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         this.message.error('Image size should not exceed 5MB');
         return;
       }
 
-      // Compress and convert to base64
       this.compressImage(file)
         .then((base64String) => {
           this.professionForm.patchValue({
@@ -145,7 +140,6 @@ export class Home implements OnInit {
             return;
           }
 
-          // Calculate new dimensions (max 1200px width/height, maintain aspect ratio)
           let width = img.width;
           let height = img.height;
           const maxSize = 1200;
@@ -161,10 +155,8 @@ export class Home implements OnInit {
           canvas.width = width;
           canvas.height = height;
 
-          // Draw and compress
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Convert to base64 with 0.8 quality for JPEG, 0.9 for PNG
           const quality = file.type === 'image/png' ? 0.9 : 0.8;
           const base64String = canvas.toDataURL(file.type, quality);
 
@@ -183,11 +175,11 @@ export class Home implements OnInit {
    */
   getImageSrc(image: string): string {
     if (!image) return '';
-    // If it's already a base64 string or full URL, return as is
+
     if (image.startsWith('data:') || image.startsWith('http')) {
       return image;
     }
-    // Otherwise assume it's a relative path
+
     return image;
   }
 
@@ -208,7 +200,7 @@ export class Home implements OnInit {
     this.professionForm.patchValue({
       name: profession.name,
       description: profession.description,
-      image: profession.image, // Will be base64 from backend
+      image: profession.image,
     });
     this.isModalVisible.set(true);
   }
@@ -220,7 +212,7 @@ export class Home implements OnInit {
     this.professionForm.patchValue({
       image: '',
     });
-    // Reset file input
+
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
@@ -265,7 +257,7 @@ export class Home implements OnInit {
           console.log('Add response status:', response.status);
           console.log('Add response body:', response.body);
           this.message.success('Profession added successfully!');
-          // Backend returns plain text ID, so reload professions to get the updated list
+
           this.loadProfessions();
           this.handleCancel();
           this.cdr.markForCheck();
@@ -298,7 +290,6 @@ export class Home implements OnInit {
           console.log('Update response:', response);
           const index = this.szakmak.findIndex((p) => p.id === this.selectedProfessionId);
           if (index !== -1) {
-            // Update with local data since backend returns plain text ID
             this.szakmak[index] = { ...this.szakmak[index], ...professionData };
           }
           this.handleCancel();
@@ -337,7 +328,7 @@ export class Home implements OnInit {
         console.log('Professions loaded:', data);
         if (data && data.length > 0) {
           this.szakmak = data;
-          this.cdr.markForCheck(); // Explicitly trigger change detection
+          this.cdr.markForCheck();
         }
       },
       error: (error) => {

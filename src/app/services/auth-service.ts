@@ -36,6 +36,10 @@ interface RefreshTokenResponse {
   expiresIn: number;
 }
 
+interface AuthMessageResponse {
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -55,24 +59,21 @@ export class AuthService {
   isLoading = signal(false);
   errorMessage = signal<string | null>(null);
 
-  // Cookie names
   private readonly AUTH_TOKEN_COOKIE = 'auth_token';
   private readonly AUTH_USER_COOKIE = 'auth_user';
   private readonly AUTH_REFRESH_TOKEN_COOKIE = 'auth_refresh_token';
   private readonly AUTH_TOKEN_TYPE_COOKIE = 'auth_token_type';
   private readonly AUTH_TOKEN_EXPIRY_COOKIE = 'auth_token_expiry';
 
-  // Token refresh
   private refreshTokenTimer?: ReturnType<typeof setTimeout>;
   private isRefreshing = false;
   private refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
   constructor() {
-    // Check if user is already logged in from cookies
     this.loadAuthFromCookies();
-    // Mark as initialized after loading from cookies
+
     this._authInitialized.set(true);
-    // Start automatic token refresh if logged in
+
     if (this.isAuthenticated()) {
       this.scheduleTokenRefresh();
     }
@@ -114,18 +115,16 @@ export class AuthService {
     accessToken: string,
     refreshToken: string,
     tokenType: string,
-    expiresIn: number
+    expiresIn: number,
   ) {
     try {
       const expiryDays = expiresIn / 1000 / 60 / 60 / 24;
 
-      // Store tokens
       this.cookieService.setCookie(this.AUTH_TOKEN_COOKIE, accessToken, expiryDays);
       this.cookieService.setCookie(this.AUTH_REFRESH_TOKEN_COOKIE, refreshToken, 7);
       this.cookieService.setCookie(this.AUTH_TOKEN_TYPE_COOKIE, tokenType, 7);
       this.cookieService.setCookie(this.AUTH_TOKEN_EXPIRY_COOKIE, expiresIn.toString(), expiryDays);
 
-      // Store user data (encode to handle special characters)
       const userJson = JSON.stringify(user);
       this.cookieService.setCookie(this.AUTH_USER_COOKIE, userJson, expiryDays);
     } catch (error) {
@@ -148,7 +147,6 @@ export class AuthService {
    * Schedule automatic token refresh before it expires
    */
   private scheduleTokenRefresh() {
-    // Clear any existing timer
     if (this.refreshTokenTimer) {
       clearTimeout(this.refreshTokenTimer);
     }
@@ -158,7 +156,6 @@ export class AuthService {
       return;
     }
 
-    // Refresh token 1 minute before it expires (or at 80% of the expiry time, whichever is sooner)
     const refreshTime = Math.min(expiresIn * 0.8, expiresIn - 60000);
 
     if (refreshTime > 0) {
@@ -172,7 +169,6 @@ export class AuthService {
    * Refresh the access token using the refresh token
    */
   async refreshAccessToken(): Promise<boolean> {
-    // Prevent multiple simultaneous refresh attempts
     if (this.isRefreshing) {
       return false;
     }
@@ -191,11 +187,10 @@ export class AuthService {
         this.http.post<RefreshTokenResponse>(
           `${this.apiUrl}/auth/refresh`,
           { refreshToken },
-          { withCredentials: true }
-        )
+          { withCredentials: true },
+        ),
       );
 
-      // Parse JWT to extract user info
       const tokenParts = response.accessToken.split('.');
       const payload = JSON.parse(atob(tokenParts[1]));
       const user: User = {
@@ -205,7 +200,6 @@ export class AuthService {
         id: payload.userId,
       };
 
-      // Update state with new tokens
       this._authState.set({
         isLoggedIn: true,
         user: user,
@@ -215,25 +209,22 @@ export class AuthService {
         expiresIn: response.expiresIn,
       });
 
-      // Save to cookies
       this.saveAuthToCookies(
         user,
         response.accessToken,
         response.refreshToken,
         response.tokenType,
-        response.expiresIn
+        response.expiresIn,
       );
 
-      // Schedule next refresh
       this.scheduleTokenRefresh();
 
-      // Notify subscribers that token has been refreshed
       this.refreshTokenSubject.next(response.accessToken);
 
       return true;
     } catch (err: any) {
       console.error('Token refresh failed:', err);
-      // If refresh fails, logout the user
+
       await this.logout();
       this.router.navigate(['/login']);
       return false;
@@ -265,11 +256,10 @@ export class AuthService {
         this.http.post<LoginResponse>(
           `${this.apiUrl}/auth/login`,
           { username, password },
-          { withCredentials: true }
-        )
+          { withCredentials: true },
+        ),
       );
 
-      // Parse JWT to extract user info
       const tokenParts = response.accessToken.split('.');
       const payload = JSON.parse(atob(tokenParts[1]));
       console.log(payload);
@@ -280,7 +270,6 @@ export class AuthService {
         id: payload.userId,
       };
 
-      // Update state with user info and token
       this._authState.set({
         isLoggedIn: true,
         user: user,
@@ -290,16 +279,14 @@ export class AuthService {
         expiresIn: response.expiresIn,
       });
 
-      // Save to cookies
       this.saveAuthToCookies(
         user,
         response.accessToken,
         response.refreshToken,
         response.tokenType,
-        response.expiresIn
+        response.expiresIn,
       );
 
-      // Schedule automatic token refresh
       this.scheduleTokenRefresh();
 
       return true;
@@ -313,21 +300,47 @@ export class AuthService {
     }
   }
 
+  async forgotPassword(email: string): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await firstValueFrom(
+        this.http.post<AuthMessageResponse>(
+          `${this.apiUrl}/auth/forgot-password`,
+          { email },
+          { withCredentials: true },
+        ),
+      );
+
+      return {
+        success: true,
+        message: response?.message ?? 'Ha az email cím létezik, új jelszót küldtünk rá.',
+      };
+    } catch (err: any) {
+      const errorMsg = err?.error?.message || 'Nem sikerült elindítani a jelszó-visszaállítást.';
+      return { success: false, message: errorMsg };
+    }
+  }
+
+  loginWithKeycloak(): void {
+    const apiOrigin = new URL(this.apiUrl).origin;
+    const backendOAuthLoginUrl = `${apiOrigin}/oauth2/authorization/keycloak`;
+
+    if (environment.keycloakLoginUrl) {
+      window.location.href = environment.keycloakLoginUrl;
+      return;
+    }
+    window.location.href = backendOAuthLoginUrl;
+  }
+
   async logout(): Promise<void> {
-    // Clear the refresh timer
     if (this.refreshTokenTimer) {
       clearTimeout(this.refreshTokenTimer);
       this.refreshTokenTimer = undefined;
     }
 
     try {
-      // await firstValueFrom(
-      //   this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true })
-      // );
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
-      // Clear cookies and local state
       this.clearAuthCookies();
       this._authState.set({ isLoggedIn: false });
     }

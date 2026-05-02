@@ -101,7 +101,7 @@ nz-content {
     border-color: rgba(255, 255, 255, 0.5);
   }
 
-  // Keep the admin buttons visible and styled
+  
   .absolute {
     position: absolute;
   }
@@ -117,7 +117,7 @@ nz-footer {
   font-size: 14px;
 }
 
-// Card enhancements
+
 .rounded-2xl,
 .rounded-3xl {
   &.bg-cover {
@@ -125,7 +125,7 @@ nz-footer {
     position: relative;
     overflow: hidden;
 
-    // Shimmer effect on hover
+    
     &::before {
       content: '';
       position: absolute;
@@ -179,9 +179,9 @@ nz-footer {
   }
 }
 
-// Admin Controls
+
 ::ng-deep {
-  // Top header buttons
+  
   .flex.gap-2 {
     .ant-btn {
       backdrop-filter: blur(15px);
@@ -269,7 +269,7 @@ nz-footer {
         }
       }
 
-      // File input styling
+      
       input[type='file'] {
         color: rgba(255, 255, 255, 0.85);
 
@@ -291,7 +291,7 @@ nz-footer {
         }
       }
 
-      // Image preview styling
+      
       img {
         border: 2px solid rgba(255, 255, 255, 0.2);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -305,7 +305,7 @@ nz-footer {
   }
 }
 
-// Edit Mode Card Overlay
+
 .card-edit-overlay {
   position: absolute;
   top: 0;

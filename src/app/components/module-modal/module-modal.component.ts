@@ -220,12 +220,10 @@ export class ModuleModalComponent implements OnInit, OnChanges {
   }
 
   private setupFormListeners(): void {
-    // Update preview on content changes
     this.moduleForm.get('content')?.valueChanges.subscribe((value) => {
       this.previewContent.set(value || '');
     });
 
-    // Update validation based on module type
     this.moduleForm.get('moduleType')?.valueChanges.subscribe((type) => {
       const contentControl = this.moduleForm.get('content');
       if (type === 'MD') {
@@ -293,7 +291,6 @@ export class ModuleModalComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Validate PDF file for new PDF modules
     if (this.moduleType === 'PDF' && !this.isEditing && !this.selectedFile) {
       return;
     }

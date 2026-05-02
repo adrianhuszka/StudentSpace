@@ -114,7 +114,7 @@ export class SelectedProfessionLayout {
     this.subjectForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
-      createForum: [true], // Default to true for new subjects
+      createForum: [true],
     });
 
     this.moduleForm = this.fb.group({
@@ -123,12 +123,10 @@ export class SelectedProfessionLayout {
       moduleType: ['MD', [Validators.required]],
     });
 
-    // Update preview content on form changes (with built-in debouncing via signals)
     this.moduleForm.get('content')?.valueChanges.subscribe((value) => {
       this.modulePreviewContent.set(value || '');
     });
 
-    // Update content validation based on module type
     this.moduleForm.get('moduleType')?.valueChanges.subscribe((type) => {
       const contentControl = this.moduleForm.get('content');
       if (type === 'MD') {
@@ -158,13 +156,13 @@ export class SelectedProfessionLayout {
     this.subjectService.deleteModule(module.id).subscribe({
       next: () => {
         this.message.success('Module deleted successfully!');
-        // Remove the module from local state
+
         this.professionSubjects.update((subjects) =>
           subjects.map((s) =>
             s.id === subject.id ? { ...s, module: s.module.filter((m) => m.id !== module.id) } : s,
           ),
         );
-        // Clear selected module if it's the one being deleted
+
         if (this.selectedModule()?.id === module.id) {
           this.selectedModule.set(null);
         }
@@ -179,7 +177,6 @@ export class SelectedProfessionLayout {
   private cleanupPdfBlob(): void {
     const currentUrl = this.pdfBlobUrl();
     if (currentUrl) {
-      // Extract the blob URL from SafeResourceUrl
       const urlString = (currentUrl as any).changingThisBreaksApplicationSecurity;
       if (urlString && urlString.startsWith('blob:')) {
         URL.revokeObjectURL(urlString);
@@ -250,7 +247,7 @@ export class SelectedProfessionLayout {
       .subscribe({
         next: (response) => {
           this.message.success('Subject added successfully!');
-          // Parse the returned ID and add the new subject to local state
+
           const newSubjectId = response.body ? parseInt(response.body) : Date.now();
           const newSubject: Subject = {
             id: newSubjectId,
@@ -285,7 +282,7 @@ export class SelectedProfessionLayout {
       .subscribe({
         next: () => {
           this.message.success('Subject updated successfully!');
-          // Update the subject in local state
+
           this.professionSubjects.update((subjects) =>
             subjects.map((s) =>
               s.id === this.selectedSubjectId
@@ -311,9 +308,9 @@ export class SelectedProfessionLayout {
     this.subjectService.deleteSubject(subject.id).subscribe({
       next: () => {
         this.message.success('Subject deleted successfully!');
-        // Remove the subject from local state
+
         this.professionSubjects.update((subjects) => subjects.filter((s) => s.id !== subject.id));
-        // Clear selected module if it belongs to the deleted subject
+
         if (
           this.selectedModule() &&
           subject.module.some((m) => m.id === this.selectedModule()?.id)
@@ -328,7 +325,6 @@ export class SelectedProfessionLayout {
     });
   }
 
-  // Module modal methods
   openAddModuleModal(subject: Subject) {
     this.isEditingModule.set(false);
     this.selectedModuleId = null;
@@ -344,16 +340,14 @@ export class SelectedProfessionLayout {
     this.selectedModuleId = module.id;
     this.currentSubjectForModule = subject;
 
-    // Pre-populate basic fields immediately
     this.moduleForm.patchValue({
       title: module.title,
       moduleType: module.moduleType,
-      content: '', // Will be loaded for MD modules
+      content: '',
     });
 
     this.isModuleModalVisible.set(true);
 
-    // For MD modules, fetch the full content from server
     if (module.moduleType === 'MD') {
       this.http.get<{ content: string }>(`${this.apiUrl}/modules/${module.id}`).subscribe({
         next: (response) => {
@@ -368,7 +362,6 @@ export class SelectedProfessionLayout {
       });
       this.clearFile();
     } else if (module.moduleType === 'PDF') {
-      // For PDF modules, just show the filename indicator
       this.selectedFileName.set('Existing PDF file');
       this.modulePreviewContent.set('');
     }
@@ -394,7 +387,6 @@ export class SelectedProfessionLayout {
       return;
     }
 
-    // Validate PDF file upload (only required when adding new PDF module)
     if (
       this.moduleForm.value.moduleType === 'PDF' &&
       !this.isEditingModule() &&
@@ -421,7 +413,6 @@ export class SelectedProfessionLayout {
   }
 
   private addModule(data: any) {
-    // Use FormData for multipart upload
     const formData = new FormData();
     formData.append('title', data.title);
     formData.append('moduleType', data.moduleType);
@@ -441,7 +432,7 @@ export class SelectedProfessionLayout {
       .subscribe({
         next: (response) => {
           this.message.success('Module added successfully!');
-          // Parse the returned ID and add the new module to local state
+
           const newModuleId = response.body || crypto.randomUUID();
           const newModule: Module = {
             id: newModuleId,
@@ -468,7 +459,6 @@ export class SelectedProfessionLayout {
   private updateModule(data: any) {
     if (!this.selectedModuleId) return;
 
-    // Use FormData for multipart upload
     const formData = new FormData();
     formData.append('id', this.selectedModuleId);
     formData.append('title', data.title);
@@ -478,7 +468,6 @@ export class SelectedProfessionLayout {
     if (data.moduleType === 'MD') {
       formData.append('content', data.content || '');
     } else if (data.moduleType === 'PDF' && this.selectedFile) {
-      // Only append file if a new one was selected
       formData.append('pdfFile', this.selectedFile, this.selectedFile.name);
     }
 
@@ -490,7 +479,7 @@ export class SelectedProfessionLayout {
       .subscribe({
         next: () => {
           this.message.success('Module updated successfully!');
-          // Update the module in local state
+
           this.professionSubjects.update((subjects) =>
             subjects.map((s) =>
               s.id === this.currentSubjectForModule?.id
@@ -510,7 +499,7 @@ export class SelectedProfessionLayout {
                 : s,
             ),
           );
-          // Update selected module if it's the one being edited
+
           if (this.selectedModule()?.id === this.selectedModuleId) {
             this.selectedModule.set({
               id: this.selectedModuleId,
@@ -528,7 +517,6 @@ export class SelectedProfessionLayout {
       });
   }
 
-  // Link subject modal methods
   openLinkSubjectModal() {
     this.selectedSubjectToLink = null;
     this.loadAllSubjects();
@@ -553,7 +541,7 @@ export class SelectedProfessionLayout {
     this.selectedFile = null;
     this.selectedFileName.set('');
     this.moduleForm.patchValue({ content: '' });
-    // Reset file input
+
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
@@ -563,7 +551,6 @@ export class SelectedProfessionLayout {
   private loadAllSubjects() {
     this.http.get<Subject[]>(`${this.apiUrl}/subjects`).subscribe({
       next: (subjects) => {
-        // Filter out subjects that are already linked to this profession
         const currentSubjectIds = this.professionSubjects().map((s) => s.id);
         const available = subjects.filter((s) => !currentSubjectIds.includes(s.id));
         this.availableSubjects.set(available);
@@ -588,7 +575,7 @@ export class SelectedProfessionLayout {
       .subscribe({
         next: () => {
           this.message.success('Subject linked successfully!');
-          // Find the subject from available subjects and add it to profession subjects
+
           const linkedSubject = this.availableSubjects().find((s) => s.id === subjectId);
           if (linkedSubject) {
             this.professionSubjects.update((subjects) => [...subjects, linkedSubject]);
@@ -621,9 +608,9 @@ export class SelectedProfessionLayout {
       .subscribe({
         next: () => {
           this.message.success('Subject unlinked successfully!');
-          // Remove the subject from local state
+
           this.professionSubjects.update((subjects) => subjects.filter((s) => s.id !== subject.id));
-          // Clear selected module if it belongs to the unlinked subject
+
           if (
             this.selectedModule() &&
             subject.module.some((m) => m.id === this.selectedModule()?.id)
@@ -638,19 +625,16 @@ export class SelectedProfessionLayout {
       });
   }
 
-  // File upload methods
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
 
-      // Validate file type
       if (!file.type.includes('pdf')) {
         this.message.error('Please select a PDF file');
         return;
       }
 
-      // Validate file size (10MB)
       const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
         this.message.error('File size must be less than 10MB');

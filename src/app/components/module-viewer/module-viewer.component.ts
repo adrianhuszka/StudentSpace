@@ -164,10 +164,8 @@ export class ModuleViewerComponent implements OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['module']) {
-      // Clean up previous PDF blob
       this.cleanupPdfBlob();
 
-      // Load new PDF if module is PDF type
       if (this.module?.moduleType === 'PDF') {
         this.loadPdfBlob(this.module.id);
       }

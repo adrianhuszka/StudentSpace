@@ -27,13 +27,11 @@ export class FileUploadService {
       quality = 0.8,
     } = options;
 
-    // Validate file type
     if (!allowedTypes.some((type) => file.type.includes(type.replace('image/', '')))) {
       this.message.error('Please select a valid image file');
       return null;
     }
 
-    // Validate file size
     if (file.size > maxSizeMB * 1024 * 1024) {
       this.message.error(`Image size should not exceed ${maxSizeMB}MB`);
       return null;
@@ -56,17 +54,15 @@ export class FileUploadService {
    */
   handlePdfFile(
     file: File,
-    options: FileUploadOptions = {}
+    options: FileUploadOptions = {},
   ): { valid: boolean; file: File | null } {
     const { maxSizeMB = 10 } = options;
 
-    // Validate file type
     if (!file.type.includes('pdf')) {
       this.message.error('Please select a PDF file');
       return { valid: false, file: null };
     }
 
-    // Validate file size
     const maxSize = maxSizeMB * 1024 * 1024;
     if (file.size > maxSize) {
       this.message.error(`File size must be less than ${maxSizeMB}MB`);
@@ -95,7 +91,7 @@ export class FileUploadService {
   private compressImage(
     file: File,
     maxDimension: number = 1200,
-    quality: number = 0.8
+    quality: number = 0.8,
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -110,7 +106,6 @@ export class FileUploadService {
             return;
           }
 
-          // Calculate new dimensions (maintain aspect ratio)
           let width = img.width;
           let height = img.height;
 
@@ -125,10 +120,8 @@ export class FileUploadService {
           canvas.width = width;
           canvas.height = height;
 
-          // Draw and compress
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Convert to base64
           const outputQuality = file.type === 'image/png' ? 0.9 : quality;
           const base64String = canvas.toDataURL(file.type, outputQuality);
 
@@ -147,11 +140,11 @@ export class FileUploadService {
    */
   getImageSrc(image: string): string {
     if (!image) return '';
-    // If it's already a base64 string or full URL, return as is
+
     if (image.startsWith('data:') || image.startsWith('http')) {
       return image;
     }
-    // Otherwise assume it's a relative path
+
     return image;
   }
 }

@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
@@ -14,6 +14,7 @@ import { AuthService } from '@services/auth-service';
   selector: 'app-login',
   imports: [
     ReactiveFormsModule,
+    RouterModule,
     NzButtonModule,
     NzCheckboxModule,
     NzFormModule,
@@ -59,13 +60,13 @@ export class Login {
     if (this.validateForm.valid) {
       const { username, password } = this.validateForm.value;
 
-      // Call the async login method
+      
       this.authService.login(username!, password!).then((success) => {
         if (success) {
-          // Redirect to home or dashboard after successful login
+          
           this.router.navigate(['/']);
         }
-        // Error message is already set in authService.errorMessage
+        
       });
     } else {
       Object.values(this.validateForm.controls).forEach((control) => {
@@ -75,5 +76,9 @@ export class Login {
         }
       });
     }
+  }
+
+  onKeycloakLogin(): void {
+    this.authService.loginWithKeycloak();
   }
 }

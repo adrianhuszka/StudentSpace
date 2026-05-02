@@ -16,10 +16,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Wait for auth initialization to complete
   if (!authService.authInitialized()) {
-    // If auth is not initialized yet, allow the guard to pass temporarily
-    // This prevents flashing the login page during initial load
     return new Promise((resolve) => {
       const checkInterval = setInterval(() => {
         if (authService.authInitialized()) {
@@ -41,7 +38,6 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  // Redirect to login page with return URL
   router.navigate(['/login'], {
     queryParams: { returnUrl: state.url },
   });
@@ -78,7 +74,6 @@ export const authenticatedLoginGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Wait for auth initialization to complete
   if (!authService.authInitialized()) {
     return new Promise((resolve) => {
       const checkInterval = setInterval(() => {

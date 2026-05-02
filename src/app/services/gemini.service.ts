@@ -19,7 +19,6 @@ export class GeminiService {
     ];
 
     if (images.length > 0) {
-      // For multimodal requests, we add images to the parts
       const imageParts = images.map((base64Image) => ({
         inline_data: {
           mime_type: 'image/jpeg',
@@ -45,13 +44,13 @@ export class GeminiService {
           return response.candidates[0].content.parts[0].text;
         }
         return 'No summary generated.';
-      })
+      }),
     );
   }
 
   generateAnswer(
     question: string,
-    context: string
+    context: string,
   ): Observable<{ answer: string; quote: string; page?: number }> {
     const prompt = `
       You are a helpful teaching assistant. Answer the student's question based ONLY on the provided context.
@@ -84,7 +83,6 @@ export class GeminiService {
         ) {
           const text = response.candidates[0].content.parts[0].text;
           try {
-            // Clean up potential markdown code blocks
             const cleanText = text
               .replace(/```json/g, '')
               .replace(/```/g, '')
@@ -96,7 +94,7 @@ export class GeminiService {
           }
         }
         return { answer: 'Nem találtam választ a dokumentumban.', quote: '' };
-      })
+      }),
     );
   }
 }

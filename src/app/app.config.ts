@@ -21,11 +21,8 @@ import { MERMAID_OPTIONS, provideMarkdown } from 'ngx-markdown';
 
 registerLocaleData(en);
 
-// Initialize auth before app starts
 export function initializeAuth(authService: AuthService) {
   return () => {
-    // Auth service constructor already loads from cookies
-    // This just ensures it's initialized before routing
     return Promise.resolve();
   };
 }

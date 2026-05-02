@@ -62,13 +62,11 @@ export class QuizComponent implements OnInit, OnDestroy {
   isLoading = signal(true);
   error = signal<string | null>(null);
 
-  // Quiz state
   questions = signal<QuizQuestion[]>([]);
   currentQuestionIndex = signal(0);
   answers = signal<Record<string, string>>({});
 
-  // Timer
-  timeRemaining = signal<number | null>(null); // seconds
+  timeRemaining = signal<number | null>(null);
   private timerSubscription?: Subscription;
 
   currentQuestion = computed(() => {
@@ -111,12 +109,9 @@ export class QuizComponent implements OnInit, OnDestroy {
       next: (quiz) => {
         this.quiz.set(quiz);
         if (quiz.questions) {
-          // Parse options if needed
           const processedQuestions = quiz.questions.map((q) => {
             if (q.type === 'MULTIPLE_CHOICE' && typeof q.options === 'string') {
               try {
-                // If it's a JSON string, keep it as is, we'll parse in template or component logic
-                // Actually, let's keep it consistent
               } catch (e) {
                 console.error('Error parsing options', e);
               }
@@ -142,7 +137,6 @@ export class QuizComponent implements OnInit, OnDestroy {
         this.currentAttempt.set(attempt);
         this.isLoading.set(false);
 
-        // Start timer if quiz has time limit
         const limit = this.quiz()?.timeLimit;
         if (limit) {
           this.timeRemaining.set(limit * 60);
@@ -234,5 +228,9 @@ export class QuizComponent implements OnInit, OnDestroy {
     } catch (e) {
       return [];
     }
+  }
+
+  goHome() {
+    this.router.navigate(['/home']);
   }
 }

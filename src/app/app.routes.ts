@@ -19,6 +19,14 @@ export const routes: Routes = [
     canActivate: [authenticatedLoginGuard],
   },
   {
+    path: 'forgot-password',
+    loadChildren: () =>
+      import('./pages/forgot-password/forgot-password.routes').then(
+        (m) => m.FORGOT_PASSWORD_ROUTES,
+      ),
+    canActivate: [authenticatedLoginGuard],
+  },
+  {
     path: 'selected-profession',
     loadChildren: () =>
       import('./pages/selected-profession/selected-profession.routes').then(

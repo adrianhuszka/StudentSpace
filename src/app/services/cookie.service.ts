@@ -27,8 +27,7 @@ export class CookieService {
       date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
       const expires = `expires=${date.toUTCString()}`;
 
-      // Additional security flags
-      const sameSite = 'Strict'; // or 'Lax' for more flexibility
+      const sameSite = 'Strict';
       const secure = window.location.protocol === 'https:' ? '; Secure' : '';
 
       document.cookie = `${name}=${value}; ${expires}; path=${path}; SameSite=${sameSite}${secure}`;

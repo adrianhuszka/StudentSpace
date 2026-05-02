@@ -17,6 +17,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzPopconfirmModule } from 'ng-zorro-antd/popconfirm';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
+import { NzFormModule } from 'ng-zorro-antd/form';
 import { Router } from '@angular/router';
 
 import { AvatarComponent } from '@components/avatar/avatar.component';
@@ -46,6 +47,7 @@ import { QuizService, Quiz } from '@services/quiz.service';
     NzPopconfirmModule,
     NzInputModule,
     NzTabsModule,
+    NzFormModule,
     AvatarComponent,
   ],
   templateUrl: './admin.html',
@@ -60,7 +62,6 @@ export class Admin implements OnInit {
   private message = inject(NzMessageService);
   private router = inject(Router);
 
-  // Statistics
   userStats = signal<UserStats>({
     totalUsers: 0,
     activeUsers: 0,
@@ -74,7 +75,6 @@ export class Admin implements OnInit {
     averageSubjectsPerProfession: 0,
   });
 
-  // Data
   users = signal<User[]>([]);
   professions = signal<Profession[]>([]);
   subjects = signal<Subject[]>([]);
@@ -89,18 +89,15 @@ export class Admin implements OnInit {
     );
   });
 
-  // UI State
   loading = signal(false);
   selectedTab = signal(0);
   userSearchTerm = signal('');
 
-  // Modal state for user editing
   isUserModalVisible = signal(false);
   editingUser = signal<User | null>(null);
   availableRoles = ['USER', 'TEACHER', 'ADMIN', 'SUPERADMIN'];
   selectedRoles: string[] = [];
 
-  // Quiz Modal State
   isQuizModalVisible = signal(false);
   editingQuiz = signal<Quiz | null>(null);
   quizForm: {
@@ -127,7 +124,6 @@ export class Admin implements OnInit {
     questions: [],
   };
 
-  // Check if current user is superadmin
   isSuperAdmin = computed(() => {
     return this.authService.userRoles().includes('SUPERADMIN');
   });
@@ -139,25 +135,21 @@ export class Admin implements OnInit {
   loadDashboardData() {
     this.loading.set(true);
 
-    // Load statistics
     this.professionService.getProfessionStats().subscribe({
       next: (stats) => this.professionStats.set(stats),
       error: (err) => console.error('Error loading profession stats:', err),
     });
 
-    // Load professions
     this.professionService.getAll().subscribe({
       next: (data) => this.professions.set(data),
       error: (err) => console.error('Error loading professions:', err),
     });
 
-    // Load subjects
     this.subjectService.getAllSubjects().subscribe({
       next: (data) => this.subjects.set(data),
       error: (err) => console.error('Error loading subjects:', err),
     });
 
-    // Load users and stats only for superadmin
     if (this.isSuperAdmin()) {
       this.adminService.getUserStats().subscribe({
         next: (stats) => this.userStats.set(stats),
@@ -181,7 +173,6 @@ export class Admin implements OnInit {
     }
   }
 
-  // Quiz methods
   loadAllQuizzes() {
     this.quizService.getAllAdmin().subscribe({
       next: (data) => this.quizzes.set(data),
@@ -243,7 +234,6 @@ export class Admin implements OnInit {
   }
 
   saveQuiz() {
-    // Validate form basic
     if (!this.quizForm.title || !this.quizForm.subjectId) {
       this.message.error('Please fill in required fields (Title, Subject)');
       return;
@@ -251,7 +241,6 @@ export class Admin implements OnInit {
 
     const quizData: Partial<Quiz> = {
       ...this.quizForm,
-      // Map questions to match interface if needed
     } as any;
 
     if (this.editingQuiz()) {
@@ -295,7 +284,6 @@ export class Admin implements OnInit {
     });
   }
 
-  // User management methods
   openEditUserModal(user: User) {
     this.editingUser.set(user);
     this.selectedRoles = [...user.roles];
@@ -315,7 +303,7 @@ export class Admin implements OnInit {
     this.adminService.updateUserRoles(user.id, this.selectedRoles).subscribe({
       next: () => {
         this.message.success('User roles updated successfully');
-        // Update local user data
+
         const updatedUsers = this.users().map((u) =>
           u.id === user.id ? { ...u, roles: this.selectedRoles } : u,
         );
@@ -334,7 +322,7 @@ export class Admin implements OnInit {
       next: () => {
         const status = user.enabled ? 'disabled' : 'enabled';
         this.message.success(`User ${status} successfully`);
-        // Update local user data
+
         const updatedUsers = this.users().map((u) =>
           u.id === user.id ? { ...u, enabled: !u.enabled } : u,
         );
@@ -360,7 +348,6 @@ export class Admin implements OnInit {
     });
   }
 
-  // Navigation methods
   viewProfession(professionId: number) {
     this.router.navigate(['/selected-profession', professionId]);
   }

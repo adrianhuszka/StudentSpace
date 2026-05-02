@@ -7,14 +7,14 @@
 
     <!-- Display error message from auth service -->
     @if (authService.errorMessage()) {
-    <nz-alert
-      class="mb-4"
-      nzType="error"
-      [nzMessage]="authService.errorMessage()"
-      nzShowIcon
-      nzCloseable
-      (nzOnClose)="authService.errorMessage.set(null)"
-    ></nz-alert>
+      <nz-alert
+        class="mb-4"
+        nzType="error"
+        [nzMessage]="authService.errorMessage()"
+        nzShowIcon
+        nzCloseable
+        (nzOnClose)="authService.errorMessage.set(null)"
+      ></nz-alert>
     }
 
     <nz-tabset nzCentered class="auth-tabs">
@@ -55,7 +55,7 @@
               </label>
             </div>
             <div nz-col [nzSpan]="12">
-              <a class="float-right">Forgot password</a>
+              <a class="float-right" [routerLink]="['/forgot-password']">Forgot password</a>
             </div>
           </div>
           <button
@@ -67,6 +67,16 @@
           >
             Log in
           </button>
+
+          <button
+            nz-button
+            class="w-full mt-3"
+            [nzType]="'default'"
+            type="button"
+            (click)="onKeycloakLogin()"
+          >
+            Log in with Keycloak
+          </button>
         </form>
       </nz-tab>
 
@@ -75,7 +85,12 @@
           <nz-form-item class="w-full">
             <nz-form-control>
               <nz-input-group nzPrefixIcon="user">
-                <input type="text" nz-input placeholder="Username" />
+                <input
+                  type="text"
+                  nz-input
+                  placeholder="Username"
+                  style="border-radius: 5px; padding: 5px"
+                />
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>
@@ -83,7 +98,12 @@
           <nz-form-item class="w-full">
             <nz-form-control>
               <nz-input-group nzPrefixIcon="mail">
-                <input type="email" nz-input placeholder="Email" />
+                <input
+                  type="email"
+                  nz-input
+                  placeholder="Email"
+                  style="border-radius: 5px; padding: 5px"
+                />
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>
@@ -91,7 +111,12 @@
           <nz-form-item class="w-full">
             <nz-form-control>
               <nz-input-group nzPrefixIcon="lock">
-                <input type="password" nz-input placeholder="Password" />
+                <input
+                  type="password"
+                  nz-input
+                  placeholder="Password"
+                  style="border-radius: 5px; padding: 5px"
+                />
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>
@@ -99,7 +124,12 @@
           <nz-form-item class="w-full">
             <nz-form-control>
               <nz-input-group nzPrefixIcon="lock">
-                <input type="password" nz-input placeholder="Confirm Password" />
+                <input
+                  type="password"
+                  nz-input
+                  placeholder="Confirm Password"
+                  style="border-radius: 5px; padding: 5px"
+                />
               </nz-input-group>
             </nz-form-control>
           </nz-form-item>

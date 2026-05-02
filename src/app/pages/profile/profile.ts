@@ -77,7 +77,7 @@ export class Profile implements OnInit {
         newPassword: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', [Validators.required]],
       },
-      { validators: this.passwordMatchValidator }
+      { validators: this.passwordMatchValidator },
     );
   }
 
@@ -97,7 +97,6 @@ export class Profile implements OnInit {
       return;
     }
 
-    // Fetch full user profile from API
     this.http.get<UserProfile>(`${this.apiUrl}/users/me`).subscribe({
       next: (profile) => {
         this.userProfile.set(profile);
@@ -111,7 +110,7 @@ export class Profile implements OnInit {
       },
       error: (error) => {
         console.error('Error loading profile:', error);
-        // Fallback to auth service user data
+
         this.userProfile.set({
           id: user.id,
           username: user.username,
@@ -130,7 +129,6 @@ export class Profile implements OnInit {
   toggleEditMode() {
     this.isEditMode.update((v) => !v);
     if (!this.isEditMode()) {
-      // Reset form to original values
       this.loadUserProfile();
     }
   }

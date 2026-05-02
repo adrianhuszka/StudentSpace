@@ -1,5 +1,4 @@
 ::ng-deep {
-  // Select dropdown styling to match dark theme
   .ant-select-dropdown {
     background: rgba(10, 38, 71, 0.95) !important;
     backdrop-filter: blur(20px);
@@ -47,7 +46,6 @@
     }
   }
 
-  // Style the select input to match dark theme
   .link-subject-content {
     .ant-select {
       .ant-select-selector {
@@ -93,7 +91,6 @@
   }
 }
 
-// Edit mode styling
 .subject-actions,
 .module-actions {
   float: right;
@@ -151,7 +148,6 @@
   }
 }
 
-// Link Subject Modal styling
 .link-subject-content {
   .subject-option {
     .subject-name {

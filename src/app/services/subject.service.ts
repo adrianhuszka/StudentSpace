@@ -27,7 +27,7 @@ export class SubjectService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
 
-  // Subject operations
+  
   getSubjectsByProfession(professionId: string | number): Observable<Subject[]> {
     return this.http.get<Subject[]>(`${this.apiUrl}/subjects/by-profession/${professionId}`);
   }
@@ -79,7 +79,7 @@ export class SubjectService {
     );
   }
 
-  // Module operations
+  
   getModule(id: string): Observable<{ content: string }> {
     return this.http.get<{ content: string }>(`${this.apiUrl}/modules/${id}`);
   }

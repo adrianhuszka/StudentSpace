@@ -94,7 +94,6 @@ export class SelectedProfession implements OnDestroy {
   selectedProfession = signal<Profession | null>(null);
   selectedModule = signal<Module | null>(null);
 
-  // Computed property for markdown content (memoized)
   markdownContent = computed(() => {
     const module = this.selectedModule();
     if (!module?.content) {
@@ -105,8 +104,6 @@ export class SelectedProfession implements OnDestroy {
 
   isLoading = signal(true);
   loadError = signal<string | null>(null);
-
-  // Edit mode state
 
   isSubjectModalVisible = signal(false);
   isModuleModalVisible = signal(false);
@@ -120,26 +117,18 @@ export class SelectedProfession implements OnDestroy {
   selectedModuleId: string | null = null;
   currentSubjectForModule: Subject | null = null;
 
-  // Module preview content signal for better performance
   modulePreviewContent = signal<string>('');
 
-  // PDF file upload
   selectedFile: File | null = null;
   selectedFileName = signal<string>('');
 
-  // PDF blob URL for viewing (with authentication)
   pdfBlobUrl = signal<SafeResourceUrl | null>(null);
 
-  // Available subjects for linking
   availableSubjects = signal<Subject[]>([]);
   selectedSubjectToLink: number | null = null;
 
-  // Forum view state
   showForumView = signal(false);
 
-  // Check if user can edit (ADMIN, SUPERADMIN, or TEACHER)
-
-  // Gemini Summarization
   isSummarizing = signal(false);
   summaryResult = signal<string | null>(null);
   isSummaryModalVisible = signal(false);
@@ -157,17 +146,11 @@ export class SelectedProfession implements OnDestroy {
       this.loadData(params['id']);
     });
 
-    // Handle query params for deep linking from chatbot
     this.route.queryParams.subscribe((params) => {
       if (params['moduleId']) {
-        // Wait for data to load if not yet loaded
         if (this.professionSubjects().length > 0) {
           this.selectModuleById(params['moduleId'], params['quote'], params['page']);
         } else {
-          // If data not loaded, set a flag or wait.
-          // Since loadData is called on params change, we might need to wait for that.
-          // A simple way is to check in loadData or use an effect.
-          // For now, let's store the pending navigation
           this.pendingNavigation = {
             moduleId: params['moduleId'],
             quote: params['quote'],
@@ -227,7 +210,6 @@ export class SelectedProfession implements OnDestroy {
           this.professionSubjects.set(result.subjects);
           this.selectedProfession.set(result.profession);
 
-          // Handle pending navigation
           if (this.pendingNavigation) {
             this.selectModuleById(
               this.pendingNavigation.moduleId,
@@ -237,7 +219,6 @@ export class SelectedProfession implements OnDestroy {
             this.pendingNavigation = null;
           }
 
-          // Load quizzes for each subject
           result.subjects.forEach((subject) => {
             this.loadQuizzesForSubject(subject.id);
           });
@@ -278,13 +259,10 @@ export class SelectedProfession implements OnDestroy {
       if (module) {
         this.selectModule(module);
 
-        // Handle scrolling after a short delay to allow rendering
         setTimeout(() => {
           if (quote && module.moduleType === 'MD') {
             this.scrollToQuote(quote);
           } else if (page && module.moduleType === 'PDF') {
-            // PDF page navigation is handled by updating the URL in selectModule/loadPdfBlob
-            // We need to pass the page to loadPdfBlob
             this.loadPdfBlob(module.id, page);
           }
         }, 500);
@@ -294,22 +272,12 @@ export class SelectedProfession implements OnDestroy {
   }
 
   private scrollToQuote(quote: string) {
-    // Simple text search and scroll
-    // This is a bit hacky for rendered markdown but works for simple cases
-    // A better approach would be to use a library or search in the raw markdown if we rendered it with IDs
-    // For now, let's try window.find() or searching DOM elements
-
-    // Note: window.find is not standard but widely supported.
-    // Alternatively, we can search text nodes.
-
     const container = document.querySelector('.markdown-content-display');
     if (!container) return;
 
-    // Remove quotes if present
     const cleanQuote = quote.replace(/^"|"$/g, '').trim();
     if (!cleanQuote) return;
 
-    // Try to find the text in the container
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
     let node;
     while ((node = walker.nextNode())) {
@@ -317,7 +285,7 @@ export class SelectedProfession implements OnDestroy {
         const element = node.parentElement;
         if (element) {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          element.style.backgroundColor = '#fff3cd'; // Highlight
+          element.style.backgroundColor = '#fff3cd';
           setTimeout(() => (element.style.backgroundColor = ''), 3000);
           return;
         }
@@ -325,13 +293,9 @@ export class SelectedProfession implements OnDestroy {
     }
   }
 
-  // ... existing methods ...
-
-  // Clean up blob URL to prevent memory leaks
   private cleanupPdfBlob(): void {
     const currentUrl = this.pdfBlobUrl();
     if (currentUrl) {
-      // Extract the blob URL from SafeResourceUrl
       const urlString = (currentUrl as any).changingThisBreaksApplicationSecurity;
       if (urlString && urlString.startsWith('blob:')) {
         URL.revokeObjectURL(urlString);
@@ -341,7 +305,6 @@ export class SelectedProfession implements OnDestroy {
   }
 
   private loadPdfBlob(moduleId: string, page?: number): void {
-    // Clean up previous blob URL
     this.cleanupPdfBlob();
 
     this.http
@@ -350,9 +313,8 @@ export class SelectedProfession implements OnDestroy {
       })
       .subscribe({
         next: (blob) => {
-          // Create object URL from blob
           const url = URL.createObjectURL(blob);
-          // Append page hash if provided
+
           const fullUrl = page ? `${url}#page=${page}` : url;
           const safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(fullUrl);
           this.pdfBlobUrl.set(safeUrl);
@@ -366,23 +328,15 @@ export class SelectedProfession implements OnDestroy {
   }
 
   selectModule(module: Module) {
-    // Toggle selection - if clicking the same module, deselect it
     if (this.selectedModule()?.id === module.id) {
-      // Don't deselect if we are navigating to it (might be just refreshing view)
-      // But original logic was toggle. Let's keep it but maybe check if we are navigating.
-      // For now, let's assume if called from selectModuleById we want to select.
-      // But selectModuleById calls this.
-      // Let's just set it.
     }
 
     this.selectedModule.set(module);
-    this.showForumView.set(false); // Close forum view when selecting a module
+    this.showForumView.set(false);
 
-    // If it's a PDF module, load the PDF blob with authentication
     if (module.moduleType === 'PDF') {
       this.loadPdfBlob(module.id);
     } else {
-      // Clean up previous PDF blob URL if switching from PDF to MD
       this.cleanupPdfBlob();
     }
   }
@@ -403,7 +357,6 @@ export class SelectedProfession implements OnDestroy {
     this.router.navigate(['/home']);
   }
 
-  // Gemini Summarization Logic
   async summarizeModule() {
     const module = this.selectedModule();
     if (!module) return;
@@ -435,7 +388,6 @@ export class SelectedProfession implements OnDestroy {
           this.isSummarizing.set(false);
         }
       } else if (module.moduleType === 'PDF') {
-        // Fetch the PDF blob again to process it
         this.http
           .get(`${this.apiUrl}/modules/${module.id}/pdf`, {
             responseType: 'blob',
@@ -482,20 +434,17 @@ export class SelectedProfession implements OnDestroy {
 
   private async convertPdfToImages(blob: Blob): Promise<string[]> {
     const arrayBuffer = await blob.arrayBuffer();
-    // Dynamically import pdfjs-dist to avoid build issues if not used
+
     const pdfjsLib = await import('pdfjs-dist');
     pdfjsLib.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.mjs`;
 
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     const images: string[] = [];
     const numPages = pdf.numPages;
-    // Limit pages to avoid payload too large if necessary, but for now process all (or first 10?)
-    // Let's process up to 5 pages for performance/cost in this demo, or all if small.
-    // User wants "summarize content", so let's try all.
 
     for (let i = 1; i <= numPages; i++) {
       const page = await pdf.getPage(i);
-      const viewport = page.getViewport({ scale: 1.5 }); // 1.5 scale for decent quality
+      const viewport = page.getViewport({ scale: 1.5 });
       const canvas = document.createElement('canvas');
       const context = canvas.getContext('2d');
       canvas.height = viewport.height;
@@ -507,7 +456,7 @@ export class SelectedProfession implements OnDestroy {
           viewport: viewport,
         };
         await page.render(renderContext).promise;
-        // Convert to base64 jpeg
+
         const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
         images.push(base64);
       }
@@ -521,7 +470,6 @@ export class SelectedProfession implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    // Clean up blob URL to prevent memory leaks
     this.cleanupPdfBlob();
   }
 }

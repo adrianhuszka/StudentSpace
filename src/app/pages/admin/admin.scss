@@ -1,13 +1,12 @@
 .admin-layout {
   min-height: 100vh;
-  // Remove background to let global body background show through
+
   position: relative;
   overflow: hidden;
 }
 
 .admin-header {
-  // Use global glassmorphism variables if available, or match styles.scss
-  background: rgba(10, 38, 71, 0.8); // Matches global modal/card base
+  background: rgba(10, 38, 71, 0.8);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: 0 32px;
@@ -69,7 +68,6 @@
   }
 }
 
-// Statistics Grid
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -77,8 +75,6 @@
   margin-bottom: 32px;
 
   .stat-card {
-    // Inherits global .ant-card styles from styles.scss
-    // We just need to ensure specific overrides if needed
     position: relative;
     overflow: hidden;
 
@@ -128,9 +124,7 @@
   }
 }
 
-// Main Card
 .main-card {
-  // Inherits global .ant-card styles
   overflow: hidden;
 
   ::ng-deep .ant-card-body {
@@ -177,7 +171,6 @@
   }
 }
 
-// Tab Content
 .tab-content {
   .table-header {
     display: flex;
@@ -205,7 +198,6 @@
 
     .search-input {
       width: 320px;
-      // Input styles are handled globally in styles.scss
     }
   }
 
@@ -222,7 +214,6 @@
   }
 }
 
-// Profession Images
 .profession-image {
   width: 64px;
   height: 64px;
@@ -258,7 +249,6 @@
   }
 }
 
-// User Stats Mini
 .user-stats-mini {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -324,7 +314,6 @@
   }
 }
 
-// Table Styling
 ::ng-deep {
   .ant-table {
     background: transparent;
@@ -376,7 +365,6 @@
   }
 }
 
-// User Modal
 .user-modal-content {
   .user-info {
     p {
@@ -446,7 +434,6 @@
   }
 }
 
-// Responsive Design
 @media (max-width: 768px) {
   .admin-header {
     .header-content {

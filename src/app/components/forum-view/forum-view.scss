@@ -1,4 +1,3 @@
-// Forum View Container
 .forum-container {
   height: 100%;
   display: flex;
@@ -147,7 +146,7 @@
             color: rgba(255, 255, 255, 0.75);
             font-size: 14px;
             line-height: 1.6;
-            padding-left: 56px; // Align with title text after icon
+            padding-left: 56px;
           }
         }
 
@@ -201,7 +200,6 @@
       }
     }
 
-    // Forum Messages Section
     .forum-messages {
       display: flex;
       flex-direction: column;
@@ -232,7 +230,6 @@
         padding-right: 8px;
         margin-bottom: 20px;
 
-        // Custom scrollbar
         &::-webkit-scrollbar {
           width: 8px;
         }
@@ -428,7 +425,6 @@
           }
         }
 
-        // Empty state for no messages
         &:empty::after {
           content: 'No messages yet. Be the first to start the discussion!';
           display: block;
@@ -440,7 +436,6 @@
         }
       }
 
-      // Message Input Section
       .message-input {
         background: rgba(255, 255, 255, 0.08);
         backdrop-filter: blur(10px);
@@ -455,7 +450,9 @@
 
         &:focus-within {
           border-color: var(--color-accent);
-          box-shadow: 0 0 0 3px rgba(44, 116, 179, 0.2), 0 -4px 16px rgba(0, 0, 0, 0.15);
+          box-shadow:
+            0 0 0 3px rgba(44, 116, 179, 0.2),
+            0 -4px 16px rgba(0, 0, 0, 0.15);
         }
 
         textarea {
@@ -486,7 +483,6 @@
             box-shadow: 0 0 0 2px rgba(44, 116, 179, 0.15);
           }
 
-          // Custom scrollbar for textarea
           &::-webkit-scrollbar {
             width: 6px;
           }

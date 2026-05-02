@@ -1,11 +1,11 @@
-// Layout Styles
 :host {
   display: flex;
 }
 
 .app-layout {
   height: 100vh;
-  background: radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
+  background:
+    radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, var(--color-tertiary) 0%, transparent 50%),
     radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
     linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
@@ -34,7 +34,6 @@ nz-header {
     }
   }
 
-  // Forum button styling
   .forum-button {
     background: rgba(255, 255, 255, 0.1) !important;
     border-color: rgba(255, 255, 255, 0.3) !important;
@@ -117,7 +116,12 @@ nz-header {
   color: #fff;
   font-weight: 600;
   font-size: 20px;
-  font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+  font-family:
+    Avenir,
+    Helvetica Neue,
+    Arial,
+    Helvetica,
+    sans-serif;
   vertical-align: middle;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -140,7 +144,6 @@ nz-content {
   scrollbar-color: rgba(255, 255, 255, 0.2);
 }
 
-// Enhanced Sidebar Styling
 nz-sider {
   background: rgba(10, 38, 71, 0.95) !important;
   backdrop-filter: blur(20px);
@@ -223,7 +226,6 @@ nz-sider {
         }
       }
 
-      // Collapsed menu styling
       &.ant-menu-inline-collapsed {
         .ant-menu-item,
         .ant-menu-submenu-title {
@@ -237,7 +239,6 @@ nz-sider {
       }
     }
 
-    // Trigger button
     .ant-layout-sider-trigger {
       background: rgba(44, 116, 179, 0.8);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -250,7 +251,6 @@ nz-sider {
   }
 }
 
-// Footer styling
 nz-footer {
   background: rgba(10, 38, 71, 0.6) !important;
   backdrop-filter: blur(10px);

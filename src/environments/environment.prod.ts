@@ -2,5 +2,10 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'https://your-production-api.com/api', // Your production Spring Boot API
+  apiUrl: 'https://example.com/api',
+  keycloakBaseUrl: 'https://keycloak.pollak.info',
+  keycloakRealm: 'master',
+  keycloakClientId: 'student-space',
+  keycloakRedirectUri: undefined as string | undefined,
+  keycloakLoginUrl: undefined as string | undefined,
 };

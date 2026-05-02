@@ -8,9 +8,9 @@ export interface Quiz {
   title: string;
   description: string;
   moduleId?: string;
-  subjectId?: string; // UUID from backend
-  timeLimit?: number; // minutes
-  passingScore: number; // percentage
+  subjectId?: string;
+  timeLimit?: number;
+  passingScore: number;
   isActive: boolean;
   questions?: QuizQuestion[];
   createdAt?: string;
@@ -21,7 +21,7 @@ export interface QuizQuestion {
   id?: string;
   type: 'MULTIPLE_CHOICE' | 'TRUE_FALSE' | 'SHORT_ANSWER';
   question: string;
-  options?: string; // JSON string
+  options?: string;
   correctAnswer: string;
   points: number;
   orderIndex: number;
@@ -33,7 +33,7 @@ export interface QuizAttempt {
   studentId: string;
   startedAt: string;
   completedAt?: string;
-  answers: string; // JSON string
+  answers: string;
   score?: number;
   pointsEarned?: number;
   totalPoints?: number;
@@ -85,7 +85,6 @@ export class QuizService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  // Attempt methods
   startQuiz(quizId: string): Observable<QuizAttempt> {
     return this.http.post<QuizAttempt>(`${this.apiUrl}/${quizId}/start`, {});
   }

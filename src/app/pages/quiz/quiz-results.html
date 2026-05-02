@@ -4,11 +4,13 @@
       <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading results..."></nz-spin>
     </div>
   } @else if (error()) {
-    <nz-result nzStatus="error" [nzTitle]="error()" nzSubTitle="Could not load quiz results.">
+    <nz-result
+      nzStatus="error"
+      [nzTitle]="error() || undefined"
+      nzSubTitle="Could not load quiz results."
+    >
       <div nz-result-extra>
-        <button nz-button nzType="primary" (click)="router.navigate(['/home'])">
-          Back to Home
-        </button>
+        <button nz-button nzType="primary" (click)="goHome()">Back to Home</button>
       </div>
     </nz-result>
   } @else if (attempt()) {
@@ -20,7 +22,7 @@
       >
         <div nz-result-extra>
           <button nz-button nzType="primary" (click)="backToProfession()">Done</button>
-          <button nz-button (click)="router.navigate(['/quiz', quiz()?.id])">Retake Quiz</button>
+          <button nz-button (click)="retakeQuiz()">Retake Quiz</button>
         </div>
       </nz-result>
 

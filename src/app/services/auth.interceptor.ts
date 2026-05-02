@@ -14,12 +14,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const cookieService = inject(CookieService);
   const authService = inject(AuthService);
 
-  // Get token from cookie
   const token = cookieService.getCookie('auth_token');
 
-  // If token exists and request is to the API, add Authorization header
   let authReq = req;
-  // Exclude external APIs like Gemini
+
   const isExternalApi = req.url.includes('generativelanguage.googleapis.com');
 
   if (token && !req.headers.has('Authorization') && !isExternalApi) {
@@ -32,16 +30,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      // If we get a 401 error and it's not a login/refresh request, try to refresh the token
       if (
         error.status === 401 &&
         !authReq.url.includes('/auth/login') &&
         !authReq.url.includes('/auth/refresh') &&
         authService.isAuthenticated()
       ) {
-        // Check if token refresh is already in progress
         if (authService.isRefreshingToken()) {
-          // Wait for the token to be refreshed and retry the request
           return authService.getRefreshTokenSubject().pipe(
             filter((token) => token !== null),
             take(1),
@@ -53,10 +48,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                 },
               });
               return next(retryReq);
-            })
+            }),
           );
         } else {
-          // Attempt to refresh the token
           return from(authService.refreshAccessToken()).pipe(
             switchMap((success) => {
               if (success) {
@@ -71,12 +65,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                 return throwError(() => error);
               }
             }),
-            catchError(() => throwError(() => error))
+            catchError(() => throwError(() => error)),
           );
         }
       }
 
       return throwError(() => error);
-    })
+    }),
   );
 };
