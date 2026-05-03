@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '@services/auth-service';
 import { environment } from 'src/environments/environment';
 import { Profession } from '@pages/home/home';
@@ -34,7 +34,7 @@ import { CommonModule } from '@angular/common';
 import { SelectedProfessionLayout } from '@app/layout/selected-profession/selected-profession.layout';
 import { ForumViewComponent } from '@components/forum-view/forum-view.component';
 import { GeminiService } from '@services/gemini.service';
-import { QuizService, Quiz } from '@services/quiz.service';
+import { QuizService, Quiz, QuizAttempt } from '@services/quiz.service';
 
 export interface Subject {
   id: number;
@@ -53,8 +53,16 @@ export interface Module {
 }
 
 export interface Forum {
-  forumMessages: any[];
+  forumMessages?: any[];
   id: string;
+}
+
+interface QuizFormQuestion {
+  type: 'MULTIPLE_CHOICE' | 'TRUE_FALSE' | 'SHORT_ANSWER';
+  question: string;
+  options: string[];
+  correctAnswer: string;
+  points: number;
 }
 
 @Component({
@@ -92,6 +100,7 @@ export class SelectedProfession implements OnDestroy {
 
   professionSubjects = signal<Subject[]>([]);
   selectedProfession = signal<Profession | null>(null);
+  selectedSubject = signal<Subject | null>(null);
   selectedModule = signal<Module | null>(null);
 
   markdownContent = computed(() => {
@@ -128,10 +137,40 @@ export class SelectedProfession implements OnDestroy {
   selectedSubjectToLink: number | null = null;
 
   showForumView = signal(false);
+  selectedForumSubjectId = signal<number | null>(null);
 
   isSummarizing = signal(false);
   summaryResult = signal<string | null>(null);
   isSummaryModalVisible = signal(false);
+
+  isQuizModalVisible = signal(false);
+  isSavingQuiz = signal(false);
+  isQuizActionModalVisible = signal(false);
+  isLoadingQuizAttempts = signal(false);
+  showQuizAttemptsInModal = signal(false);
+  selectedQuizForAction = signal<Quiz | null>(null);
+  quizAttemptsForSelected = signal<QuizAttempt[]>([]);
+
+  quizForm: {
+    title: string;
+    description: string;
+    timeLimit: number | null;
+    passingScore: number;
+    isActive: boolean;
+    questions: QuizFormQuestion[];
+  } = {
+    title: '',
+    description: '',
+    timeLimit: null,
+    passingScore: 60,
+    isActive: true,
+    questions: [],
+  };
+
+  canManageQuizzes = computed(() => {
+    const roles = this.authService.userRoles();
+    return roles.includes('ADMIN') || roles.includes('TEACHER') || roles.includes('SUPERADMIN');
+  });
 
   private geminiService = inject(GeminiService);
 
@@ -209,6 +248,10 @@ export class SelectedProfession implements OnDestroy {
 
           this.professionSubjects.set(result.subjects);
           this.selectedProfession.set(result.profession);
+          this.selectedSubject.set(null);
+          this.selectedModule.set(null);
+          this.showForumView.set(false);
+          this.selectedForumSubjectId.set(null);
 
           if (this.pendingNavigation) {
             this.selectModuleById(
@@ -251,6 +294,267 @@ export class SelectedProfession implements OnDestroy {
 
   navigateToQuiz(quizId: string) {
     this.router.navigate(['/quiz', quizId]);
+  }
+
+  handleQuizClick(quiz: Quiz) {
+    if (!this.canManageQuizzes()) {
+      this.navigateToQuiz(quiz.id);
+      return;
+    }
+
+    this.selectedQuizForAction.set(quiz);
+    this.showQuizAttemptsInModal.set(false);
+    this.quizAttemptsForSelected.set([]);
+    this.isQuizActionModalVisible.set(true);
+  }
+
+  closeQuizActionModal() {
+    this.isQuizActionModalVisible.set(false);
+    this.selectedQuizForAction.set(null);
+    this.showQuizAttemptsInModal.set(false);
+    this.quizAttemptsForSelected.set([]);
+    this.isLoadingQuizAttempts.set(false);
+  }
+
+  startQuizFromActionModal() {
+    const quiz = this.selectedQuizForAction();
+    if (!quiz) {
+      return;
+    }
+
+    this.closeQuizActionModal();
+    this.navigateToQuiz(quiz.id);
+  }
+
+  openQuizResultsInActionModal() {
+    const quiz = this.selectedQuizForAction();
+    if (!quiz) {
+      return;
+    }
+
+    this.showQuizAttemptsInModal.set(true);
+    this.isLoadingQuizAttempts.set(true);
+
+    this.quizService.getQuizAttempts(quiz.id).subscribe({
+      next: (attempts) => {
+        const sorted = [...attempts].sort((a, b) => {
+          const aDate = a.completedAt || a.startedAt;
+          const bDate = b.completedAt || b.startedAt;
+          return new Date(bDate).getTime() - new Date(aDate).getTime();
+        });
+        this.quizAttemptsForSelected.set(sorted);
+        this.isLoadingQuizAttempts.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load quiz attempts:', err);
+        this.message.error('Nem sikerült betölteni az eredményeket.');
+        this.isLoadingQuizAttempts.set(false);
+      },
+    });
+  }
+
+  openAttemptResult(attemptId: string) {
+    const quiz = this.selectedQuizForAction();
+    if (!quiz) {
+      return;
+    }
+
+    this.closeQuizActionModal();
+    this.router.navigate(['/quiz', quiz.id, 'results'], {
+      queryParams: { attemptId },
+    });
+  }
+
+  openCreateQuizModal() {
+    if (!this.canManageQuizzes()) {
+      this.message.error('Nincs jogosultságod kvíz létrehozásához.');
+      return;
+    }
+
+    if (!this.selectedSubject()) {
+      this.message.error('Előbb válassz tantárgyat.');
+      return;
+    }
+
+    this.quizForm = {
+      title: '',
+      description: '',
+      timeLimit: null,
+      passingScore: 60,
+      isActive: true,
+      questions: [],
+    };
+    this.addQuizQuestion();
+    this.isQuizModalVisible.set(true);
+  }
+
+  closeQuizModal() {
+    this.isQuizModalVisible.set(false);
+  }
+
+  addQuizQuestion() {
+    this.quizForm.questions.push({
+      type: 'MULTIPLE_CHOICE',
+      question: '',
+      options: ['1. opció', '2. opció'],
+      correctAnswer: '1. opció',
+      points: 1,
+    });
+  }
+
+  removeQuizQuestion(index: number) {
+    this.quizForm.questions.splice(index, 1);
+  }
+
+  onQuestionTypeChange(index: number) {
+    const question = this.quizForm.questions[index];
+    if (!question) return;
+
+    if (question.type === 'MULTIPLE_CHOICE') {
+      question.options = question.options.length > 1 ? question.options : ['1. opció', '2. opció'];
+      if (!question.options.includes(question.correctAnswer)) {
+        question.correctAnswer = question.options[0] || '';
+      }
+      return;
+    }
+
+    if (question.type === 'TRUE_FALSE') {
+      question.options = [];
+      if (question.correctAnswer !== 'true' && question.correctAnswer !== 'false') {
+        question.correctAnswer = 'true';
+      }
+      return;
+    }
+
+    question.options = [];
+    question.correctAnswer = '';
+  }
+
+  addOption(questionIndex: number) {
+    const question = this.quizForm.questions[questionIndex];
+    if (!question || question.type !== 'MULTIPLE_CHOICE') return;
+
+    question.options.push('');
+    if (!question.correctAnswer) {
+      question.correctAnswer = question.options[0] || '';
+    }
+  }
+
+  removeOption(questionIndex: number, optionIndex: number) {
+    const question = this.quizForm.questions[questionIndex];
+    if (!question || question.type !== 'MULTIPLE_CHOICE') return;
+    if (question.options.length <= 2) {
+      this.message.warning('Legalább 2 opció szükséges.');
+      return;
+    }
+
+    const removed = question.options[optionIndex];
+    question.options.splice(optionIndex, 1);
+
+    if (question.correctAnswer === removed) {
+      question.correctAnswer = question.options[0] || '';
+    }
+  }
+
+  saveQuiz() {
+    const subject = this.selectedSubject();
+    if (!subject) {
+      this.message.error('Nincs kiválasztott tantárgy.');
+      return;
+    }
+
+    if (!this.quizForm.title.trim()) {
+      this.message.error('Add meg a kvíz címét.');
+      return;
+    }
+
+    if (this.quizForm.questions.length === 0) {
+      this.message.error('Adj hozzá legalább 1 kérdést.');
+      return;
+    }
+
+    for (let i = 0; i < this.quizForm.questions.length; i++) {
+      const question = this.quizForm.questions[i];
+      if (!question.question.trim()) {
+        this.message.error(`A(z) ${i + 1}. kérdés szövege kötelező.`);
+        return;
+      }
+
+      if (!question.points || question.points < 1) {
+        this.message.error(`A(z) ${i + 1}. kérdés pontszáma legalább 1 legyen.`);
+        return;
+      }
+
+      if (question.type === 'MULTIPLE_CHOICE') {
+        const cleanedOptions = question.options.map((opt) => opt.trim()).filter((opt) => !!opt);
+        if (cleanedOptions.length < 2) {
+          this.message.error(`A(z) ${i + 1}. kérdéshez legalább 2 válaszopció kell.`);
+          return;
+        }
+
+        if (!cleanedOptions.includes(question.correctAnswer)) {
+          this.message.error(`A(z) ${i + 1}. kérdésnél válassz helyes választ az opciók közül.`);
+          return;
+        }
+      } else if (!question.correctAnswer.trim()) {
+        this.message.error(`A(z) ${i + 1}. kérdésnél add meg a helyes választ.`);
+        return;
+      }
+    }
+
+    const payload: Partial<Quiz> = {
+      title: this.quizForm.title.trim(),
+      description: this.quizForm.description?.trim() || '',
+      subjectId: subject.id.toString(),
+      timeLimit: this.quizForm.timeLimit ?? undefined,
+      passingScore: this.quizForm.passingScore,
+      isActive: this.quizForm.isActive,
+      questions: this.quizForm.questions.map((question, index) => {
+        const cleanedOptions = question.options.map((opt) => opt.trim()).filter((opt) => !!opt);
+        return {
+          type: question.type,
+          question: question.question.trim(),
+          options: question.type === 'MULTIPLE_CHOICE' ? JSON.stringify(cleanedOptions) : undefined,
+          correctAnswer: question.correctAnswer.trim(),
+          points: question.points,
+          orderIndex: index,
+        };
+      }),
+    };
+
+    this.isSavingQuiz.set(true);
+    this.quizService.create(payload).subscribe({
+      next: () => {
+        this.message.success('Kvíz létrehozva.');
+        this.isSavingQuiz.set(false);
+        this.closeQuizModal();
+        this.loadQuizzesForSubject(subject.id);
+      },
+      error: (err) => {
+        const errorResponse = err as HttpErrorResponse;
+        console.error('Error creating quiz:', errorResponse);
+
+        const backendMessage =
+          typeof errorResponse?.error === 'string'
+            ? errorResponse.error
+            : errorResponse?.error?.message || errorResponse?.error?.error;
+
+        this.message.error(
+          backendMessage
+            ? `Nem sikerült létrehozni a kvízt: ${backendMessage}`
+            : 'Nem sikerült létrehozni a kvízt.',
+        );
+        this.isSavingQuiz.set(false);
+      },
+    });
+  }
+
+  selectSubject(subject: Subject) {
+    this.selectedSubject.set(subject);
+    this.selectedModule.set(null);
+    this.showForumView.set(false);
+    this.selectedForumSubjectId.set(null);
+    this.cleanupPdfBlob();
   }
 
   private selectModuleById(moduleId: string, quote?: string, page?: number) {
@@ -329,6 +633,16 @@ export class SelectedProfession implements OnDestroy {
 
   selectModule(module: Module) {
     if (this.selectedModule()?.id === module.id) {
+      this.selectedModule.set(null);
+      this.cleanupPdfBlob();
+      return;
+    }
+
+    const subject = this.professionSubjects().find((item) =>
+      item.module.some((subjectModule) => subjectModule.id === module.id),
+    );
+    if (subject) {
+      this.selectedSubject.set(subject);
     }
 
     this.selectedModule.set(module);
@@ -341,7 +655,14 @@ export class SelectedProfession implements OnDestroy {
     }
   }
 
-  openForumList() {
+  openForumList(subjectId?: number) {
+    if (subjectId) {
+      const subject = this.professionSubjects().find((item) => item.id === subjectId);
+      if (subject) {
+        this.selectedSubject.set(subject);
+      }
+    }
+    this.selectedForumSubjectId.set(subjectId ?? null);
     this.showForumView.set(true);
     this.selectedModule.set(null);
     this.cleanupPdfBlob();
@@ -350,6 +671,7 @@ export class SelectedProfession implements OnDestroy {
   closeForumView() {
     console.log('closeForumView called in parent');
     this.showForumView.set(false);
+    this.selectedForumSubjectId.set(null);
     this.cdr.markForCheck();
   }
 

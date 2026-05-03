@@ -16,8 +16,13 @@
       <div class="logo"></div>
       <ul nz-menu nzTheme="dark" nzMode="inline">
         @for (subject of professionSubjects(); track subject.id) {
-          <li nz-submenu nzIcon="book">
-            <span title class="subject-item">
+          <li nz-submenu nzIcon="book" [nzOpen]="selectedSubject()?.id === subject.id">
+            <span
+              title
+              class="subject-item"
+              [class.subject-item-active]="selectedSubject()?.id === subject.id"
+              (click)="selectSubject(subject)"
+            >
               {{ subject.name }}
               @if (isEditMode() && canEdit()) {
                 <span class="subject-actions">
@@ -49,41 +54,47 @@
               }
             </span>
             <ul>
-              @for (module of subject.module; track module.id) {
-                <li
-                  nz-menu-item
-                  [class.ant-menu-item-selected]="selectedModule()?.id === module.id"
-                  nzOpen
-                  (click)="selectModule(module)"
-                >
-                  <span class="module-item">
-                    {{ module.title }}
-                    @if (isEditMode() && canEdit()) {
-                      <span class="module-actions">
-                        <span
-                          nz-icon
-                          nzType="edit"
-                          nzTheme="outline"
-                          class="edit-icon"
-                          (click)="openEditModuleModal(module, subject); $event.stopPropagation()"
-                        ></span>
-                        <span
-                          nz-icon
-                          nzType="delete"
-                          nzTheme="outline"
-                          class="delete-icon"
-                          (click)="deleteModule(module, subject, $event)"
-                        ></span>
+              <li nz-menu-item-group nzTitle="Tananyag">
+                <ul>
+                  @for (module of subject.module; track module.id) {
+                    <li
+                      nz-menu-item
+                      [class.ant-menu-item-selected]="selectedModule()?.id === module.id"
+                      nzOpen
+                      (click)="selectModule(module)"
+                    >
+                      <span class="module-item">
+                        {{ module.title }}
+                        @if (isEditMode() && canEdit()) {
+                          <span class="module-actions">
+                            <span
+                              nz-icon
+                              nzType="edit"
+                              nzTheme="outline"
+                              class="edit-icon"
+                              (click)="
+                                openEditModuleModal(module, subject); $event.stopPropagation()
+                              "
+                            ></span>
+                            <span
+                              nz-icon
+                              nzType="delete"
+                              nzTheme="outline"
+                              class="delete-icon"
+                              (click)="deleteModule(module, subject, $event)"
+                            ></span>
+                          </span>
+                        }
                       </span>
-                    }
-                  </span>
-                </li>
-              }
+                    </li>
+                  }
+                </ul>
+              </li>
 
               @if (subjectQuizzes().get(subject.id); as quizzes) {
                 @if (quizzes.length > 0) {
                   <li nz-menu-divider></li>
-                  <li nz-menu-item-group nzTitle="Quizzes">
+                  <li nz-menu-item-group nzTitle="Feladatok">
                     <ul>
                       @for (quiz of quizzes; track quiz.id) {
                         <li nz-menu-item (click)="navigateToQuiz(quiz.id)">
@@ -94,6 +105,18 @@
                     </ul>
                   </li>
                 }
+              }
+
+              @if (subject.forum) {
+                <li nz-menu-divider></li>
+                <li nz-menu-item-group nzTitle="Fórum">
+                  <ul>
+                    <li nz-menu-item (click)="openForumList(subject.id)">
+                      <span nz-icon nzType="message" nzTheme="outline"></span>
+                      <span>Tantárgyi fórum</span>
+                    </li>
+                  </ul>
+                </li>
               }
 
               @if (isEditMode() && canEdit()) {

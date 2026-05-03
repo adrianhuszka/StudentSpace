@@ -2,19 +2,23 @@
   [isLoading]="isLoading()"
   [loadError]="loadError()"
   [professionSubjects]="professionSubjects"
+  [selectedSubject]="selectedSubject"
   [selectedModule]="selectedModule"
   [pdfBlobUrl]="pdfBlobUrl"
   [showForumView]="showForumView"
   [selectedProfession]="selectedProfession"
   [subjectQuizzes]="subjectQuizzes"
+  [selectSubject]="selectSubject.bind(this)"
   [selectModule]="selectModule.bind(this)"
   [navigateToQuiz]="navigateToQuiz.bind(this)"
+  [openForumList]="openForumList.bind(this)"
 >
   <div class="inner-content">
     @if (showForumView()) {
       <app-forum-view
         [selectedProfession]="selectedProfession"
         [professionSubjects]="professionSubjects"
+        [initialSubjectId]="selectedForumSubjectId()"
         (closeForumView)="closeForumView()"
       ></app-forum-view>
     } @else if (selectedModule()?.moduleType === 'MD') {
@@ -95,30 +99,96 @@
         }
       </div>
     } @else {
-      <div class="empty-state forum-welcome">
-        <div class="forum-welcome-content">
-          <span nz-icon nzType="message" nzTheme="outline" class="forum-icon"></span>
-          <h2>Welcome to {{ selectedProfession()?.name }}</h2>
-          <p>Select a module from the sidebar to start learning, or join the discussion forum</p>
-          <button
-            nz-button
-            nzType="primary"
-            nzSize="large"
-            class="forum-open-button"
-            (click)="openForumList()"
-          >
-            <span nz-icon nzType="team" nzTheme="outline"></span>
-            Open Forum
-          </button>
-          <div class="divider-with-text">
-            <span>or</span>
+      @if (selectedSubject(); as subject) {
+        <div class="subject-hub">
+          <div class="subject-hub-header">
+            <h2>{{ subject.name }}</h2>
+            <p>{{ subject.description }}</p>
           </div>
-          <p class="secondary-text">
-            <span nz-icon nzType="book" nzTheme="outline"></span>
-            Choose a module to begin your learning journey
-          </p>
+
+          <div class="subject-hub-grid">
+            <div class="subject-hub-section">
+              <h3>
+                <span nz-icon nzType="book" nzTheme="outline"></span>
+                Tananyag
+              </h3>
+              @if (subject.module.length > 0) {
+                <ul>
+                  @for (module of subject.module; track module.id) {
+                    <li>
+                      <button nz-button nzType="default" (click)="selectModule(module)">
+                        <span
+                          nz-icon
+                          [nzType]="module.moduleType === 'MD' ? 'file-markdown' : 'file-pdf'"
+                          nzTheme="outline"
+                        ></span>
+                        {{ module.title }}
+                      </button>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="subject-hub-empty">Ehhez a tantárgyhoz még nincs tananyag.</p>
+              }
+            </div>
+
+            <div class="subject-hub-section">
+              <h3>
+                <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+                Feladatok
+              </h3>
+              @if (canManageQuizzes()) {
+                <button
+                  nz-button
+                  nzType="dashed"
+                  class="subject-hub-create-quiz"
+                  (click)="openCreateQuizModal()"
+                >
+                  <span nz-icon nzType="plus" nzTheme="outline"></span>
+                  Kvíz létrehozása
+                </button>
+              }
+              @if (getQuizzesForSubject(subject.id).length > 0) {
+                <ul>
+                  @for (quiz of getQuizzesForSubject(subject.id); track quiz.id) {
+                    <li>
+                      <button nz-button nzType="default" (click)="handleQuizClick(quiz)">
+                        <span nz-icon nzType="file-text" nzTheme="outline"></span>
+                        {{ quiz.title }}
+                      </button>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <p class="subject-hub-empty">Ehhez a tantárgyhoz még nincs feladat.</p>
+              }
+            </div>
+
+            <div class="subject-hub-section">
+              <h3>
+                <span nz-icon nzType="message" nzTheme="outline"></span>
+                Fórum
+              </h3>
+              @if (subject.forum) {
+                <button nz-button nzType="primary" (click)="openForumList(subject.id)">
+                  <span nz-icon nzType="team" nzTheme="outline"></span>
+                  Tantárgyi fórum megnyitása
+                </button>
+              } @else {
+                <p class="subject-hub-empty">Ehhez a tantárgyhoz még nincs fórum.</p>
+              }
+            </div>
+          </div>
         </div>
-      </div>
+      } @else {
+        <div class="empty-state forum-welcome">
+          <div class="forum-welcome-content">
+            <span nz-icon nzType="book" nzTheme="outline" class="forum-icon"></span>
+            <h2>Válassz egy tantárgyat</h2>
+            <p>A bal oldali menüben válassz ki egy tantárgyat a továbblépéshez.</p>
+          </div>
+        </div>
+      }
     }
   </div>
 
@@ -135,6 +205,274 @@
       <div class="summary-content">
         <markdown [data]="summaryResult()"></markdown>
       </div>
+    </ng-container>
+  </nz-modal>
+
+  <nz-modal
+    [nzVisible]="isQuizModalVisible()"
+    nzTitle="Új kvíz létrehozása"
+    (nzOnCancel)="closeQuizModal()"
+    (nzOnOk)="saveQuiz()"
+    nzOkText="Mentés"
+    [nzOkLoading]="isSavingQuiz()"
+    [nzWidth]="900"
+  >
+    <ng-container *nzModalContent>
+      <form nz-form nzLayout="vertical" class="quiz-create-form">
+        <nz-form-item>
+          <nz-form-label nzRequired>Kvíz címe</nz-form-label>
+          <nz-form-control>
+            <input nz-input [(ngModel)]="quizForm.title" name="quiz_title" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Leírás</nz-form-label>
+          <nz-form-control>
+            <textarea
+              nz-input
+              [(ngModel)]="quizForm.description"
+              name="quiz_description"
+              rows="3"
+            ></textarea>
+          </nz-form-control>
+        </nz-form-item>
+
+        <div class="grid grid-cols-2 gap-4">
+          <nz-form-item>
+            <nz-form-label>Időlimit (perc)</nz-form-label>
+            <nz-form-control>
+              <input
+                nz-input
+                type="number"
+                [(ngModel)]="quizForm.timeLimit"
+                name="quiz_timeLimit"
+              />
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label>Átmenési százalék</nz-form-label>
+            <nz-form-control>
+              <input
+                nz-input
+                type="number"
+                [(ngModel)]="quizForm.passingScore"
+                name="quiz_passingScore"
+                min="0"
+                max="100"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <nz-form-item>
+          <nz-form-control>
+            <label nz-checkbox [(ngModel)]="quizForm.isActive" name="quiz_isActive"
+              >Aktív kvíz</label
+            >
+          </nz-form-control>
+        </nz-form-item>
+
+        <div class="quiz-question-list">
+          @for (question of quizForm.questions; track $index; let questionIndex = $index) {
+            <div class="quiz-question-card">
+              <div class="quiz-question-header">
+                <h4>Kérdés {{ $index + 1 }}</h4>
+                <button nz-button nzType="text" nzDanger (click)="removeQuizQuestion($index)">
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+              </div>
+
+              <nz-form-item>
+                <nz-form-label>Kérdés szövege</nz-form-label>
+                <nz-form-control>
+                  <input
+                    nz-input
+                    [(ngModel)]="question.question"
+                    [name]="'question_text_' + $index"
+                  />
+                </nz-form-control>
+              </nz-form-item>
+
+              <div class="grid grid-cols-2 gap-4">
+                <nz-form-item>
+                  <nz-form-label>Típus</nz-form-label>
+                  <nz-form-control>
+                    <nz-select
+                      [(ngModel)]="question.type"
+                      [name]="'question_type_' + $index"
+                      (ngModelChange)="onQuestionTypeChange($index)"
+                    >
+                      <nz-option nzValue="MULTIPLE_CHOICE" nzLabel="Feleletválasztós"></nz-option>
+                      <nz-option nzValue="TRUE_FALSE" nzLabel="Igaz/Hamis"></nz-option>
+                      <nz-option nzValue="SHORT_ANSWER" nzLabel="Rövid válasz"></nz-option>
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item>
+                  <nz-form-label>Pont</nz-form-label>
+                  <nz-form-control>
+                    <input
+                      nz-input
+                      type="number"
+                      min="1"
+                      [(ngModel)]="question.points"
+                      [name]="'question_points_' + $index"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+
+              @if (question.type === 'MULTIPLE_CHOICE') {
+                <div class="quiz-options-list">
+                  <label>Válaszopciók</label>
+                  @for (option of question.options; track $index; let optionIndex = $index) {
+                    <div class="quiz-option-row">
+                      <input
+                        nz-input
+                        [(ngModel)]="question.options[optionIndex]"
+                        [name]="'question_option_' + questionIndex + '_' + optionIndex"
+                        [placeholder]="'Opció ' + (optionIndex + 1)"
+                      />
+                      <button
+                        nz-button
+                        nzType="text"
+                        nzDanger
+                        (click)="removeOption(questionIndex, optionIndex)"
+                      >
+                        <span nz-icon nzType="minus-circle" nzTheme="outline"></span>
+                      </button>
+                    </div>
+                  }
+                  <button nz-button nzType="dashed" (click)="addOption($index)">
+                    <span nz-icon nzType="plus" nzTheme="outline"></span>
+                    Opció hozzáadása
+                  </button>
+                </div>
+
+                <nz-form-item>
+                  <nz-form-label>Helyes válasz</nz-form-label>
+                  <nz-form-control>
+                    <nz-select
+                      [(ngModel)]="question.correctAnswer"
+                      [name]="'question_correct_' + $index"
+                    >
+                      @for (option of question.options; track $index) {
+                        @if (option.trim()) {
+                          <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                        }
+                      }
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              } @else if (question.type === 'TRUE_FALSE') {
+                <nz-form-item>
+                  <nz-form-label>Helyes válasz</nz-form-label>
+                  <nz-form-control>
+                    <nz-select
+                      [(ngModel)]="question.correctAnswer"
+                      [name]="'question_correct_' + $index"
+                    >
+                      <nz-option nzValue="true" nzLabel="Igaz"></nz-option>
+                      <nz-option nzValue="false" nzLabel="Hamis"></nz-option>
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              } @else {
+                <nz-form-item>
+                  <nz-form-label>Helyes válasz</nz-form-label>
+                  <nz-form-control>
+                    <input
+                      nz-input
+                      [(ngModel)]="question.correctAnswer"
+                      [name]="'question_correct_' + $index"
+                      placeholder="Rövid szöveges válasz"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+              }
+            </div>
+          }
+
+          <button nz-button nzType="dashed" class="w-full" (click)="addQuizQuestion()">
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+            Kérdés hozzáadása
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </nz-modal>
+
+  <nz-modal
+    [nzVisible]="isQuizActionModalVisible()"
+    nzTitle="Kvíz műveletek"
+    (nzOnCancel)="closeQuizActionModal()"
+    [nzFooter]="null"
+    [nzWidth]="760"
+  >
+    <ng-container *nzModalContent>
+      @if (selectedQuizForAction(); as quiz) {
+        <div class="quiz-action-modal">
+          <h3>{{ quiz.title }}</h3>
+          @if (quiz.description) {
+            <p class="quiz-action-description">{{ quiz.description }}</p>
+          }
+
+          <div class="quiz-action-buttons">
+            <button nz-button nzType="primary" (click)="startQuizFromActionModal()">
+              <span nz-icon nzType="play-circle" nzTheme="outline"></span>
+              Kvíz kitöltése
+            </button>
+
+            <button nz-button nzType="default" (click)="openQuizResultsInActionModal()">
+              <span nz-icon nzType="bar-chart" nzTheme="outline"></span>
+              Eredmények megtekintése
+            </button>
+          </div>
+
+          @if (showQuizAttemptsInModal()) {
+            <div class="quiz-attempts-panel">
+              @if (isLoadingQuizAttempts()) {
+                <div class="quiz-attempts-loading">
+                  <nz-spin nzSimple [nzSize]="'large'"></nz-spin>
+                </div>
+              } @else if (quizAttemptsForSelected().length === 0) {
+                <p class="quiz-attempts-empty">Ehhez a kvízhez még nincs kitöltés.</p>
+              } @else {
+                <div class="quiz-attempts-list">
+                  @for (attempt of quizAttemptsForSelected(); track attempt.id) {
+                    <div class="quiz-attempt-row">
+                      <div class="quiz-attempt-meta">
+                        <div><strong>Hallgató:</strong> {{ attempt.studentId }}</div>
+                        <div><strong>Pontszám:</strong> {{ attempt.score ?? '-' }}%</div>
+                        <div>
+                          <strong>Állapot:</strong>
+                          {{ attempt.completedAt ? 'Befejezve' : 'Folyamatban' }}
+                        </div>
+                        <div>
+                          <strong>Idő:</strong>
+                          {{ attempt.completedAt || attempt.startedAt | date: 'short' }}
+                        </div>
+                      </div>
+
+                      <button
+                        nz-button
+                        nzType="default"
+                        [disabled]="!attempt.completedAt"
+                        (click)="openAttemptResult(attempt.id)"
+                      >
+                        Részletek
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
     </ng-container>
   </nz-modal>
 </app-selected-profession-layout>

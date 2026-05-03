@@ -12,6 +12,9 @@ export interface Subject {
   description: string;
   professions: Profession[];
   module: Module[];
+  forum?: {
+    id: string;
+  };
 }
 
 export interface Module {
@@ -75,9 +78,7 @@ export interface SubjectCardEvents {
                 nzType="text"
                 nzSize="small"
                 nz-tooltip="Edit"
-                (click)="
-                  onEditModule.emit({ module, subject }); $event.stopPropagation()
-                "
+                (click)="onEditModule.emit({ module, subject }); $event.stopPropagation()"
               >
                 <span nz-icon nzType="edit"></span>
               </button>
@@ -87,9 +88,7 @@ export interface SubjectCardEvents {
                 nzDanger
                 nzSize="small"
                 nz-tooltip="Delete"
-                (click)="
-                  onDeleteModule.emit({ module, subject }); $event.stopPropagation()
-                "
+                (click)="onDeleteModule.emit({ module, subject }); $event.stopPropagation()"
               >
                 <span nz-icon nzType="delete"></span>
               </button>

@@ -10,7 +10,8 @@
 
 body {
   min-height: 100vh;
-  background: radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
+  background:
+    radial-gradient(circle at 20% 50%, var(--color-accent) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, var(--color-tertiary) 0%, transparent 50%),
     radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
     linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
@@ -318,34 +319,4 @@ body {
 .ant-select-disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.fade-in-up {
-  animation: fadeInUp 0.5s ease-out;
-}
-
-.slide-in {
-  animation: slideIn 0.3s ease-out;
 }

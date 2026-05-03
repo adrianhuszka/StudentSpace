@@ -5,6 +5,11 @@
   flex-wrap: nowrap;
   align-content: center;
   justify-content: flex-start;
+
+  &.subject-item-active {
+    color: var(--color-accent);
+    font-weight: 600;
+  }
 }
 
 .subject-actions,
@@ -24,7 +29,6 @@
 
     &:hover {
       background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.1);
     }
   }
 
@@ -38,6 +42,82 @@
 
   .unlink-icon:hover {
     color: #faad14;
+  }
+}
+
+.subject-hub {
+  padding: 24px;
+  color: white;
+
+  .subject-hub-header {
+    margin-bottom: 24px;
+
+    h2 {
+      margin: 0 0 8px;
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 15px;
+    }
+  }
+
+  .subject-hub-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 16px;
+
+    @media (max-width: 1100px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .subject-hub-section {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px;
+
+    h3 {
+      margin: 0 0 12px;
+      color: white;
+      font-size: 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    button[nz-button] {
+      width: 100%;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      white-space: normal;
+      height: auto;
+      min-height: 38px;
+      padding: 8px 12px;
+    }
+  }
+
+  .subject-hub-empty {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
   }
 }
 
@@ -165,14 +245,12 @@
   min-height: 400px;
   padding: 48px;
   color: rgba(255, 255, 255, 0.7);
-  animation: fadeInUp 0.6s ease-out;
 
   .empty-icon {
     font-size: 72px;
     margin-bottom: 24px;
     opacity: 0.4;
     color: var(--color-accent);
-    animation: pulse 2s ease-in-out infinite;
   }
 
   p {
@@ -187,29 +265,6 @@
     }
   }
 
-  @keyframes pulse {
-    0%,
-    100% {
-      opacity: 0.4;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.6;
-      transform: scale(1.05);
-    }
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
   &.forum-welcome {
     min-height: 600px;
     background: radial-gradient(circle at center, rgba(44, 116, 179, 0.15) 0%, transparent 70%);
@@ -221,7 +276,6 @@
       gap: 24px;
       max-width: 600px;
       text-align: center;
-      animation: fadeInUp 0.8s ease-out;
 
       .forum-icon {
         font-size: 120px;
@@ -272,7 +326,6 @@
         }
 
         &:hover {
-          transform: translateY(-4px) scale(1.05);
           box-shadow: 0 12px 32px rgba(44, 116, 179, 0.7);
           background: linear-gradient(135deg, #2563a8, #3687cc);
 
@@ -282,7 +335,7 @@
         }
 
         &:active {
-          transform: translateY(-2px) scale(1.02);
+          transform: none;
         }
 
         .anticon {
@@ -350,16 +403,6 @@
           color: var(--color-accent);
         }
       }
-
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-20px);
-        }
-      }
     }
   }
 }
@@ -422,13 +465,11 @@
     radial-gradient(circle at 40% 20%, var(--color-secondary) 0%, transparent 50%),
     linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   background-attachment: fixed;
-  animation: fadeIn 0.5s ease-out;
 
   .error-icon {
     font-size: 96px;
     color: #ff6b6b;
     margin-bottom: 32px;
-    animation: shake 0.5s ease-in-out;
     filter: drop-shadow(0 4px 12px rgba(255, 77, 79, 0.4));
   }
 
@@ -464,6 +505,122 @@
     }
     75% {
       transform: translateX(10px);
+    }
+  }
+}
+
+.subject-hub-create-quiz {
+  margin-bottom: 12px;
+}
+
+.quiz-create-form {
+  .quiz-question-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .quiz-question-card {
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .quiz-question-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+
+    h4 {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 16px;
+      font-weight: 600;
+    }
+  }
+
+  .quiz-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    label {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+
+  .quiz-option-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+}
+
+.quiz-action-modal {
+  h3 {
+    margin: 0 0 8px;
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .quiz-action-description {
+    margin: 0 0 16px;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .quiz-action-buttons {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .quiz-attempts-panel {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    padding-top: 12px;
+  }
+
+  .quiz-attempts-loading {
+    padding: 16px 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .quiz-attempts-empty {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .quiz-attempts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .quiz-attempt-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .quiz-attempt-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 4px 14px;
+    color: rgba(255, 255, 255, 0.86);
+
+    @media (max-width: 780px) {
+      grid-template-columns: 1fr;
     }
   }
 }

@@ -4,6 +4,8 @@ import {
   Input,
   Output,
   EventEmitter,
+  OnChanges,
+  SimpleChanges,
   signal,
   WritableSignal,
 } from '@angular/core';
@@ -35,9 +37,10 @@ import { environment } from 'src/environments/environment';
     NzInputModule,
   ],
 })
-export class ForumViewComponent {
+export class ForumViewComponent implements OnChanges {
   @Input() selectedProfession!: WritableSignal<Profession | null>;
   @Input() professionSubjects!: WritableSignal<Subject[]>;
+  @Input() initialSubjectId: number | null = null;
   @Output() closeForumView = new EventEmitter<void>();
 
   newMessageContent = '';
@@ -51,6 +54,26 @@ export class ForumViewComponent {
   private http = inject(HttpClient);
   private message = inject(NzMessageService);
   private authService = inject(AuthService);
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialSubjectId'] || changes['professionSubjects']) {
+      this.trySelectInitialForum();
+    }
+  }
+
+  private trySelectInitialForum() {
+    if (!this.initialSubjectId || this.selectedForum()) {
+      return;
+    }
+
+    const subject = this.professionSubjects().find(
+      (item) => item.id === this.initialSubjectId && item.forum,
+    );
+
+    if (subject) {
+      this.selectForumId(subject);
+    }
+  }
 
   /**
    * Close the forum view

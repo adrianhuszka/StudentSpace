@@ -30,7 +30,6 @@ nz-header {
 
     &:hover {
       color: var(--color-accent);
-      transform: scale(1.1);
     }
   }
 
@@ -46,7 +45,6 @@ nz-header {
       background: rgba(44, 116, 179, 0.3) !important;
       border-color: var(--color-accent) !important;
       color: white !important;
-      transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(44, 116, 179, 0.4);
     }
 
@@ -57,7 +55,6 @@ nz-header {
 
     &:hover .anticon {
       color: white;
-      transform: scale(1.1);
     }
   }
 }

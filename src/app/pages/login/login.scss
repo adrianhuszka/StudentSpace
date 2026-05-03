@@ -162,7 +162,6 @@
       box-shadow: 0 8px 20px rgba(44, 116, 179, 0.5), 0 0 30px rgba(44, 116, 179, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: gradientShift 3s ease infinite;
 
       @keyframes gradientShift {
         0%,

@@ -63,6 +63,7 @@ export class SelectedProfessionLayout {
   @Input() isLoading: boolean = false;
   @Input() loadError: string | null = null;
   @Input() professionSubjects: WritableSignal<Subject[]> = signal<Subject[]>([]);
+  @Input() selectedSubject: WritableSignal<Subject | null> = signal<Subject | null>(null);
   @Input() selectedModule: WritableSignal<Module | null> = signal<Module | null>(null);
   @Input() pdfBlobUrl: WritableSignal<SafeResourceUrl | null> = signal<SafeResourceUrl | null>(
     null,
@@ -74,7 +75,9 @@ export class SelectedProfessionLayout {
   );
 
   @Input() selectModule: (module: Module) => void = () => {};
+  @Input() selectSubject: (subject: Subject) => void = () => {};
   @Input() navigateToQuiz: (quizId: string) => void = () => {};
+  @Input() openForumList: (subjectId?: number) => void = () => {};
 
   private apiUrl = environment.apiUrl;
 
