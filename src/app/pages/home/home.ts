@@ -253,21 +253,16 @@ export class Home implements OnInit {
       })
       .subscribe({
         next: (response) => {
-          console.log('Add response:', response);
-          console.log('Add response status:', response.status);
-          console.log('Add response body:', response.body);
           this.message.success('Profession added successfully!');
+          console.log(response);
 
           this.loadProfessions();
           this.handleCancel();
           this.cdr.markForCheck();
         },
         error: (error) => {
-          console.error('Error adding profession - Full error object:', error);
-          console.error('Error status:', error.status);
-          console.error('Error message:', error.message);
-          console.error('Error error:', error.error);
-          this.message.error('Failed to add profession. Please try again.');
+          this.message.error('Failed to add profession. Please try again later.');
+          console.error(error);
         },
       });
   }
@@ -296,7 +291,7 @@ export class Home implements OnInit {
           this.cdr.markForCheck();
         },
         error: (error) => {
-          console.error('Error updating profession - Full error object:', error);
+          console.error(error);
           this.message.error('Failed to update profession. Please try again.');
         },
       });
