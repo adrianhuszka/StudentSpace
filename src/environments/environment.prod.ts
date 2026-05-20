@@ -3,6 +3,7 @@
 export const environment = {
   production: true,
   apiUrl: 'https://example.com/api',
+  keycloakEnabled: false,
   keycloakBaseUrl: 'https://keycloak.pollak.info',
   keycloakRealm: 'master',
   keycloakClientId: 'student-space',

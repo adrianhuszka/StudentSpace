@@ -95,7 +95,7 @@ export class Admin implements OnInit {
 
   isUserModalVisible = signal(false);
   editingUser = signal<User | null>(null);
-  availableRoles = ['USER', 'TEACHER', 'ADMIN', 'SUPERADMIN'];
+  availableRoles = ['STUDENT', 'TEACHER', 'ADMIN', 'SUPERADMIN'];
   selectedRoles: string[] = [];
 
   isQuizModalVisible = signal(false);
@@ -160,7 +160,12 @@ export class Admin implements OnInit {
 
       this.adminService.getAll().subscribe({
         next: (data) => {
-          this.users.set(data);
+          this.users.set(
+            data.map((user) => ({
+              ...user,
+              enabled: user.enabled !== false,
+            })),
+          );
           this.loading.set(false);
         },
         error: (err) => {
@@ -319,13 +324,11 @@ export class Admin implements OnInit {
 
   toggleUserStatus(user: User) {
     this.adminService.toggleUserStatus(user.id).subscribe({
-      next: () => {
-        const status = user.enabled ? 'disabled' : 'enabled';
+      next: (enabled) => {
+        const status = enabled ? 'enabled' : 'disabled';
         this.message.success(`User ${status} successfully`);
 
-        const updatedUsers = this.users().map((u) =>
-          u.id === user.id ? { ...u, enabled: !u.enabled } : u,
-        );
+        const updatedUsers = this.users().map((u) => (u.id === user.id ? { ...u, enabled } : u));
         this.users.set(updatedUsers);
       },
       error: (err) => {
@@ -361,7 +364,7 @@ export class Admin implements OnInit {
       SUPERADMIN: 'red',
       ADMIN: 'orange',
       TEACHER: 'blue',
-      USER: 'default',
+      STUDENT: 'default',
     };
     return colorMap[role] || 'default';
   }

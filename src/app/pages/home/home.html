@@ -2,22 +2,28 @@
   <div class="w-full flex flex-row justify-between items-center p-4 md:p-6 lg:p-8">
     <div class="flex gap-2">
       @if (isAdmin()) {
-      <button
-        nz-button
-        nzType="primary"
-        [nzGhost]="!isEditMode()"
-        (click)="toggleEditMode()"
-        class="flex items-center gap-2"
-      >
-        <span nz-icon [nzType]="isEditMode() ? 'check' : 'edit'" nzTheme="outline"></span>
-        {{ isEditMode() ? 'Done' : 'Edit Mode' }}
-      </button>
-      @if (isEditMode()) {
-      <button nz-button nzType="primary" (click)="openAddModal()" class="flex items-center gap-2">
-        <span nz-icon nzType="plus" nzTheme="outline"></span>
-        Add Profession
-      </button>
-      } }
+        <button
+          nz-button
+          nzType="primary"
+          [nzGhost]="!isEditMode()"
+          (click)="toggleEditMode()"
+          class="flex items-center gap-2"
+        >
+          <span nz-icon [nzType]="isEditMode() ? 'check' : 'edit'" nzTheme="outline"></span>
+          {{ isEditMode() ? 'Done' : 'Edit Mode' }}
+        </button>
+        @if (isEditMode()) {
+          <button
+            nz-button
+            nzType="primary"
+            (click)="openAddModal()"
+            class="flex items-center gap-2"
+          >
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+            Add Profession
+          </button>
+        }
+      }
     </div>
     <app-avatar></app-avatar>
   </div>
@@ -26,60 +32,60 @@
       <!-- Cards Grid -->
       <div class="cards-grid">
         @for (szakma of szakmak; track szakma.id; let i = $index) {
-        <div
-          class="profession-card rounded-2xl md:rounded-3xl bg-cover bg-center cursor-pointer shadow-2xl select-none group transition-all duration-300 hover:scale-105"
-          [style.background-image]="
-            'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(' +
-            getImageSrc(szakma.image) +
-            ')'
-          "
-          (click)="!isEditMode() ? navigateToProfession(szakma.id) : null"
-        >
-          <!-- Edit/Delete buttons for admins in edit mode -->
-          @if (isEditMode() && isAdmin()) {
-          <div class="absolute top-4 right-4 flex gap-2 z-20">
-            <button
-              nz-button
-              nzType="primary"
-              nzSize="small"
-              (click)="openEditModal(szakma); $event.stopPropagation()"
-              class="flex items-center gap-1"
-            >
-              <span nz-icon nzType="edit" nzTheme="outline"></span>
-              Edit
-            </button>
-            <button
-              nz-button
-              nzType="primary"
-              nzDanger
-              nzSize="small"
-              (click)="deleteProfession(szakma.id, $event)"
-              class="flex items-center gap-1"
-            >
-              <span nz-icon nzType="delete" nzTheme="outline"></span>
-              Delete
-            </button>
-          </div>
-          }
           <div
-            class="w-full h-full flex flex-col justify-around items-center p-4 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl transition-all duration-300 group-hover:backdrop-blur-sm"
+            class="profession-card rounded-2xl md:rounded-3xl bg-cover bg-center cursor-pointer shadow-2xl select-none group transition-all duration-300 hover:scale-105"
+            [style.background-image]="
+              'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(' +
+              getImageSrc(szakma.image) +
+              ')'
+            "
+            (click)="!isEditMode() ? navigateToProfession(szakma.id) : null"
           >
-            <h1 class="!text-white text-lg sm:text-xl md:text-2xl font-bold text-center">
-              {{ szakma.name }}
-            </h1>
-            <p
-              class="!text-white transition-opacity duration-300 text-sm sm:text-base text-center opacity-0 group-hover:opacity-100"
-              [class.opacity-100]="isEditMode()"
+            <!-- Edit/Delete buttons for admins in edit mode -->
+            @if (isEditMode() && isAdmin()) {
+              <div class="absolute top-4 right-4 flex gap-2 z-20">
+                <button
+                  nz-button
+                  nzType="primary"
+                  nzSize="small"
+                  (click)="openEditModal(szakma); $event.stopPropagation()"
+                  class="flex items-center gap-1"
+                >
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                  Edit
+                </button>
+                <button
+                  nz-button
+                  nzType="primary"
+                  nzDanger
+                  nzSize="small"
+                  (click)="deleteProfession(szakma.id, $event)"
+                  class="flex items-center gap-1"
+                >
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                  Delete
+                </button>
+              </div>
+            }
+            <div
+              class="w-full h-full flex flex-col justify-around items-center p-4 sm:p-6 md:p-8 rounded-2xl md:rounded-3xl transition-all duration-300 group-hover:backdrop-blur-sm"
             >
-              {{ szakma.description }}
-            </p>
+              <h1 class="!text-white text-lg sm:text-xl md:text-2xl font-bold text-center">
+                {{ szakma.name }}
+              </h1>
+              <p
+                class="!text-white transition-opacity duration-300 text-sm sm:text-base text-center opacity-0 group-hover:opacity-100"
+                [class.opacity-100]="isEditMode()"
+              >
+                {{ szakma.description }}
+              </p>
+            </div>
           </div>
-        </div>
         }
       </div>
     </div>
   </div>
-  <nz-footer>Ant Design ©{{ date.getFullYear() }} Implement By Angular</nz-footer>
+  <nz-footer>Huszka Adrián Gábor ©{{ date.getFullYear() }}</nz-footer>
 </nz-layout>
 
 <!-- Add/Edit Profession Modal -->
@@ -132,28 +138,28 @@
 
       <!-- Image Preview -->
       @if (professionForm.get('image')?.value) {
-      <div class="mt-4">
-        <div class="flex justify-between items-center mb-2">
-          <p class="text-sm text-gray-300">Preview:</p>
-          <button
-            type="button"
-            nz-button
-            nzType="text"
-            nzSize="small"
-            nzDanger
-            (click)="clearImage()"
-            class="flex items-center gap-1"
-          >
-            <span nz-icon nzType="delete" nzTheme="outline"></span>
-            Remove
-          </button>
+        <div class="mt-4">
+          <div class="flex justify-between items-center mb-2">
+            <p class="text-sm text-gray-300">Preview:</p>
+            <button
+              type="button"
+              nz-button
+              nzType="text"
+              nzSize="small"
+              nzDanger
+              (click)="clearImage()"
+              class="flex items-center gap-1"
+            >
+              <span nz-icon nzType="delete" nzTheme="outline"></span>
+              Remove
+            </button>
+          </div>
+          <img
+            [src]="getImageSrc(professionForm.get('image')?.value)"
+            alt="Preview"
+            class="w-full max-w-xs h-48 object-cover rounded-lg border border-gray-300"
+          />
         </div>
-        <img
-          [src]="getImageSrc(professionForm.get('image')?.value)"
-          alt="Preview"
-          class="w-full max-w-xs h-48 object-cover rounded-lg border border-gray-300"
-        />
-      </div>
       }
     </form>
   </ng-container>

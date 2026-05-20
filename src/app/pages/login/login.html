@@ -74,20 +74,27 @@
             [nzType]="'default'"
             type="button"
             (click)="onKeycloakLogin()"
+            disabled
           >
-            Log in with Keycloak
+            Log in with Keycloak (WIP)
           </button>
         </form>
       </nz-tab>
 
       <nz-tab nzTitle="Register">
-        <form nz-form class="login-form">
+        <form
+          nz-form
+          class="login-form"
+          [formGroup]="registerForm"
+          (ngSubmit)="submitRegisterForm()"
+        >
           <nz-form-item class="w-full">
             <nz-form-control>
               <nz-input-group nzPrefixIcon="user">
                 <input
                   type="text"
                   nz-input
+                  formControlName="username"
                   placeholder="Username"
                   style="border-radius: 5px; padding: 5px"
                 />
@@ -101,6 +108,7 @@
                 <input
                   type="email"
                   nz-input
+                  formControlName="email"
                   placeholder="Email"
                   style="border-radius: 5px; padding: 5px"
                 />
@@ -114,6 +122,7 @@
                 <input
                   type="password"
                   nz-input
+                  formControlName="password"
                   placeholder="Password"
                   style="border-radius: 5px; padding: 5px"
                 />
@@ -127,6 +136,7 @@
                 <input
                   type="password"
                   nz-input
+                  formControlName="confirmPassword"
                   placeholder="Confirm Password"
                   style="border-radius: 5px; padding: 5px"
                 />
@@ -134,7 +144,15 @@
             </nz-form-control>
           </nz-form-item>
 
-          <button nz-button class="w-full login-button" [nzType]="'primary'">Create Account</button>
+          <button
+            nz-button
+            class="w-full login-button"
+            [nzType]="'primary'"
+            [nzLoading]="authService.isLoading()"
+            [disabled]="authService.isLoading()"
+          >
+            Create Account
+          </button>
         </form>
       </nz-tab>
     </nz-tabset>

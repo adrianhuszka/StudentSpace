@@ -37,6 +37,13 @@ export class Login {
     remember: this.fb.control(true),
   });
 
+  registerForm = this.fb.group({
+    username: this.fb.control('', [Validators.required]),
+    email: this.fb.control('', [Validators.required, Validators.email]),
+    password: this.fb.control('', [Validators.required]),
+    confirmPassword: this.fb.control('', [Validators.required]),
+  });
+
   getPasswordErrorMessage(): string {
     const passwordControl = this.validateForm.controls.password;
     if (passwordControl.hasError('required')) {
@@ -60,13 +67,10 @@ export class Login {
     if (this.validateForm.valid) {
       const { username, password } = this.validateForm.value;
 
-      
       this.authService.login(username!, password!).then((success) => {
         if (success) {
-          
           this.router.navigate(['/']);
         }
-        
       });
     } else {
       Object.values(this.validateForm.controls).forEach((control) => {
@@ -80,5 +84,30 @@ export class Login {
 
   onKeycloakLogin(): void {
     this.authService.loginWithKeycloak();
+  }
+
+  submitRegisterForm(): void {
+    if (this.registerForm.invalid) {
+      Object.values(this.registerForm.controls).forEach((control) => {
+        if (control.invalid) {
+          control.markAsDirty();
+          control.updateValueAndValidity({ onlySelf: true });
+        }
+      });
+      return;
+    }
+
+    const { username, email, password, confirmPassword } = this.registerForm.getRawValue();
+
+    if (password !== confirmPassword) {
+      this.authService.errorMessage.set('A két jelszó nem egyezik meg.');
+      return;
+    }
+
+    this.authService.register(username, email, password).then((success) => {
+      if (success) {
+        this.router.navigate(['/']);
+      }
+    });
   }
 }

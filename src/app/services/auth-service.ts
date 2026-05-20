@@ -40,6 +40,12 @@ interface AuthMessageResponse {
   message: string;
 }
 
+interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -261,33 +267,8 @@ export class AuthService {
       );
 
       const tokenParts = response.accessToken.split('.');
-      const payload = JSON.parse(atob(tokenParts[1]));
-      console.log(payload);
-      const user: User = {
-        username: payload.sub || payload.userId,
-        fullName: payload.fullName || payload.username,
-        roles: payload.roles || ['user'],
-        id: payload.userId,
-      };
 
-      this._authState.set({
-        isLoggedIn: true,
-        user: user,
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
-        tokenType: response.tokenType,
-        expiresIn: response.expiresIn,
-      });
-
-      this.saveAuthToCookies(
-        user,
-        response.accessToken,
-        response.refreshToken,
-        response.tokenType,
-        response.expiresIn,
-      );
-
-      this.scheduleTokenRefresh();
+      this.applyAuthenticationResponse(response);
 
       return true;
     } catch (err: any) {
@@ -298,6 +279,67 @@ export class AuthService {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  async register(username: string, email: string, password: string): Promise<boolean> {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    const payload: RegisterRequest = {
+      username,
+      email,
+      password,
+    };
+
+    try {
+      const response = await firstValueFrom(
+        this.http.post<LoginResponse>(`${this.apiUrl}/auth/register`, payload, {
+          withCredentials: true,
+        }),
+      );
+
+      this.applyAuthenticationResponse(response);
+
+      return true;
+    } catch (err: any) {
+      const errorMsg = err?.error?.message || 'A regisztráció nem sikerült';
+      console.error(err);
+      this.errorMessage.set(errorMsg);
+      return false;
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  private applyAuthenticationResponse(response: LoginResponse): void {
+    const tokenParts = response.accessToken.split('.');
+    const payload = JSON.parse(atob(tokenParts[1]));
+    console.log(payload);
+    const user: User = {
+      username: payload.sub || payload.userId,
+      fullName: payload.fullName || payload.username,
+      roles: payload.roles || ['user'],
+      id: payload.userId,
+    };
+
+    this._authState.set({
+      isLoggedIn: true,
+      user: user,
+      accessToken: response.accessToken,
+      refreshToken: response.refreshToken,
+      tokenType: response.tokenType,
+      expiresIn: response.expiresIn,
+    });
+
+    this.saveAuthToCookies(
+      user,
+      response.accessToken,
+      response.refreshToken,
+      response.tokenType,
+      response.expiresIn,
+    );
+
+    this.scheduleTokenRefresh();
   }
 
   async forgotPassword(email: string): Promise<{ success: boolean; message: string }> {
@@ -321,6 +363,11 @@ export class AuthService {
   }
 
   loginWithKeycloak(): void {
+    if (!environment.keycloakEnabled) {
+      this.errorMessage.set('A Keycloak bejelentkezés jelenleg még fejlesztés alatt áll.');
+      return;
+    }
+
     const apiOrigin = new URL(this.apiUrl).origin;
     const backendOAuthLoginUrl = `${apiOrigin}/oauth2/authorization/keycloak`;
 

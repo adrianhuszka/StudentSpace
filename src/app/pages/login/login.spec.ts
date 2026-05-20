@@ -17,6 +17,7 @@ describe('Login', () => {
           provide: AuthService,
           useValue: {
             login: () => Promise.resolve(true),
+            register: () => Promise.resolve(true),
             loginWithKeycloak: () => undefined,
             errorMessage: () => null,
             isLoading: () => false,

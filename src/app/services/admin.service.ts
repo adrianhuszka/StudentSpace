@@ -35,6 +35,6 @@ export class AdminService extends CrudService<User> {
   }
 
   toggleUserStatus(userId: string) {
-    return this.http.put(`${this.apiUrl}/users/${userId}/toggle-status`, {});
+    return this.http.put<boolean>(`${this.apiUrl}/users/${userId}/toggle-status`, {});
   }
 }

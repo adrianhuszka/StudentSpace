@@ -94,6 +94,55 @@ describe('AuthService', () => {
     expect(service.errorMessage()).toBe('Bad credentials');
   });
 
+  it('should register successfully and persist auth state', async () => {
+    const registerPromise = service.register('new-user', 'new-user@example.com', 'secret');
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      username: 'new-user',
+      email: 'new-user@example.com',
+      password: 'secret',
+    });
+    expect(req.request.withCredentials).toBeTrue();
+
+    const token = createToken({
+      sub: 'new-user',
+      userId: 'u-2',
+      fullName: 'New User',
+      roles: ['STUDENT'],
+    });
+
+    req.flush({
+      accessToken: token,
+      refreshToken: 'refresh-token',
+      tokenType: 'Bearer',
+      expiresIn: 3600000,
+    });
+
+    const success = await registerPromise;
+
+    expect(success).toBeTrue();
+    expect(service.isAuthenticated()).toBeTrue();
+    expect(service.getToken()).toBe(token);
+    expect(service.getUser()?.username).toBe('new-user');
+    expect(cookieServiceSpy.setCookie).toHaveBeenCalled();
+    expect(service.errorMessage()).toBeNull();
+  });
+
+  it('should set error message when register fails', async () => {
+    const registerPromise = service.register('new-user', 'new-user@example.com', 'secret');
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/register`);
+    req.flush({ message: 'Username already exists' }, { status: 400, statusText: 'Bad Request' });
+
+    const success = await registerPromise;
+
+    expect(success).toBeFalse();
+    expect(service.isAuthenticated()).toBeFalse();
+    expect(service.errorMessage()).toBe('Username already exists');
+  });
+
   it('should return success result for forgotPassword', async () => {
     const requestPromise = service.forgotPassword('john@example.com');
 

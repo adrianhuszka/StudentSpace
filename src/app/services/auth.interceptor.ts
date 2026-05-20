@@ -19,8 +19,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   let authReq = req;
 
   const isExternalApi = req.url.includes('generativelanguage.googleapis.com');
+  const isAuthEndpoint =
+    req.url.includes('/auth/login') ||
+    req.url.includes('/auth/register') ||
+    req.url.includes('/auth/refresh') ||
+    req.url.includes('/auth/forgot-password');
 
-  if (token && !req.headers.has('Authorization') && !isExternalApi) {
+  if (token && !req.headers.has('Authorization') && !isExternalApi && !isAuthEndpoint) {
     authReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
