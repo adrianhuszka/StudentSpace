@@ -26,6 +26,16 @@ const angularApp = new AngularNodeAppEngine({
   allowedHosts,
 });
 
+app.get('/runtime-config.js', (_req, res) => {
+  const apiUrl = process.env['API_URL'] || 'http://localhost:8080/api/v1';
+  const runtimeConfig = { apiUrl };
+
+  res
+    .type('application/javascript')
+    .set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    .send(`window.__STUDENTSPACE_CONFIG__ = ${JSON.stringify(runtimeConfig)};`);
+});
+
 app.use(
   express.static(browserDistFolder, {
     maxAge: '1y',

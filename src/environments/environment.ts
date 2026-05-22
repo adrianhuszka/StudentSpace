@@ -1,8 +1,10 @@
 // Environment configuration for API endpoints
 
+import { runtimeApiUrl } from './runtime-config';
+
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api/v1',
+  apiUrl: runtimeApiUrl ?? 'http://localhost:8080/api/v1',
   geminiApiKey: 'AIzaSyAAR0wQi4665kLyW-kW7K6Uj99jVoaEmT4',
   keycloakEnabled: false,
   keycloakBaseUrl: 'https://keycloak.pollak.info',
