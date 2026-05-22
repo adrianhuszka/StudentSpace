@@ -122,6 +122,9 @@
 }
 
 .markdown-content-display {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   background: white;
   padding: 32px;
   color: #333;
