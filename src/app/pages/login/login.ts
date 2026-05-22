@@ -47,10 +47,10 @@ export class Login {
   getPasswordErrorMessage(): string {
     const passwordControl = this.validateForm.controls.password;
     if (passwordControl.hasError('required')) {
-      return 'Password is required';
+      return 'A jelszó megadása kötelező';
     }
     if (passwordControl.hasError('pattern')) {
-      return 'Password must be at least 8 characters with uppercase, lowercase, and number';
+      return 'A jelszónak legalább 8 karakteresnek kell lennie, kis- és nagybetűvel, valamint számmal';
     }
     return 'aa';
   }
@@ -58,7 +58,7 @@ export class Login {
   getUsernameErrorMessage(): string {
     const usernameControl = this.validateForm.controls.username;
     if (usernameControl.hasError('required')) {
-      return 'Username is required';
+      return 'A felhasználónév megadása kötelező';
     }
     return '';
   }

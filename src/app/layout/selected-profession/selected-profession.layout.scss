@@ -1712,3 +1712,52 @@ nz-footer {
     }
   }
 }
+
+@media (max-width: 768px) {
+  nz-content {
+    padding: 6px;
+  }
+
+  nz-header {
+    padding: 8px;
+    min-height: 64px;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    .trigger {
+      font-size: 18px;
+      padding: 0 8px;
+    }
+
+    .edit-mode-button,
+    .add-subject-button,
+    .link-subject-button {
+      margin: 0 !important;
+      height: 34px;
+      padding: 0 10px;
+      font-size: 12px;
+    }
+
+    .top-nav {
+      line-height: normal;
+      margin-left: auto;
+    }
+
+    .profession-title {
+      order: 3;
+      width: 100%;
+      margin: 0;
+      text-align: left !important;
+      font-size: 14px !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.95;
+    }
+  }
+
+  .inner-content {
+    border-radius: 10px;
+  }
+}

@@ -125,7 +125,7 @@ export class QuizComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error loading quiz', err);
-        this.error.set('Failed to load quiz');
+        this.error.set('Nem sikerült betölteni a kvízt');
         this.isLoading.set(false);
       },
     });
@@ -145,7 +145,7 @@ export class QuizComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error starting quiz attempt', err);
-        this.error.set('Failed to start quiz attempt');
+        this.error.set('Nem sikerült elindítani a kvíz kitöltését');
         this.isLoading.set(false);
       },
     });
@@ -208,14 +208,14 @@ export class QuizComponent implements OnInit, OnDestroy {
 
     this.quizService.submitQuiz(quizId, request).subscribe({
       next: (result) => {
-        this.message.success('Quiz submitted successfully!');
+        this.message.success('A kvíz sikeresen beküldve!');
         this.router.navigate(['/quiz', quizId, 'results'], {
           queryParams: { attemptId: result.id },
         });
       },
       error: (err) => {
         console.error('Error submitting quiz', err);
-        this.message.error('Failed to submit quiz');
+        this.message.error('Nem sikerült beküldeni a kvízt');
         this.isLoading.set(false);
       },
     });

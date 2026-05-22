@@ -4,11 +4,11 @@
       <div class="flex items-center gap-4">
         <button nz-button nzType="text" (click)="goToHome()" class="back-btn">
           <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
-          Back to Home
+          Vissza a főoldalra
         </button>
         <h1 class="page-title">
           <span nz-icon nzType="dashboard" nzTheme="outline"></span>
-          Admin Dashboard
+          Admin irányítópult
         </h1>
       </div>
       <app-avatar></app-avatar>
@@ -22,7 +22,7 @@
         <nz-card class="stat-card">
           <nz-statistic
             [nzValue]="professionStats().totalProfessions"
-            nzTitle="Total Professions"
+            nzTitle="Összes szakma"
             [nzPrefix]="professionIcon"
           ></nz-statistic>
           <ng-template #professionIcon>
@@ -33,7 +33,7 @@
         <nz-card class="stat-card">
           <nz-statistic
             [nzValue]="professionStats().totalSubjects"
-            nzTitle="Total Subjects"
+            nzTitle="Összes tantárgy"
             [nzPrefix]="subjectIcon"
           ></nz-statistic>
           <ng-template #subjectIcon>
@@ -44,7 +44,7 @@
         <nz-card class="stat-card">
           <nz-statistic
             [nzValue]="professionStats().totalModules"
-            nzTitle="Total Modules"
+            nzTitle="Összes modul"
             [nzPrefix]="moduleIcon"
           ></nz-statistic>
           <ng-template #moduleIcon>
@@ -55,7 +55,7 @@
         <nz-card class="stat-card">
           <nz-statistic
             [nzValue]="quizzes().length"
-            nzTitle="Total Quizzes"
+            nzTitle="Összes kvíz"
             [nzPrefix]="quizIcon"
           ></nz-statistic>
           <ng-template #quizIcon>
@@ -67,7 +67,7 @@
           <nz-card class="stat-card">
             <nz-statistic
               [nzValue]="userStats().totalUsers"
-              nzTitle="Total Users"
+              nzTitle="Összes felhasználó"
               [nzPrefix]="userIcon"
             ></nz-statistic>
             <ng-template #userIcon>
@@ -81,17 +81,17 @@
       <nz-card class="main-card">
         <nz-tabset [(nzSelectedIndex)]="selectedTab" nzType="card">
           <!-- Professions Tab -->
-          <nz-tab nzTitle="Professions">
+          <nz-tab nzTitle="Szakmák">
             <ng-template nz-tab>
               <div class="tab-content">
                 <div class="table-header">
                   <h2>
                     <span nz-icon nzType="book" nzTheme="outline"></span>
-                    Professions Management
+                    Szakmák kezelése
                   </h2>
                   <button nz-button nzType="primary" (click)="goToHome()">
                     <span nz-icon nzType="edit" nzTheme="outline"></span>
-                    Manage Professions
+                    Szakmák kezelése
                   </button>
                 </div>
 
@@ -104,10 +104,10 @@
                 >
                   <thead>
                     <tr>
-                      <th>Image</th>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th>Actions</th>
+                      <th>Kép</th>
+                      <th>Név</th>
+                      <th>Leírás</th>
+                      <th>Műveletek</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -142,7 +142,7 @@
                               (click)="viewProfession(profession.id)"
                             >
                               <span nz-icon nzType="eye" nzTheme="outline"></span>
-                              View
+                              Megtekintés
                             </button>
                           </nz-space>
                         </td>
@@ -155,13 +155,13 @@
           </nz-tab>
 
           <!-- Subjects Tab -->
-          <nz-tab nzTitle="Subjects">
+          <nz-tab nzTitle="Tantárgyak">
             <ng-template nz-tab>
               <div class="tab-content">
                 <div class="table-header">
                   <h2>
                     <span nz-icon nzType="read" nzTheme="outline"></span>
-                    Subjects Management
+                    Tantárgyak kezelése
                   </h2>
                 </div>
 
@@ -174,11 +174,11 @@
                 >
                   <thead>
                     <tr>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th>Professions</th>
-                      <th>Modules</th>
-                      <th>Forum</th>
+                      <th>Név</th>
+                      <th>Leírás</th>
+                      <th>Szakmák</th>
+                      <th>Modulok</th>
+                      <th>Fórum</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -207,12 +207,12 @@
                           @if (subject.forumId) {
                             <nz-tag nzColor="success">
                               <span nz-icon nzType="check-circle" nzTheme="outline"></span>
-                              Yes
+                              Igen
                             </nz-tag>
                           } @else {
                             <nz-tag nzColor="default">
                               <span nz-icon nzType="close-circle" nzTheme="outline"></span>
-                              No
+                              Nem
                             </nz-tag>
                           }
                         </td>
@@ -225,17 +225,17 @@
           </nz-tab>
 
           <!-- Quizzes Tab -->
-          <nz-tab nzTitle="Quizzes">
+          <nz-tab nzTitle="Kvízek">
             <ng-template nz-tab>
               <div class="tab-content">
                 <div class="table-header">
                   <h2>
                     <span nz-icon nzType="question-circle" nzTheme="outline"></span>
-                    Quizzes Management
+                    Kvízek kezelése
                   </h2>
                   <button nz-button nzType="primary" (click)="openQuizModal()">
                     <span nz-icon nzType="plus" nzTheme="outline"></span>
-                    Create Quiz
+                    Kvíz létrehozása
                   </button>
                 </div>
 
@@ -248,12 +248,12 @@
                 >
                   <thead>
                     <tr>
-                      <th>Title</th>
-                      <th>Subject (ID)</th>
-                      <th>Time Limit</th>
-                      <th>Passing Score</th>
-                      <th>Active</th>
-                      <th>Actions</th>
+                      <th>Cím</th>
+                      <th>Tantárgy (ID)</th>
+                      <th>Időkorlát</th>
+                      <th>Átmenési pontszám</th>
+                      <th>Aktív</th>
+                      <th>Műveletek</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -270,16 +270,16 @@
                           {{ quiz.subjectId || 'N/A' }}
                         </td>
                         <td>
-                          {{ quiz.timeLimit ? quiz.timeLimit + ' min' : 'No limit' }}
+                          {{ quiz.timeLimit ? quiz.timeLimit + ' perc' : 'Nincs limit' }}
                         </td>
                         <td>
                           <nz-tag [nzColor]="'blue'">{{ quiz.passingScore }}%</nz-tag>
                         </td>
                         <td>
                           @if (quiz.isActive) {
-                            <nz-badge nzStatus="success" nzText="Active"></nz-badge>
+                            <nz-badge nzStatus="success" nzText="Aktív"></nz-badge>
                           } @else {
-                            <nz-badge nzStatus="error" nzText="Inactive"></nz-badge>
+                            <nz-badge nzStatus="error" nzText="Inaktív"></nz-badge>
                           }
                         </td>
                         <td>
@@ -292,7 +292,7 @@
                               (click)="openQuizModal(quiz)"
                             >
                               <span nz-icon nzType="edit" nzTheme="outline"></span>
-                              Edit
+                              Szerkesztés
                             </button>
                             <button
                               *nzSpaceItem
@@ -300,11 +300,11 @@
                               nzDanger
                               nzSize="small"
                               nz-popconfirm
-                              nzPopconfirmTitle="Are you sure you want to delete this quiz?"
+                              nzPopconfirmTitle="Biztosan törölni szeretnéd ezt a kvízt?"
                               (nzOnConfirm)="deleteQuiz(quiz.id)"
                             >
                               <span nz-icon nzType="delete" nzTheme="outline"></span>
-                              Delete
+                              Törlés
                             </button>
                           </nz-space>
                         </td>
@@ -318,18 +318,18 @@
 
           <!-- Users Tab (Only for SUPERADMIN) -->
           @if (isSuperAdmin()) {
-            <nz-tab nzTitle="Users">
+            <nz-tab nzTitle="Felhasználók">
               <ng-template nz-tab>
                 <div class="tab-content">
                   <div class="table-header">
                     <h2>
                       <span nz-icon nzType="team" nzTheme="outline"></span>
-                      Users Management
+                      Felhasználók kezelése
                     </h2>
                     <nz-input-group [nzPrefix]="searchIcon" class="search-input">
                       <input
                         nz-input
-                        placeholder="Search users..."
+                        placeholder="Felhasználók keresése..."
                         [(ngModel)]="userSearchTerm"
                         (ngModelChange)="userSearchTerm.set($event)"
                       />
@@ -344,28 +344,28 @@
                       <span nz-icon nzType="team" nzTheme="outline"></span>
                       <div>
                         <div class="mini-stat-value">{{ userStats().totalUsers }}</div>
-                        <div class="mini-stat-label">Total Users</div>
+                        <div class="mini-stat-label">Összes felhasználó</div>
                       </div>
                     </div>
                     <div class="mini-stat">
                       <span nz-icon nzType="check-circle" nzTheme="outline" class="success"></span>
                       <div>
                         <div class="mini-stat-value">{{ userStats().activeUsers }}</div>
-                        <div class="mini-stat-label">Active</div>
+                        <div class="mini-stat-label">Aktív</div>
                       </div>
                     </div>
                     <div class="mini-stat">
                       <span nz-icon nzType="crown" nzTheme="outline" class="warning"></span>
                       <div>
                         <div class="mini-stat-value">{{ userStats().adminUsers }}</div>
-                        <div class="mini-stat-label">Admins</div>
+                        <div class="mini-stat-label">Adminok</div>
                       </div>
                     </div>
                     <div class="mini-stat">
                       <span nz-icon nzType="solution" nzTheme="outline" class="info"></span>
                       <div>
                         <div class="mini-stat-value">{{ userStats().teacherUsers }}</div>
-                        <div class="mini-stat-label">Teachers</div>
+                        <div class="mini-stat-label">Oktatók</div>
                       </div>
                     </div>
                   </div>
@@ -379,12 +379,12 @@
                   >
                     <thead>
                       <tr>
-                        <th>Username</th>
-                        <th>Full Name</th>
-                        <th>Email</th>
-                        <th>Roles</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>Felhasználónév</th>
+                        <th>Teljes név</th>
+                        <th>E-mail</th>
+                        <th>Szerepkörök</th>
+                        <th>Állapot</th>
+                        <th>Műveletek</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -394,7 +394,7 @@
                             <strong>{{ user.username }}</strong>
                           </td>
                           <td>{{ user.fullName }}</td>
-                          <td>{{ user.email || 'N/A' }}</td>
+                          <td>{{ user.email || 'Nincs adat' }}</td>
                           <td>
                             <nz-space [nzSize]="4">
                               @for (role of user.roles; track role) {
@@ -406,9 +406,9 @@
                           </td>
                           <td>
                             @if (user.enabled) {
-                              <nz-badge nzStatus="success" nzText="Active"></nz-badge>
+                              <nz-badge nzStatus="success" nzText="Aktív"></nz-badge>
                             } @else {
-                              <nz-badge nzStatus="error" nzText="Disabled"></nz-badge>
+                              <nz-badge nzStatus="error" nzText="Letiltva"></nz-badge>
                             }
                           </td>
                           <td>
@@ -421,7 +421,7 @@
                                 (click)="openEditUserModal(user)"
                               >
                                 <span nz-icon nzType="edit" nzTheme="outline"></span>
-                                Edit Roles
+                                Szerepkörök szerkesztése
                               </button>
                               <button
                                 *nzSpaceItem
@@ -430,9 +430,9 @@
                                 nzSize="small"
                                 nz-popconfirm
                                 [nzPopconfirmTitle]="
-                                  'Are you sure you want to ' +
-                                  (user.enabled ? 'disable' : 'enable') +
-                                  ' this user?'
+                                  'Biztosan ' +
+                                  (user.enabled ? 'letiltod' : 'engedélyezed') +
+                                  ' ezt a felhasználót?'
                                 "
                                 (nzOnConfirm)="toggleUserStatus(user)"
                               >
@@ -441,7 +441,7 @@
                                   [nzType]="user.enabled ? 'stop' : 'play-circle'"
                                   nzTheme="outline"
                                 ></span>
-                                {{ user.enabled ? 'Disable' : 'Enable' }}
+                                {{ user.enabled ? 'Letiltás' : 'Engedélyezés' }}
                               </button>
                               <button
                                 *nzSpaceItem
@@ -449,11 +449,11 @@
                                 nzDanger
                                 nzSize="small"
                                 nz-popconfirm
-                                nzPopconfirmTitle="Are you sure you want to delete this user?"
+                                nzPopconfirmTitle="Biztosan törölni szeretnéd ezt a felhasználót?"
                                 (nzOnConfirm)="deleteUser(user.id)"
                               >
                                 <span nz-icon nzType="delete" nzTheme="outline"></span>
-                                Delete
+                                Törlés
                               </button>
                             </nz-space>
                           </td>
@@ -474,10 +474,10 @@
 <!-- Edit User Roles Modal -->
 <nz-modal
   [(nzVisible)]="isUserModalVisible"
-  nzTitle="Edit User Roles"
+  nzTitle="Felhasználói szerepkörök szerkesztése"
   (nzOnCancel)="closeUserModal()"
   (nzOnOk)="saveUserRoles()"
-  nzOkText="Save"
+  nzOkText="Mentés"
   [nzWidth]="500"
 >
   <ng-container *nzModalContent>
@@ -485,11 +485,11 @@
       <div class="user-modal-content">
         <div class="user-info">
           <p>
-            <strong>Username:</strong>
+            <strong>Felhasználónév:</strong>
             {{ editingUser()?.username }}
           </p>
           <p>
-            <strong>Full Name:</strong>
+            <strong>Teljes név:</strong>
             {{ editingUser()?.fullName }}
           </p>
         </div>
@@ -497,11 +497,11 @@
         <nz-divider></nz-divider>
 
         <div class="role-selection">
-          <label class="role-label">Select Roles:</label>
+          <label class="role-label">Szerepkörök kiválasztása:</label>
           <nz-select
             [(ngModel)]="selectedRoles"
             nzMode="multiple"
-            nzPlaceHolder="Select roles"
+            nzPlaceHolder="Válassz szerepköröket"
             class="role-select"
           >
             @for (role of availableRoles; track role) {
@@ -513,13 +513,16 @@
         <div class="role-info">
           <small>
             <span nz-icon nzType="info-circle" nzTheme="outline"></span>
-            <strong>Role Descriptions:</strong>
+            <strong>Szerepkörök leírása:</strong>
           </small>
           <ul>
-            <li><strong>USER:</strong> Basic access to view professions and subjects</li>
-            <li><strong>TEACHER:</strong> Can edit subjects and modules</li>
-            <li><strong>ADMIN:</strong> Can manage professions, subjects, and modules</li>
-            <li><strong>SUPERADMIN:</strong> Full system access including user management</li>
+            <li><strong>USER:</strong> Alap hozzáférés a szakmák és tantárgyak megtekintéséhez</li>
+            <li><strong>TEACHER:</strong> Tantárgyak és modulok szerkesztése</li>
+            <li><strong>ADMIN:</strong> Szakmák, tantárgyak és modulok kezelése</li>
+            <li>
+              <strong>SUPERADMIN:</strong> Teljes rendszerhozzáférés, beleértve a
+              felhasználókezelést
+            </li>
           </ul>
         </div>
       </div>
@@ -530,29 +533,29 @@
 <!-- Edit Quiz Modal -->
 <nz-modal
   [(nzVisible)]="isQuizModalVisible"
-  [nzTitle]="editingQuiz() ? 'Edit Quiz' : 'Create Quiz'"
+  [nzTitle]="editingQuiz() ? 'Kvíz szerkesztése' : 'Kvíz létrehozása'"
   (nzOnCancel)="closeQuizModal()"
   (nzOnOk)="saveQuiz()"
-  nzOkText="Save"
+  nzOkText="Mentés"
   [nzWidth]="800"
 >
   <ng-container *nzModalContent>
     <form nz-form nzLayout="vertical">
       <nz-form-item>
-        <nz-form-label [nzSpan]="24" nzRequired>Title</nz-form-label>
+        <nz-form-label [nzSpan]="24" nzRequired>Cím</nz-form-label>
         <nz-form-control [nzSpan]="24">
-          <input nz-input [(ngModel)]="quizForm.title" name="title" placeholder="Quiz Title" />
+          <input nz-input [(ngModel)]="quizForm.title" name="title" placeholder="Kvíz címe" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="24">Description</nz-form-label>
+        <nz-form-label [nzSpan]="24">Leírás</nz-form-label>
         <nz-form-control [nzSpan]="24">
           <textarea
             nz-input
             [(ngModel)]="quizForm.description"
             name="description"
-            placeholder="Quiz Description"
+            placeholder="Kvíz leírása"
             rows="3"
           ></textarea>
         </nz-form-control>
@@ -560,12 +563,12 @@
 
       <div class="grid grid-cols-2 gap-4">
         <nz-form-item>
-          <nz-form-label [nzSpan]="24" nzRequired>Subject</nz-form-label>
+          <nz-form-label [nzSpan]="24" nzRequired>Tantárgy</nz-form-label>
           <nz-form-control [nzSpan]="24">
             <nz-select
               [(ngModel)]="quizForm.subjectId"
               name="subjectId"
-              placeholder="Select Subject"
+              placeholder="Válassz tantárgyat"
             >
               @for (subject of subjects(); track subject.id) {
                 <nz-option [nzValue]="subject.id" [nzLabel]="subject.name"></nz-option>
@@ -575,14 +578,14 @@
         </nz-form-item>
 
         <nz-form-item>
-          <nz-form-label [nzSpan]="24">Time Limit (minutes)</nz-form-label>
+          <nz-form-label [nzSpan]="24">Időkorlát (perc)</nz-form-label>
           <nz-form-control [nzSpan]="24">
             <input
               nz-input
               type="number"
               [(ngModel)]="quizForm.timeLimit"
               name="timeLimit"
-              placeholder="No limit"
+              placeholder="Nincs limit"
             />
           </nz-form-control>
         </nz-form-item>
@@ -590,7 +593,7 @@
 
       <div class="grid grid-cols-2 gap-4">
         <nz-form-item>
-          <nz-form-label [nzSpan]="24">Passing Score (%)</nz-form-label>
+          <nz-form-label [nzSpan]="24">Átmenési pontszám (%)</nz-form-label>
           <nz-form-control [nzSpan]="24">
             <input
               nz-input
@@ -604,18 +607,18 @@
         </nz-form-item>
 
         <nz-form-item>
-          <nz-form-label [nzSpan]="24">Status</nz-form-label>
+          <nz-form-label [nzSpan]="24">Állapot</nz-form-label>
           <nz-form-control [nzSpan]="24">
-            <label nz-checkbox [(ngModel)]="quizForm.isActive" name="isActive">Active</label>
+            <label nz-checkbox [(ngModel)]="quizForm.isActive" name="isActive">Aktív</label>
           </nz-form-control>
         </nz-form-item>
       </div>
 
-      <nz-divider nzText="Questions"></nz-divider>
+      <nz-divider nzText="Kérdések"></nz-divider>
 
       <div class="questions-list">
         @for (question of quizForm.questions; track $index) {
-          <nz-card [nzTitle]="'Question ' + ($index + 1)" [nzExtra]="extraTemplate" class="mb-4">
+          <nz-card [nzTitle]="'Kérdés ' + ($index + 1)" [nzExtra]="extraTemplate" class="mb-4">
             <ng-template #extraTemplate>
               <button nz-button nzType="text" nzDanger (click)="removeQuestion($index)">
                 <span nz-icon nzType="delete"></span>
@@ -623,31 +626,31 @@
             </ng-template>
 
             <nz-form-item>
-              <nz-form-label [nzSpan]="24">Question Text</nz-form-label>
+              <nz-form-label [nzSpan]="24">Kérdés szövege</nz-form-label>
               <nz-form-control [nzSpan]="24">
                 <input
                   nz-input
                   [(ngModel)]="question.question"
                   [name]="'q_text_' + $index"
-                  placeholder="Question"
+                  placeholder="Kérdés"
                 />
               </nz-form-control>
             </nz-form-item>
 
             <nz-form-item>
-              <nz-form-label [nzSpan]="24">Type</nz-form-label>
+              <nz-form-label [nzSpan]="24">Típus</nz-form-label>
               <nz-form-control [nzSpan]="24">
                 <nz-select [(ngModel)]="question.type" [name]="'q_type_' + $index">
-                  <nz-option nzValue="MULTIPLE_CHOICE" nzLabel="Multiple Choice"></nz-option>
-                  <nz-option nzValue="TRUE_FALSE" nzLabel="True/False"></nz-option>
-                  <nz-option nzValue="SHORT_ANSWER" nzLabel="Short Answer"></nz-option>
+                  <nz-option nzValue="MULTIPLE_CHOICE" nzLabel="Feleletválasztós"></nz-option>
+                  <nz-option nzValue="TRUE_FALSE" nzLabel="Igaz/Hamis"></nz-option>
+                  <nz-option nzValue="SHORT_ANSWER" nzLabel="Rövid válasz"></nz-option>
                 </nz-select>
               </nz-form-control>
             </nz-form-item>
 
             @if (question.type === 'MULTIPLE_CHOICE') {
               <nz-form-item>
-                <nz-form-label [nzSpan]="24">Options (JSON Array e.g. ["A", "B"])</nz-form-label>
+                <nz-form-label [nzSpan]="24">Opciók (JSON tömb pl. ["A", "B"])</nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input nz-input [(ngModel)]="question.options" [name]="'q_options_' + $index" />
                 </nz-form-control>
@@ -656,19 +659,19 @@
 
             <div class="grid grid-cols-2 gap-4">
               <nz-form-item>
-                <nz-form-label [nzSpan]="24">Correct Answer</nz-form-label>
+                <nz-form-label [nzSpan]="24">Helyes válasz</nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input
                     nz-input
                     [(ngModel)]="question.correctAnswer"
                     [name]="'q_correct_' + $index"
-                    placeholder="Exact match"
+                    placeholder="Pontos egyezés"
                   />
                 </nz-form-control>
               </nz-form-item>
 
               <nz-form-item>
-                <nz-form-label [nzSpan]="24">Points</nz-form-label>
+                <nz-form-label [nzSpan]="24">Pont</nz-form-label>
                 <nz-form-control [nzSpan]="24">
                   <input
                     nz-input
@@ -684,7 +687,7 @@
         }
 
         <button nz-button nzType="dashed" class="w-full" (click)="addQuestion()">
-          <span nz-icon nzType="plus"></span> Add Question
+          <span nz-icon nzType="plus"></span> Kérdés hozzáadása
         </button>
       </div>
     </form>

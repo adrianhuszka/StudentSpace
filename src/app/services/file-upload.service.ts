@@ -28,12 +28,12 @@ export class FileUploadService {
     } = options;
 
     if (!allowedTypes.some((type) => file.type.includes(type.replace('image/', '')))) {
-      this.message.error('Please select a valid image file');
+      this.message.error('Kérlek, érvényes képfájlt válassz');
       return null;
     }
 
     if (file.size > maxSizeMB * 1024 * 1024) {
-      this.message.error(`Image size should not exceed ${maxSizeMB}MB`);
+      this.message.error(`A kép mérete nem haladhatja meg a(z) ${maxSizeMB}MB-ot`);
       return null;
     }
 
@@ -44,7 +44,7 @@ export class FileUploadService {
         return await this.fileToBase64(file);
       }
     } catch (error) {
-      this.message.error('Failed to process image file');
+      this.message.error('Nem sikerült feldolgozni a képfájlt');
       return null;
     }
   }
@@ -59,17 +59,17 @@ export class FileUploadService {
     const { maxSizeMB = 10 } = options;
 
     if (!file.type.includes('pdf')) {
-      this.message.error('Please select a PDF file');
+      this.message.error('Kérlek, PDF fájlt válassz');
       return { valid: false, file: null };
     }
 
     const maxSize = maxSizeMB * 1024 * 1024;
     if (file.size > maxSize) {
-      this.message.error(`File size must be less than ${maxSizeMB}MB`);
+      this.message.error(`A fájl mérete legyen kisebb mint ${maxSizeMB}MB`);
       return { valid: false, file: null };
     }
 
-    this.message.success('File selected successfully');
+    this.message.success('A fájl sikeresen kiválasztva');
     return { valid: true, file };
   }
 

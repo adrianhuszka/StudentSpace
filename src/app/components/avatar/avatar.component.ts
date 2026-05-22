@@ -5,7 +5,7 @@ import { NzBadgeModule } from 'ng-zorro-antd/badge';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { AuthService } from '@services/auth-service';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-avatar',
@@ -19,7 +19,7 @@ export class AvatarComponent {
   isAdmin: boolean = false;
 
   constructor(private authService: AuthService) {
-    this.userName = this.authService.getUser()?.username ?? 'Guest';
+    this.userName = this.authService.getUser()?.username ?? 'Vendég';
     this.isAdmin =
       this.authService.getUser()?.roles.some((role) => role === 'ADMIN' || role === 'SUPERADMIN') ??
       false;

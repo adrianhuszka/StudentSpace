@@ -1,17 +1,37 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GeminiService {
-  private readonly apiKey = 'AIzaSyBJo0KQ8m12zWmSurnnGgRG38PxNus7TQ0';
-  private readonly apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.apiKey}`;
+  private readonly apiKey = environment.geminiApiKey;
 
   constructor(private http: HttpClient) {}
 
+  private getApiUrl(): string {
+    return `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${this.apiKey}`;
+  }
+
+  private mapGeminiError(err: any) {
+    const apiMessage = err?.error?.error?.message || err?.message || '';
+
+    if (/api key/i.test(apiMessage) || /API_KEY_INVALID/i.test(JSON.stringify(err?.error))) {
+      return throwError(
+        () => new Error('A Gemini API-kulcs érvénytelen vagy lejárt. Állíts be új kulcsot.'),
+      );
+    }
+
+    return throwError(() => err);
+  }
+
   generateContent(prompt: string, images: string[] = []): Observable<string> {
+    if (!this.apiKey?.trim()) {
+      return throwError(() => new Error('A Gemini API-kulcs nincs beállítva.'));
+    }
+
     const contents: any[] = [
       {
         parts: [{ text: prompt }],
@@ -20,8 +40,8 @@ export class GeminiService {
 
     if (images.length > 0) {
       const imageParts = images.map((base64Image) => ({
-        inline_data: {
-          mime_type: 'image/jpeg',
+        inlineData: {
+          mimeType: 'image/jpeg',
           data: base64Image,
         },
       }));
@@ -32,7 +52,7 @@ export class GeminiService {
       contents: contents,
     };
 
-    return this.http.post<any>(this.apiUrl, payload).pipe(
+    return this.http.post<any>(this.getApiUrl(), payload).pipe(
       map((response) => {
         if (
           response.candidates &&
@@ -43,8 +63,9 @@ export class GeminiService {
         ) {
           return response.candidates[0].content.parts[0].text;
         }
-        return 'No summary generated.';
+        return 'Nem készült összefoglaló.';
       }),
+      catchError((err) => this.mapGeminiError(err)),
     );
   }
 
@@ -52,6 +73,10 @@ export class GeminiService {
     question: string,
     context: string,
   ): Observable<{ answer: string; quote: string; page?: number }> {
+    if (!this.apiKey?.trim()) {
+      return throwError(() => new Error('A Gemini API-kulcs nincs beállítva.'));
+    }
+
     const prompt = `
       You are a helpful teaching assistant. Answer the student's question based ONLY on the provided context.
       
@@ -72,7 +97,7 @@ export class GeminiService {
     const contents = [{ parts: [{ text: prompt }] }];
     const payload = { contents };
 
-    return this.http.post<any>(this.apiUrl, payload).pipe(
+    return this.http.post<any>(this.getApiUrl(), payload).pipe(
       map((response) => {
         if (
           response.candidates &&
@@ -95,6 +120,7 @@ export class GeminiService {
         }
         return { answer: 'Nem találtam választ a dokumentumban.', quote: '' };
       }),
+      catchError((err) => this.mapGeminiError(err)),
     );
   }
 }

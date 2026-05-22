@@ -1,8 +1,10 @@
 @if (authService.authInitialized()) {
-<router-outlet></router-outlet>
-<app-chatbot></app-chatbot>
+  <router-outlet></router-outlet>
+  @if (shouldShowChatbot()) {
+    <app-chatbot></app-chatbot>
+  }
 } @else {
-<div class="loading-container">
-  <div class="loading-spinner"></div>
-</div>
+  <div class="loading-container">
+    <div class="loading-spinner"></div>
+  </div>
 }

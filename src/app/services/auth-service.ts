@@ -272,7 +272,7 @@ export class AuthService {
 
       return true;
     } catch (err: any) {
-      const errorMsg = err?.error?.message || 'Invalid credentials';
+      const errorMsg = err?.error?.message || 'Hibás bejelentkezési adatok';
       console.error(err);
       this.errorMessage.set(errorMsg);
       return false;

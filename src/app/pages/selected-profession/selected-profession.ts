@@ -268,7 +268,7 @@ export class SelectedProfession implements OnDestroy {
         },
         error: (error) => {
           console.error('Error loading data:', error);
-          this.loadError.set('Failed to load profession data. Please try again.');
+          this.loadError.set('Nem sikerült betölteni a szakma adatait. Próbáld újra.');
         },
       });
   }
@@ -625,7 +625,7 @@ export class SelectedProfession implements OnDestroy {
         },
         error: (error) => {
           console.error('Error loading PDF:', error);
-          this.message.error('Failed to load PDF file');
+          this.message.error('Nem sikerült betölteni a PDF fájlt');
           this.pdfBlobUrl.set(null);
         },
       });
@@ -702,7 +702,7 @@ export class SelectedProfession implements OnDestroy {
               },
               error: (err: any) => {
                 console.error('Gemini error:', err);
-                this.message.error('Nem sikerült létrehozni az összefoglalót.');
+                this.message.error(err?.message || 'Nem sikerült létrehozni az összefoglalót.');
                 this.isSummarizing.set(false);
               },
             });
@@ -731,7 +731,9 @@ export class SelectedProfession implements OnDestroy {
                     },
                     error: (err: any) => {
                       console.error('Gemini error:', err);
-                      this.message.error('Nem sikerült létrehozni az összefoglalót.');
+                      this.message.error(
+                        err?.message || 'Nem sikerült létrehozni az összefoglalót.',
+                      );
                       this.isSummarizing.set(false);
                     },
                   });

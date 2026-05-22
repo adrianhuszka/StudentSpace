@@ -36,11 +36,11 @@ export interface Module {
         <div class="module-actions" *ngIf="canEdit">
           <button nz-button nzType="primary" nzSize="small" (click)="onEdit.emit(module)">
             <span nz-icon nzType="edit"></span>
-            Edit
+            Szerkesztés
           </button>
           <button nz-button nzDanger nzSize="small" (click)="onDelete.emit(module)">
             <span nz-icon nzType="delete"></span>
-            Delete
+            Törlés
           </button>
         </div>
       </div>
@@ -56,18 +56,18 @@ export interface Module {
           <div class="pdf-toolbar">
             <button nz-button nzType="default" (click)="downloadPdf()">
               <span nz-icon nzType="download"></span>
-              Download PDF
+              PDF letöltése
             </button>
           </div>
           <iframe *ngIf="pdfBlobUrl()" [src]="pdfBlobUrl()" class="pdf-viewer"></iframe>
-          <div *ngIf="!pdfBlobUrl()" class="pdf-loading">Loading PDF...</div>
+          <div *ngIf="!pdfBlobUrl()" class="pdf-loading">PDF betöltése...</div>
         </div>
       </div>
     </div>
 
     <div class="no-module" *ngIf="!module">
       <span nz-icon nzType="file-text" class="empty-icon"></span>
-      <p>Select a module to view its content</p>
+      <p>Válassz egy modult a tartalom megtekintéséhez</p>
     </div>
   `,
   styles: [
@@ -196,7 +196,7 @@ export class ModuleViewerComponent implements OnChanges, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading PDF:', error);
-          this.message.error('Failed to load PDF file');
+          this.message.error('Nem sikerült betölteni a PDF fájlt');
           this.pdfBlobUrl.set(null);
         },
       });
@@ -233,7 +233,7 @@ export class ModuleViewerComponent implements OnChanges, OnDestroy {
         },
         error: (error) => {
           console.error('Error downloading PDF:', error);
-          this.message.error('Failed to download PDF file');
+          this.message.error('Nem sikerült letölteni a PDF fájlt');
         },
       });
   }

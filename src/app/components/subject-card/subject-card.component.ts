@@ -44,7 +44,7 @@ export interface SubjectCardEvents {
 
       <div class="modules-section">
         <div class="modules-header">
-          <h4>Modules ({{ subject.module.length }})</h4>
+          <h4>Modulok ({{ subject.module.length }})</h4>
           <button
             *ngIf="canEdit"
             nz-button
@@ -53,7 +53,7 @@ export interface SubjectCardEvents {
             (click)="onAddModule.emit(subject); $event.stopPropagation()"
           >
             <span nz-icon nzType="plus"></span>
-            Add Module
+            Modul hozzáadása
           </button>
         </div>
 
@@ -77,7 +77,7 @@ export interface SubjectCardEvents {
                 nz-button
                 nzType="text"
                 nzSize="small"
-                nz-tooltip="Edit"
+                nz-tooltip="Szerkesztés"
                 (click)="onEditModule.emit({ module, subject }); $event.stopPropagation()"
               >
                 <span nz-icon nzType="edit"></span>
@@ -87,7 +87,7 @@ export interface SubjectCardEvents {
                 nzType="text"
                 nzDanger
                 nzSize="small"
-                nz-tooltip="Delete"
+                nz-tooltip="Törlés"
                 (click)="onDeleteModule.emit({ module, subject }); $event.stopPropagation()"
               >
                 <span nz-icon nzType="delete"></span>
@@ -98,7 +98,7 @@ export interface SubjectCardEvents {
 
         <div class="no-modules" *ngIf="!subject.module || subject.module.length === 0">
           <span nz-icon nzType="inbox"></span>
-          <p>No modules yet</p>
+          <p>Még nincs modul</p>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ export interface SubjectCardEvents {
             nz-button
             nzType="text"
             nzSize="small"
-            nz-tooltip="Edit Subject"
+            nz-tooltip="Tantárgy szerkesztése"
             (click)="onEditSubject.emit(subject); $event.stopPropagation()"
           >
             <span nz-icon nzType="edit"></span>
@@ -117,7 +117,7 @@ export interface SubjectCardEvents {
             nz-button
             nzType="text"
             nzSize="small"
-            nz-tooltip="Unlink from Profession"
+            nz-tooltip="Leválasztás a szakmáról"
             (click)="onUnlinkSubject.emit(subject); $event.stopPropagation()"
           >
             <span nz-icon nzType="disconnect"></span>
@@ -127,7 +127,7 @@ export interface SubjectCardEvents {
             nzType="text"
             nzDanger
             nzSize="small"
-            nz-tooltip="Delete Subject"
+            nz-tooltip="Tantárgy törlése"
             (click)="onDeleteSubject.emit(subject); $event.stopPropagation()"
           >
             <span nz-icon nzType="delete"></span>

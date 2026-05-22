@@ -18,20 +18,20 @@
     <li>@{{ userName }}</li>
     <li nz-menu-divider></li>
     <li nz-menu-item routerLink="/profile">
-      <i nz-icon nzType="user" nzTheme="outline"></i> Profile
+      <i nz-icon nzType="user" nzTheme="outline"></i> Profil
     </li>
     <li nz-menu-item routerLink="/settings">
-      <i nz-icon nzType="setting" nzTheme="outline"></i> Settings
+      <i nz-icon nzType="setting" nzTheme="outline"></i> Beállítások
     </li>
     @if (isAdmin) {
-    <li nz-menu-divider></li>
-    <li nz-menu-item routerLink="/admin">
-      <i nz-icon nzType="dashboard" nzTheme="outline"></i> Admin Dashboard
-    </li>
+      <li nz-menu-divider></li>
+      <li nz-menu-item routerLink="/admin">
+        <i nz-icon nzType="dashboard" nzTheme="outline"></i> Admin irányítópult
+      </li>
     }
     <li nz-menu-divider></li>
     <li nz-menu-item class="!text-red-600" (click)="logout()">
-      <i nz-icon nzType="logout" nzTheme="outline"></i> Logout
+      <i nz-icon nzType="logout" nzTheme="outline"></i> Kijelentkezés
     </li>
   </ul>
 </nz-dropdown-menu>

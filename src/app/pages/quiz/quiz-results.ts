@@ -62,13 +62,13 @@ export class QuizResultsComponent implements OnInit {
   resultTitle = computed(() => {
     const attempt = this.attempt();
     if (!attempt) return '';
-    return attempt.passed ? 'Congratulations! You Passed!' : 'Quiz Failed';
+    return attempt.passed ? 'Gratulálunk! Sikeres lett!' : 'A kvíz nem sikerült';
   });
 
   resultSubtitle = computed(() => {
     const attempt = this.attempt();
     if (!attempt) return '';
-    return `You scored ${attempt.score}% (${attempt.pointsEarned}/${attempt.totalPoints} points)`;
+    return `${attempt.score}% eredmény (${attempt.pointsEarned}/${attempt.totalPoints} pont)`;
   });
 
   ngOnInit() {
@@ -99,13 +99,13 @@ export class QuizResultsComponent implements OnInit {
         if (attemptId) {
           this.loadAttempt(id, attemptId);
         } else {
-          this.error.set('No attempt specified');
+          this.error.set('Nincs megadott kitöltés');
           this.isLoading.set(false);
         }
       },
       error: (err) => {
         console.error('Error loading quiz', err);
-        this.error.set('Failed to load quiz');
+        this.error.set('Nem sikerült betölteni a kvízt');
         this.isLoading.set(false);
       },
     });
@@ -123,13 +123,13 @@ export class QuizResultsComponent implements OnInit {
             console.error('Error parsing answers', e);
           }
         } else {
-          this.error.set('Attempt not found');
+          this.error.set('A kitöltés nem található');
         }
         this.isLoading.set(false);
       },
       error: (err) => {
         console.error('Error loading attempts', err);
-        this.error.set('Failed to load result');
+        this.error.set('Nem sikerült betölteni az eredményt');
         this.isLoading.set(false);
       },
     });
@@ -137,7 +137,7 @@ export class QuizResultsComponent implements OnInit {
 
   getStudentAnswer(questionId: string | undefined): string {
     if (!questionId) return '';
-    return this.studentAnswers()[questionId] || 'No answer';
+    return this.studentAnswers()[questionId] || 'Nincs válasz';
   }
 
   isCorrect(question: QuizQuestion): boolean {

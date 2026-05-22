@@ -61,6 +61,6 @@ export abstract class CrudService<T> implements CrudOperations<T> {
    */
   handleError(error: any, customMessage?: string) {
     console.error('CRUD operation error:', error);
-    this.message.error(customMessage || 'Operation failed. Please try again.');
+    this.message.error(customMessage || 'A művelet sikertelen. Próbáld újra.');
   }
 }

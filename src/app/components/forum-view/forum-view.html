@@ -2,137 +2,150 @@
   <div class="forum-header">
     <h2>
       <span nz-icon nzType="message" nzTheme="outline"></span>
-      Discussion Forum - {{ selectedProfession()?.name }}
+      Beszélgető fórum - {{ selectedProfession()?.name }}
     </h2>
     <button
       nz-button
       nzType="text"
       class="close-forum-button"
       (click)="onCloseForumView()"
-      nz-tooltip="Close forum"
+      nz-tooltip="Fórum bezárása"
     >
       <span nz-icon nzType="close" nzTheme="outline"></span>
     </button>
   </div>
   <div class="forum-content">
     @if (selectedForum()) {
-    <div class="forum-messages">
-      <h3>
-        <span nz-icon nzType="team" nzTheme="outline"></span>
-        {{ selectedSubject()?.name }}
-      </h3>
-      <div class="messages-list">
-        @for (message of selectedForum()?.forumMessages; track message.id) {
-        <div
-          class="message-wrapper"
-          [class.message-right]="isCurrentUserMessage(message)"
-          [class.message-left]="!isCurrentUserMessage(message)"
-        >
-          <div class="message-card">
-            <div class="message-header">
-              <div class="message-author-info">
-                <strong>@{{ message.author.username }}</strong>
-                <span class="message-timestamp">
-                  {{ message.createdAt | date : 'short' }}
-                  @if (message.updatedAt && message.updatedAt !== message.createdAt) {
-                  <span class="message-edited"
-                    >(edited {{ message.updatedAt | date : 'short' }})</span
-                  >
+      <div class="forum-messages">
+        <h3>
+          <span nz-icon nzType="team" nzTheme="outline"></span>
+          {{ selectedSubject()?.name }}
+        </h3>
+        <div class="messages-list">
+          @for (message of selectedForum()?.forumMessages; track message.id) {
+            <div
+              class="message-wrapper"
+              [class.message-right]="isCurrentUserMessage(message)"
+              [class.message-left]="!isCurrentUserMessage(message)"
+            >
+              <div class="message-card">
+                <div class="message-header">
+                  <div class="message-author-info">
+                    <strong>@{{ message.author.username }}</strong>
+                    <span class="message-timestamp">
+                      {{ message.createdAt | date: 'short' }}
+                      @if (message.updatedAt && message.updatedAt !== message.createdAt) {
+                        <span class="message-edited"
+                          >(szerkesztve: {{ message.updatedAt | date: 'short' }})</span
+                        >
+                      }
+                    </span>
+                  </div>
+                  @if (isCurrentUserMessage(message) && !isEditing(message.id)) {
+                    <button
+                      nz-button
+                      nzType="text"
+                      nzSize="small"
+                      class="edit-message-btn"
+                      (click)="startEditMessage(message)"
+                      nz-tooltip="Üzenet szerkesztése"
+                    >
+                      <span nz-icon nzType="edit" nzTheme="outline"></span>
+                    </button>
                   }
-                </span>
+                </div>
+                @if (isEditing(message.id)) {
+                  <div class="message-edit-mode">
+                    <textarea
+                      nz-input
+                      [(ngModel)]="editingMessageContent"
+                      rows="3"
+                      (keydown)="onEditTextareaKeydown($event, message.id)"
+                      placeholder="Üzenet szerkesztése... (Enter: mentés, Esc: mégse)"
+                      class="edit-textarea"
+                    ></textarea>
+                    <div class="edit-actions">
+                      <button
+                        nz-button
+                        nzType="primary"
+                        nzSize="small"
+                        (click)="saveEditMessage(message.id)"
+                        [disabled]="!editingMessageContent.trim()"
+                      >
+                        <span nz-icon nzType="check" nzTheme="outline"></span>
+                        Mentés
+                      </button>
+                      <button
+                        nz-button
+                        nzType="default"
+                        nzSize="small"
+                        (click)="cancelEditMessage()"
+                      >
+                        <span nz-icon nzType="close" nzTheme="outline"></span>
+                        Mégse
+                      </button>
+                    </div>
+                  </div>
+                } @else {
+                  <div class="message-content">
+                    <p>{{ message.message }}</p>
+                  </div>
+                }
               </div>
-              @if (isCurrentUserMessage(message) && !isEditing(message.id)) {
-              <button
-                nz-button
-                nzType="text"
-                nzSize="small"
-                class="edit-message-btn"
-                (click)="startEditMessage(message)"
-                nz-tooltip="Edit message"
-              >
-                <span nz-icon nzType="edit" nzTheme="outline"></span>
-              </button>
-              }
             </div>
-            @if (isEditing(message.id)) {
-            <div class="message-edit-mode">
-              <textarea
-                nz-input
-                [(ngModel)]="editingMessageContent"
-                rows="3"
-                (keydown)="onEditTextareaKeydown($event, message.id)"
-                placeholder="Edit your message... (Enter to save, Esc to cancel)"
-                class="edit-textarea"
-              ></textarea>
-              <div class="edit-actions">
+          }
+        </div>
+        <div class="message-input">
+          <textarea
+            nz-input
+            [(ngModel)]="newMessageContent"
+            placeholder="Írd ide az üzeneted... (Enter: küldés, Shift+Enter: új sor)"
+            rows="3"
+            (keydown)="onTextareaKeydown($event)"
+          ></textarea>
+          <button
+            nz-button
+            nzType="primary"
+            (click)="sendMessage()"
+            [disabled]="!newMessageContent.trim()"
+          >
+            Küldés
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="forum-subjects-list">
+        <h3>Elérhető fórumok</h3>
+        @if (professionSubjects().length > 0) {
+          @for (subject of professionSubjects(); track subject.id) {
+            @if (subject.forum) {
+              <div class="forum-subject-card">
+                <div class="forum-subject-info">
+                  <h4>
+                    <span nz-icon nzType="book" nzTheme="outline"></span>
+                    {{ subject.name }} tantárgyi fórum
+                  </h4>
+                  <p>{{ subject.description }}</p>
+                </div>
                 <button
                   nz-button
                   nzType="primary"
-                  nzSize="small"
-                  (click)="saveEditMessage(message.id)"
-                  [disabled]="!editingMessageContent.trim()"
+                  class="join-forum-btn"
+                  (click)="selectForumId(subject)"
                 >
-                  <span nz-icon nzType="check" nzTheme="outline"></span>
-                  Save
-                </button>
-                <button nz-button nzType="default" nzSize="small" (click)="cancelEditMessage()">
-                  <span nz-icon nzType="close" nzTheme="outline"></span>
-                  Cancel
+                  <span nz-icon nzType="team" nzTheme="outline"></span>
+                  Csatlakozás a beszélgetéshez
                 </button>
               </div>
-            </div>
-            } @else {
-            <div class="message-content">
-              <p>{{ message.message }}</p>
-            </div>
             }
+          }
+        } @else {
+          <div class="no-forums">
+            <span nz-icon nzType="inbox" nzTheme="outline"></span>
+            <p>Még nincs elérhető fórum</p>
           </div>
-        </div>
         }
       </div>
-      <div class="message-input">
-        <textarea
-          nz-input
-          [(ngModel)]="newMessageContent"
-          placeholder="Type your message here... (Press Enter to send, Shift+Enter for new line)"
-          rows="3"
-          (keydown)="onTextareaKeydown($event)"
-        ></textarea>
-        <button
-          nz-button
-          nzType="primary"
-          (click)="sendMessage()"
-          [disabled]="!newMessageContent.trim()"
-        >
-          Send
-        </button>
-      </div>
-    </div>
-    } @else {
-    <div class="forum-subjects-list">
-      <h3>Available Forums</h3>
-      @if (professionSubjects().length > 0) { @for (subject of professionSubjects(); track
-      subject.id) { @if (subject.forum) {
-      <div class="forum-subject-card">
-        <div class="forum-subject-info">
-          <h4>
-            <span nz-icon nzType="book" nzTheme="outline"></span>
-            {{ subject.name }} Subject Forum
-          </h4>
-          <p>{{ subject.description }}</p>
-        </div>
-        <button nz-button nzType="primary" class="join-forum-btn" (click)="selectForumId(subject)">
-          <span nz-icon nzType="team" nzTheme="outline"></span>
-          Join Discussion
-        </button>
-      </div>
-      } } } @else {
-      <div class="no-forums">
-        <span nz-icon nzType="inbox" nzTheme="outline"></span>
-        <p>No forums available yet</p>
-      </div>
-      }
-    </div>
     }
   </div>
 </div>

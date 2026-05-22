@@ -228,7 +228,7 @@ export class Admin implements OnInit {
     this.quizForm.questions.push({
       type: 'MULTIPLE_CHOICE',
       question: '',
-      options: '["Option 1", "Option 2"]',
+      options: '["1. opció", "2. opció"]',
       correctAnswer: '',
       points: 1,
     });
@@ -240,7 +240,7 @@ export class Admin implements OnInit {
 
   saveQuiz() {
     if (!this.quizForm.title || !this.quizForm.subjectId) {
-      this.message.error('Please fill in required fields (Title, Subject)');
+      this.message.error('Kérlek töltsd ki a kötelező mezőket (Cím, Tantárgy)');
       return;
     }
 
@@ -252,25 +252,25 @@ export class Admin implements OnInit {
       quizData.id = this.editingQuiz()!.id;
       this.quizService.update(quizData).subscribe({
         next: () => {
-          this.message.success('Quiz updated successfully');
+          this.message.success('A kvíz sikeresen frissítve');
           this.loadAllQuizzes();
           this.closeQuizModal();
         },
         error: (err) => {
           console.error('Error updating quiz:', err);
-          this.message.error('Failed to update quiz');
+          this.message.error('Nem sikerült frissíteni a kvízt');
         },
       });
     } else {
       this.quizService.create(quizData).subscribe({
         next: () => {
-          this.message.success('Quiz created successfully');
+          this.message.success('A kvíz sikeresen létrehozva');
           this.loadAllQuizzes();
           this.closeQuizModal();
         },
         error: (err) => {
           console.error('Error creating quiz:', err);
-          this.message.error('Failed to create quiz');
+          this.message.error('Nem sikerült létrehozni a kvízt');
         },
       });
     }
@@ -279,12 +279,12 @@ export class Admin implements OnInit {
   deleteQuiz(id: string) {
     this.quizService.delete(id).subscribe({
       next: () => {
-        this.message.success('Quiz deleted successfully');
+        this.message.success('A kvíz sikeresen törölve');
         this.loadAllQuizzes();
       },
       error: (err) => {
         console.error('Error deleting quiz:', err);
-        this.message.error('Failed to delete quiz');
+        this.message.error('Nem sikerült törölni a kvízt');
       },
     });
   }
@@ -307,7 +307,7 @@ export class Admin implements OnInit {
 
     this.adminService.updateUserRoles(user.id, this.selectedRoles).subscribe({
       next: () => {
-        this.message.success('User roles updated successfully');
+        this.message.success('A felhasználói szerepkörök sikeresen frissítve');
 
         const updatedUsers = this.users().map((u) =>
           u.id === user.id ? { ...u, roles: this.selectedRoles } : u,
@@ -317,7 +317,7 @@ export class Admin implements OnInit {
       },
       error: (err) => {
         console.error('Error updating user roles:', err);
-        this.message.error('Failed to update user roles');
+        this.message.error('Nem sikerült frissíteni a szerepköröket');
       },
     });
   }
@@ -325,15 +325,15 @@ export class Admin implements OnInit {
   toggleUserStatus(user: User) {
     this.adminService.toggleUserStatus(user.id).subscribe({
       next: (enabled) => {
-        const status = enabled ? 'enabled' : 'disabled';
-        this.message.success(`User ${status} successfully`);
+        const status = enabled ? 'engedélyezve' : 'letiltva';
+        this.message.success(`A felhasználó sikeresen ${status}`);
 
         const updatedUsers = this.users().map((u) => (u.id === user.id ? { ...u, enabled } : u));
         this.users.set(updatedUsers);
       },
       error: (err) => {
         console.error('Error toggling user status:', err);
-        this.message.error('Failed to update user status');
+        this.message.error('Nem sikerült módosítani a felhasználó állapotát');
       },
     });
   }
@@ -341,12 +341,12 @@ export class Admin implements OnInit {
   deleteUser(userId: string) {
     this.adminService.delete(userId).subscribe({
       next: () => {
-        this.message.success('User deleted successfully');
+        this.message.success('A felhasználó sikeresen törölve');
         this.users.set(this.users().filter((u) => u.id !== userId));
       },
       error: (err) => {
         console.error('Error deleting user:', err);
-        this.message.error('Failed to delete user');
+        this.message.error('Nem sikerült törölni a felhasználót');
       },
     });
   }

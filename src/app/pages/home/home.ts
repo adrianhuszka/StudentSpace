@@ -101,12 +101,12 @@ export class Home implements OnInit {
       const file = input.files[0];
 
       if (!file.type.startsWith('image/')) {
-        this.message.error('Please select a valid image file');
+        this.message.error('Kérlek, érvényes képfájlt válassz');
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        this.message.error('Image size should not exceed 5MB');
+        this.message.error('A kép mérete nem haladhatja meg az 5MB-ot');
         return;
       }
 
@@ -118,7 +118,7 @@ export class Home implements OnInit {
           this.cdr.markForCheck();
         })
         .catch(() => {
-          this.message.error('Failed to process image file');
+          this.message.error('Nem sikerült feldolgozni a képfájlt');
         });
     }
   }
@@ -136,7 +136,7 @@ export class Home implements OnInit {
           const ctx = canvas.getContext('2d');
 
           if (!ctx) {
-            reject(new Error('Canvas not supported'));
+            reject(new Error('A canvas nem támogatott'));
             return;
           }
 
@@ -253,7 +253,7 @@ export class Home implements OnInit {
       })
       .subscribe({
         next: (response) => {
-          this.message.success('Profession added successfully!');
+          this.message.success('A szakma sikeresen hozzáadva!');
           console.log(response);
 
           this.loadProfessions();
@@ -261,7 +261,7 @@ export class Home implements OnInit {
           this.cdr.markForCheck();
         },
         error: (error) => {
-          this.message.error('Failed to add profession. Please try again later.');
+          this.message.error('Nem sikerült hozzáadni a szakmát. Próbáld újra később.');
           console.error(error);
         },
       });
@@ -292,7 +292,7 @@ export class Home implements OnInit {
         },
         error: (error) => {
           console.error(error);
-          this.message.error('Failed to update profession. Please try again.');
+          this.message.error('Nem sikerült frissíteni a szakmát. Próbáld újra.');
         },
       });
   }
@@ -300,19 +300,19 @@ export class Home implements OnInit {
   deleteProfession(id: number, event: Event) {
     event.stopPropagation();
 
-    if (!confirm('Are you sure you want to delete this profession?')) {
+    if (!confirm('Biztosan törölni szeretnéd ezt a szakmát?')) {
       return;
     }
 
     this.http.delete(`${this.apiUrl}/professions/${id}`).subscribe({
       next: () => {
-        this.message.success('Profession deleted successfully!');
+        this.message.success('A szakma sikeresen törölve!');
         this.szakmak = this.szakmak.filter((p) => p.id !== id);
         this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error deleting profession:', error);
-        this.message.error('Failed to delete profession. Please try again.');
+        this.message.error('Nem sikerült törölni a szakmát. Próbáld újra.');
       },
     });
   }

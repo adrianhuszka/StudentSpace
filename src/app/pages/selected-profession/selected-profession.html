@@ -38,14 +38,14 @@
                 (click)="summarizeModule()"
               >
                 <span nz-icon nzType="thunderbolt" nzTheme="fill"></span>
-                Summarize with Gemini
+                Összefoglalás Geminivel
               </button>
               <button
                 nz-button
                 nzType="text"
                 class="close-module-button-pdf"
                 (click)="selectModule(selectedModule()!)"
-                nz-tooltip="Close module"
+                nz-tooltip="Modul bezárása"
               >
                 <span nz-icon nzType="close" nzTheme="outline"></span>
               </button>
@@ -58,7 +58,7 @@
       } @else {
         <div class="empty-state">
           <span nz-icon nzType="file-markdown" nzTheme="outline" class="empty-icon"></span>
-          <p>No markdown content available</p>
+          <p>Nincs elérhető markdown tartalom</p>
         </div>
       }
     } @else if (selectedModule()?.moduleType === 'PDF') {
@@ -77,24 +77,24 @@
               (click)="summarizeModule()"
             >
               <span nz-icon nzType="thunderbolt" nzTheme="fill"></span>
-              Summarize with Gemini
+              Összefoglalás Geminivel
             </button>
             <button
               nz-button
               nzType="text"
               class="close-module-button-pdf"
               (click)="selectModule(selectedModule()!)"
-              nz-tooltip="Close module"
+              nz-tooltip="Modul bezárása"
             >
               <span nz-icon nzType="close" nzTheme="outline"></span>
             </button>
           </div>
         </div>
         @if (pdfBlobUrl()) {
-          <iframe [src]="pdfBlobUrl()" class="pdf-viewer" title="PDF Viewer"></iframe>
+          <iframe [src]="pdfBlobUrl()" class="pdf-viewer" title="PDF megjelenítő"></iframe>
         } @else {
           <div class="pdf-loading">
-            <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading PDF..."></nz-spin>
+            <nz-spin nzSimple [nzSize]="'large'" nzTip="PDF betöltése..."></nz-spin>
           </div>
         }
       </div>
@@ -195,7 +195,7 @@
   <!-- Summary Modal -->
   <nz-modal
     [(nzVisible)]="isSummaryModalVisible"
-    nzTitle="Gemini Summary"
+    nzTitle="Gemini összefoglaló"
     (nzOnCancel)="closeSummaryModal()"
     (nzOnOk)="closeSummaryModal()"
     [nzFooter]="null"

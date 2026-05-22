@@ -2,7 +2,7 @@
   <div class="login-container w-full max-w-md">
     <div class="text-center mb-8">
       <h1 class="text-4xl font-bold text-white mb-2 !text-white">StudentSpace</h1>
-      <p class="text-gray-200 text-opacity-80">Sign in or create your account</p>
+      <p class="text-gray-200 text-opacity-80">Jelentkezz be, vagy hozd létre a fiókodat</p>
     </div>
 
     <!-- Display error message from auth service -->
@@ -18,7 +18,7 @@
     }
 
     <nz-tabset nzCentered class="auth-tabs">
-      <nz-tab nzTitle="Login">
+      <nz-tab nzTitle="Bejelentkezés">
         <form nz-form [formGroup]="validateForm" class="login-form" (ngSubmit)="submitForm()">
           <nz-form-item class="w-full">
             <nz-form-control [nzErrorTip]="getUsernameErrorMessage()">
@@ -27,7 +27,7 @@
                   type="text"
                   nz-input
                   formControlName="username"
-                  placeholder="Username"
+                  placeholder="Felhasználónév"
                   (input)="validateForm.get('username')?.updateValueAndValidity()"
                   style="border-radius: 5px; padding: 5px"
                 />
@@ -41,7 +41,7 @@
                   type="password"
                   nz-input
                   formControlName="password"
-                  placeholder="Password"
+                  placeholder="Jelszó"
                   style="border-radius: 5px; padding: 5px"
                   (input)="validateForm.get('password')?.updateValueAndValidity()"
                 />
@@ -51,11 +51,11 @@
           <div nz-row class="mb-4">
             <div nz-col [nzSpan]="12">
               <label nz-checkbox formControlName="remember">
-                <span>Remember me</span>
+                <span>Emlékezz rám</span>
               </label>
             </div>
             <div nz-col [nzSpan]="12">
-              <a class="float-right" [routerLink]="['/forgot-password']">Forgot password</a>
+              <a class="float-right" [routerLink]="['/forgot-password']">Elfelejtett jelszó</a>
             </div>
           </div>
           <button
@@ -65,7 +65,7 @@
             [nzLoading]="authService.isLoading()"
             [disabled]="authService.isLoading()"
           >
-            Log in
+            Bejelentkezés
           </button>
 
           <button
@@ -76,12 +76,12 @@
             (click)="onKeycloakLogin()"
             disabled
           >
-            Log in with Keycloak (WIP)
+            Bejelentkezés Keycloakkal (hamarosan)
           </button>
         </form>
       </nz-tab>
 
-      <nz-tab nzTitle="Register">
+      <nz-tab nzTitle="Regisztráció">
         <form
           nz-form
           class="login-form"
@@ -95,7 +95,7 @@
                   type="text"
                   nz-input
                   formControlName="username"
-                  placeholder="Username"
+                  placeholder="Felhasználónév"
                   style="border-radius: 5px; padding: 5px"
                 />
               </nz-input-group>
@@ -109,7 +109,7 @@
                   type="email"
                   nz-input
                   formControlName="email"
-                  placeholder="Email"
+                  placeholder="E-mail"
                   style="border-radius: 5px; padding: 5px"
                 />
               </nz-input-group>
@@ -123,7 +123,7 @@
                   type="password"
                   nz-input
                   formControlName="password"
-                  placeholder="Password"
+                  placeholder="Jelszó"
                   style="border-radius: 5px; padding: 5px"
                 />
               </nz-input-group>
@@ -137,7 +137,7 @@
                   type="password"
                   nz-input
                   formControlName="confirmPassword"
-                  placeholder="Confirm Password"
+                  placeholder="Jelszó megerősítése"
                   style="border-radius: 5px; padding: 5px"
                 />
               </nz-input-group>
@@ -151,7 +151,7 @@
             [nzLoading]="authService.isLoading()"
             [disabled]="authService.isLoading()"
           >
-            Create Account
+            Fiók létrehozása
           </button>
         </form>
       </nz-tab>

@@ -89,6 +89,10 @@ export class ChatbotService {
     const relevantModule = await this.identifyRelevantModule(question, index);
 
     if (!relevantModule) {
+      const fallbackAnswer = await this.generateGeneralAnswer(question);
+      if (fallbackAnswer) {
+        return { answer: fallbackAnswer };
+      }
       return { answer: 'Nem találtam releváns tananyagot a kérdésedhez.' };
     }
 
@@ -115,6 +119,24 @@ export class ChatbotService {
       page: response.page,
       module: relevantModule,
     };
+  }
+
+  private async generateGeneralAnswer(question: string): Promise<string | null> {
+    const prompt = `
+      A felhasználó kérdése: "${question}"
+
+      Nem áll rendelkezésre közvetlenül releváns tananyag a belső indexben.
+      Adj rövid, pontos, érthető választ magyar nyelven.
+      Ha bizonytalan az információ, ezt jelezd röviden.
+    `;
+
+    try {
+      const answer = await this.geminiService.generateContent(prompt).toPromise();
+      return answer?.trim() || null;
+    } catch (e) {
+      console.error('Error generating general fallback answer:', e);
+      return null;
+    }
   }
 
   private async identifyRelevantModule(

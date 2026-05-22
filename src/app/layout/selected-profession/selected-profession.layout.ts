@@ -1,4 +1,12 @@
-import { Component, computed, inject, Input, signal, WritableSignal } from '@angular/core';
+import {
+  Component,
+  computed,
+  HostListener,
+  inject,
+  Input,
+  signal,
+  WritableSignal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AvatarComponent } from '../../components/avatar/avatar.component';
 import { Module, Subject } from '@components/subject-card/subject-card.component';
@@ -82,6 +90,7 @@ export class SelectedProfessionLayout {
   private apiUrl = environment.apiUrl;
 
   isEditMode = signal(false);
+  isMobileView = false;
   isCollapsed = false;
   isSubjectModalVisible = signal(false);
   isModuleModalVisible = signal(false);
@@ -111,6 +120,24 @@ export class SelectedProfessionLayout {
     private router: Router,
   ) {
     this.initForms();
+    this.updateResponsiveState();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    this.updateResponsiveState();
+  }
+
+  private updateResponsiveState() {
+    if (typeof window === 'undefined') {
+      this.isMobileView = false;
+      return;
+    }
+
+    this.isMobileView = window.innerWidth <= 768;
+    if (this.isMobileView) {
+      this.isCollapsed = true;
+    }
   }
 
   private initForms() {
@@ -158,7 +185,7 @@ export class SelectedProfessionLayout {
 
     this.subjectService.deleteModule(module.id).subscribe({
       next: () => {
-        this.message.success('Module deleted successfully!');
+        this.message.success('A modul sikeresen törölve!');
 
         this.professionSubjects.update((subjects) =>
           subjects.map((s) =>
@@ -172,7 +199,7 @@ export class SelectedProfessionLayout {
       },
       error: (error) => {
         console.error('Error deleting module:', error);
-        this.message.error('Failed to delete module. Please try again.');
+        this.message.error('Nem sikerült törölni a modult. Próbáld újra.');
       },
     });
   }
@@ -249,7 +276,7 @@ export class SelectedProfessionLayout {
       })
       .subscribe({
         next: (response) => {
-          this.message.success('Subject added successfully!');
+          this.message.success('A tantárgy sikeresen hozzáadva!');
 
           const newSubjectId = response.body ? parseInt(response.body) : Date.now();
           const newSubject: Subject = {
@@ -264,7 +291,7 @@ export class SelectedProfessionLayout {
         },
         error: (error) => {
           console.error('Error adding subject:', error);
-          this.message.error('Failed to add subject. Please try again.');
+          this.message.error('Nem sikerült hozzáadni a tantárgyat. Próbáld újra.');
         },
       });
   }
@@ -284,7 +311,7 @@ export class SelectedProfessionLayout {
       })
       .subscribe({
         next: () => {
-          this.message.success('Subject updated successfully!');
+          this.message.success('A tantárgy sikeresen frissítve!');
 
           this.professionSubjects.update((subjects) =>
             subjects.map((s) =>
@@ -297,7 +324,7 @@ export class SelectedProfessionLayout {
         },
         error: (error) => {
           console.error('Error updating subject:', error);
-          this.message.error('Failed to update subject. Please try again.');
+          this.message.error('Nem sikerült frissíteni a tantárgyat. Próbáld újra.');
         },
       });
   }
@@ -310,7 +337,7 @@ export class SelectedProfessionLayout {
 
     this.subjectService.deleteSubject(subject.id).subscribe({
       next: () => {
-        this.message.success('Subject deleted successfully!');
+        this.message.success('A tantárgy sikeresen törölve!');
 
         this.professionSubjects.update((subjects) => subjects.filter((s) => s.id !== subject.id));
 
@@ -323,7 +350,7 @@ export class SelectedProfessionLayout {
       },
       error: (error) => {
         console.error('Error deleting subject:', error);
-        this.message.error('Failed to delete subject. Please try again.');
+        this.message.error('Nem sikerült törölni a tantárgyat. Próbáld újra.');
       },
     });
   }
@@ -360,7 +387,7 @@ export class SelectedProfessionLayout {
         },
         error: (error) => {
           console.error('Error loading module content:', error);
-          this.message.error('Failed to load module content');
+          this.message.error('Nem sikerült betölteni a modul tartalmát');
         },
       });
       this.clearFile();
@@ -395,7 +422,7 @@ export class SelectedProfessionLayout {
       !this.isEditingModule() &&
       !this.selectedFile
     ) {
-      this.message.error('Please select a PDF file to upload');
+      this.message.error('Válassz ki egy feltöltendő PDF fájlt');
       return;
     }
 
@@ -434,7 +461,7 @@ export class SelectedProfessionLayout {
       })
       .subscribe({
         next: (response) => {
-          this.message.success('Module added successfully!');
+          this.message.success('A modul sikeresen hozzáadva!');
 
           const newModuleId = response.body || crypto.randomUUID();
           const newModule: Module = {
@@ -454,7 +481,7 @@ export class SelectedProfessionLayout {
         },
         error: (error) => {
           console.error('Error adding module:', error);
-          this.message.error('Failed to add module. Please try again.');
+          this.message.error('Nem sikerült hozzáadni a modult. Próbáld újra.');
         },
       });
   }
@@ -481,7 +508,7 @@ export class SelectedProfessionLayout {
       })
       .subscribe({
         next: () => {
-          this.message.success('Module updated successfully!');
+          this.message.success('A modul sikeresen frissítve!');
 
           this.professionSubjects.update((subjects) =>
             subjects.map((s) =>
@@ -515,7 +542,7 @@ export class SelectedProfessionLayout {
         },
         error: (error) => {
           console.error('Error updating module:', error);
-          this.message.error('Failed to update module. Please try again.');
+          this.message.error('Nem sikerült frissíteni a modult. Próbáld újra.');
         },
       });
   }
@@ -533,7 +560,7 @@ export class SelectedProfessionLayout {
 
   handleLinkSubjectSubmit() {
     if (!this.selectedSubjectToLink || !this.selectedProfession()?.id) {
-      this.message.error('Please select a subject to link');
+      this.message.error('Válassz egy kapcsolni kívánt tantárgyat');
       return;
     }
 
@@ -560,7 +587,7 @@ export class SelectedProfessionLayout {
       },
       error: (error) => {
         console.error('Error loading subjects:', error);
-        this.message.error('Failed to load subjects');
+        this.message.error('Nem sikerült betölteni a tantárgyakat');
       },
     });
   }
@@ -577,7 +604,7 @@ export class SelectedProfessionLayout {
       )
       .subscribe({
         next: () => {
-          this.message.success('Subject linked successfully!');
+          this.message.success('A tantárgy sikeresen kapcsolva!');
 
           const linkedSubject = this.availableSubjects().find((s) => s.id === subjectId);
           if (linkedSubject) {
@@ -587,7 +614,7 @@ export class SelectedProfessionLayout {
         },
         error: (error) => {
           console.error('Error linking subject:', error);
-          this.message.error('Failed to link subject. Please try again.');
+          this.message.error('Nem sikerült kapcsolni a tantárgyat. Próbáld újra.');
         },
       });
   }
@@ -596,13 +623,13 @@ export class SelectedProfessionLayout {
     event.stopPropagation();
 
     const confirmed = await this.confirmDialog.confirm(
-      'Unlink Subject',
-      `Are you sure you want to unlink "${subject.name}" from this profession?`,
+      'Tantárgy leválasztása',
+      `Biztosan le szeretnéd választani a(z) "${subject.name}" tantárgyat erről a szakmáról?`,
     );
     if (!confirmed) return;
 
     if (!this.selectedProfession()?.id) {
-      this.message.error('No profession selected');
+      this.message.error('Nincs kiválasztott szakma');
       return;
     }
 
@@ -610,7 +637,7 @@ export class SelectedProfessionLayout {
       .unlinkSubjectFromProfession(subject.id, this.selectedProfession()!.id)
       .subscribe({
         next: () => {
-          this.message.success('Subject unlinked successfully!');
+          this.message.success('A tantárgy sikeresen leválasztva!');
 
           this.professionSubjects.update((subjects) => subjects.filter((s) => s.id !== subject.id));
 
@@ -623,7 +650,7 @@ export class SelectedProfessionLayout {
         },
         error: (error) => {
           console.error('Error unlinking subject:', error);
-          this.message.error('Failed to unlink subject. Please try again.');
+          this.message.error('Nem sikerült leválasztani a tantárgyat. Próbáld újra.');
         },
       });
   }
@@ -634,20 +661,20 @@ export class SelectedProfessionLayout {
       const file = input.files[0];
 
       if (!file.type.includes('pdf')) {
-        this.message.error('Please select a PDF file');
+        this.message.error('Kérlek, PDF fájlt válassz');
         return;
       }
 
       const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
-        this.message.error('File size must be less than 10MB');
+        this.message.error('A fájl mérete nem lehet nagyobb 10MB-nál');
         return;
       }
 
       this.selectedFile = file;
       this.selectedFileName.set(file.name);
       this.moduleForm.patchValue({ content: file });
-      this.message.success('File selected successfully');
+      this.message.success('A fájl sikeresen kiválasztva');
     }
   }
 

@@ -1,16 +1,16 @@
 <div class="results-container">
   @if (isLoading()) {
     <div class="loading-container">
-      <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading results..."></nz-spin>
+      <nz-spin nzSimple [nzSize]="'large'" nzTip="Eredmények betöltése..."></nz-spin>
     </div>
   } @else if (error()) {
     <nz-result
       nzStatus="error"
       [nzTitle]="error() || undefined"
-      nzSubTitle="Could not load quiz results."
+      nzSubTitle="Nem sikerült betölteni a kvíz eredményeit."
     >
       <div nz-result-extra>
-        <button nz-button nzType="primary" (click)="goHome()">Back to Home</button>
+        <button nz-button nzType="primary" (click)="goHome()">Vissza a főoldalra</button>
       </div>
     </nz-result>
   } @else if (attempt()) {
@@ -21,13 +21,13 @@
         [nzSubTitle]="resultSubtitle()"
       >
         <div nz-result-extra>
-          <button nz-button nzType="primary" (click)="backToProfession()">Done</button>
-          <button nz-button (click)="retakeQuiz()">Retake Quiz</button>
+          <button nz-button nzType="primary" (click)="backToProfession()">Kész</button>
+          <button nz-button (click)="retakeQuiz()">Kvíz újrakezdése</button>
         </div>
       </nz-result>
 
       <div class="review-section">
-        <h2>Review Answers</h2>
+        <h2>Válaszok áttekintése</h2>
         <nz-collapse>
           @for (question of questions(); track question.id) {
             <nz-collapse-panel
@@ -38,7 +38,9 @@
             >
               <ng-template #questionsHeader>
                 <div class="panel-header">
-                  <span class="question-title">Q{{ $index + 1 }}: {{ question.question }}</span>
+                  <span class="question-title"
+                    >{{ $index + 1 }}. kérdés: {{ question.question }}</span
+                  >
                   <span class="status-icon">
                     <span
                       nz-icon
@@ -52,7 +54,7 @@
 
               <div class="answer-details">
                 <p>
-                  <strong>Your Answer:</strong>
+                  <strong>Válaszod:</strong>
                   <span
                     [class.correct-text]="isCorrect(question)"
                     [class.incorrect-text]="!isCorrect(question)"
@@ -61,12 +63,12 @@
                 </p>
                 @if (!isCorrect(question)) {
                   <p>
-                    <strong>Correct Answer:</strong>
+                    <strong>Helyes válasz:</strong>
                     <span class="correct-text">{{ question.correctAnswer }}</span>
                   </p>
                 }
                 <p class="points">
-                  Points: {{ isCorrect(question) ? question.points : 0 }} / {{ question.points }}
+                  Pont: {{ isCorrect(question) ? question.points : 0 }} / {{ question.points }}
                 </p>
               </div>
             </nz-collapse-panel>

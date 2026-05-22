@@ -1,16 +1,16 @@
 <div class="quiz-container">
   @if (isLoading()) {
     <div class="loading-container">
-      <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading quiz..."></nz-spin>
+      <nz-spin nzSimple [nzSize]="'large'" nzTip="Kvíz betöltése..."></nz-spin>
     </div>
   } @else if (error()) {
     <nz-result
       nzStatus="error"
       [nzTitle]="error() || undefined"
-      nzSubTitle="Please try again later."
+      nzSubTitle="Próbáld meg később újra."
     >
       <div nz-result-extra>
-        <button nz-button nzType="primary" (click)="goHome()">Back to Home</button>
+        <button nz-button nzType="primary" (click)="goHome()">Vissza a főoldalra</button>
       </div>
     </nz-result>
   } @else if (quiz()) {
@@ -25,7 +25,7 @@
             </div>
           }
           <div class="progress-info">
-            Question {{ currentQuestionIndex() + 1 }} of {{ questions().length }}
+            {{ currentQuestionIndex() + 1 }} / {{ questions().length }} kérdés
           </div>
         </div>
       </div>
@@ -40,10 +40,8 @@
       @if (currentQuestion(); as question) {
         <nz-card>
           <div class="question-header">
-            <span class="question-number">Q{{ currentQuestionIndex() + 1 }}</span>
-            <span class="points-badge"
-              >{{ question.points }} point{{ question.points !== 1 ? 's' : '' }}</span
-            >
+            <span class="question-number">{{ currentQuestionIndex() + 1 }}. kérdés</span>
+            <span class="points-badge">{{ question.points }} pont</span>
           </div>
 
           <h3 class="question-text">{{ question.question }}</h3>
@@ -65,15 +63,15 @@
                 (ngModelChange)="selectAnswer($event)"
                 class="vertical-radio-group"
               >
-                <label nz-radio nzValue="true" class="option-item">True</label>
-                <label nz-radio nzValue="false" class="option-item">False</label>
+                <label nz-radio nzValue="true" class="option-item">Igaz</label>
+                <label nz-radio nzValue="false" class="option-item">Hamis</label>
               </nz-radio-group>
             } @else if (question.type === 'SHORT_ANSWER') {
               <input
                 nz-input
                 [ngModel]="answers()[question.id!]"
                 (ngModelChange)="selectAnswer($event)"
-                placeholder="Type your answer here..."
+                placeholder="Írd ide a válaszod..."
               />
             }
           </div>
@@ -86,16 +84,16 @@
             (click)="prevQuestion()"
             [disabled]="currentQuestionIndex() === 0"
           >
-            <span nz-icon nzType="left"></span> Previous
+            <span nz-icon nzType="left"></span> Előző
           </button>
 
           @if (currentQuestionIndex() < questions().length - 1) {
             <button nz-button nzType="primary" (click)="nextQuestion()">
-              Next <span nz-icon nzType="right"></span>
+              Következő <span nz-icon nzType="right"></span>
             </button>
           } @else {
             <button nz-button nzType="primary" nzDanger (click)="submitQuiz()">
-              Submit Quiz <span nz-icon nzType="check"></span>
+              Kvíz beküldése <span nz-icon nzType="check"></span>
             </button>
           }
         </div>

@@ -10,7 +10,7 @@
           class="flex items-center gap-2"
         >
           <span nz-icon [nzType]="isEditMode() ? 'check' : 'edit'" nzTheme="outline"></span>
-          {{ isEditMode() ? 'Done' : 'Edit Mode' }}
+          {{ isEditMode() ? 'Kész' : 'Szerkesztési mód' }}
         </button>
         @if (isEditMode()) {
           <button
@@ -20,7 +20,7 @@
             class="flex items-center gap-2"
           >
             <span nz-icon nzType="plus" nzTheme="outline"></span>
-            Add Profession
+            Szakma hozzáadása
           </button>
         }
       }
@@ -52,7 +52,7 @@
                   class="flex items-center gap-1"
                 >
                   <span nz-icon nzType="edit" nzTheme="outline"></span>
-                  Edit
+                  Szerkesztés
                 </button>
                 <button
                   nz-button
@@ -63,7 +63,7 @@
                   class="flex items-center gap-1"
                 >
                   <span nz-icon nzType="delete" nzTheme="outline"></span>
-                  Delete
+                  Törlés
                 </button>
               </div>
             }
@@ -91,37 +91,37 @@
 <!-- Add/Edit Profession Modal -->
 <nz-modal
   [nzVisible]="isModalVisible()"
-  [nzTitle]="isEditing() ? 'Edit Profession' : 'Add New Profession'"
+  [nzTitle]="isEditing() ? 'Szakma szerkesztése' : 'Új szakma hozzáadása'"
   (nzOnCancel)="handleCancel()"
   (nzOnOk)="handleSubmit()"
-  [nzOkText]="isEditing() ? 'Update' : 'Create'"
+  [nzOkText]="isEditing() ? 'Mentés' : 'Létrehozás'"
   nzOkType="primary"
   [nzWidth]="600"
 >
   <ng-container *nzModalContent>
     <form nz-form [formGroup]="professionForm" nzLayout="vertical">
       <nz-form-item>
-        <nz-form-label nzRequired>Profession Name</nz-form-label>
-        <nz-form-control nzErrorTip="Please enter a profession name (min 3 characters)">
-          <input nz-input formControlName="name" placeholder="e.g., Software Developer" />
+        <nz-form-label nzRequired>Szakma neve</nz-form-label>
+        <nz-form-control nzErrorTip="Add meg a szakma nevét (min. 3 karakter)">
+          <input nz-input formControlName="name" placeholder="pl.: Szoftverfejlesztő" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label nzRequired>Description</nz-form-label>
-        <nz-form-control nzErrorTip="Please enter a description (min 10 characters)">
+        <nz-form-label nzRequired>Leírás</nz-form-label>
+        <nz-form-control nzErrorTip="Add meg a leírást (min. 10 karakter)">
           <textarea
             nz-input
             formControlName="description"
-            placeholder="Describe this profession..."
+            placeholder="Írd le ezt a szakmát..."
             [nzAutosize]="{ minRows: 3, maxRows: 6 }"
           ></textarea>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label nzRequired>Profession Image</nz-form-label>
-        <nz-form-control nzErrorTip="Please select an image">
+        <nz-form-label nzRequired>Szakma képe</nz-form-label>
+        <nz-form-control nzErrorTip="Válassz ki egy képet">
           <div class="flex flex-col gap-2">
             <input
               type="file"
@@ -130,7 +130,7 @@
               class="block w-full text-sm text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600 file:cursor-pointer cursor-pointer"
             />
             <p class="text-xs text-gray-400">
-              Accepted formats: JPG, PNG, GIF, WebP (Max size: 5MB)
+              Elfogadott formátumok: JPG, PNG, GIF, WebP (max. 5MB)
             </p>
           </div>
         </nz-form-control>
@@ -140,7 +140,7 @@
       @if (professionForm.get('image')?.value) {
         <div class="mt-4">
           <div class="flex justify-between items-center mb-2">
-            <p class="text-sm text-gray-300">Preview:</p>
+            <p class="text-sm text-gray-300">Előnézet:</p>
             <button
               type="button"
               nz-button
@@ -151,12 +151,12 @@
               class="flex items-center gap-1"
             >
               <span nz-icon nzType="delete" nzTheme="outline"></span>
-              Remove
+              Eltávolítás
             </button>
           </div>
           <img
             [src]="getImageSrc(professionForm.get('image')?.value)"
-            alt="Preview"
+            alt="Előnézet"
             class="w-full max-w-xs h-48 object-cover rounded-lg border border-gray-300"
           />
         </div>

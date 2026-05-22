@@ -23,7 +23,7 @@ export class ConfirmDialogService {
    */
   confirmDelete(itemName: string): Promise<boolean> {
     return Promise.resolve(
-      confirm(`Are you sure you want to delete "${itemName}"?\n\nThis action cannot be undone.`),
+      confirm(`Biztosan törölni szeretnéd ezt: "${itemName}"?\n\nEz a művelet nem vonható vissza.`),
     );
   }
 }

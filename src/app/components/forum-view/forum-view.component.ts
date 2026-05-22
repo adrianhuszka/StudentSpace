@@ -127,7 +127,7 @@ export class ForumViewComponent implements OnChanges {
    */
   saveEditMessage(messageId: string) {
     if (!this.editingMessageContent.trim()) {
-      this.message.error('Message cannot be empty');
+      this.message.error('Az üzenet nem lehet üres');
       return;
     }
 
@@ -143,7 +143,7 @@ export class ForumViewComponent implements OnChanges {
       .subscribe({
         next: (response) => {
           console.log('Message updated successfully:', response);
-          this.message.success('Message updated successfully!');
+          this.message.success('Az üzenet sikeresen frissítve!');
           this.cancelEditMessage();
 
           const forumId = this.selectedForum()!.id;
@@ -151,7 +151,7 @@ export class ForumViewComponent implements OnChanges {
         },
         error: (error) => {
           console.error('Error updating message:', error);
-          this.message.error('Failed to update message. Please try again.');
+          this.message.error('Nem sikerült frissíteni az üzenetet. Próbáld újra.');
         },
       });
   }
@@ -183,12 +183,12 @@ export class ForumViewComponent implements OnChanges {
 
   sendMessage() {
     if (!this.selectedForum()) {
-      this.message.error('No forum selected');
+      this.message.error('Nincs kiválasztott fórum');
       return;
     }
 
     if (!this.newMessageContent.trim()) {
-      this.message.error('Please enter a message before sending');
+      this.message.error('Küldés előtt írj be egy üzenetet');
       return;
     }
 
@@ -205,14 +205,14 @@ export class ForumViewComponent implements OnChanges {
       .subscribe({
         next: (response) => {
           console.log('Message sent successfully:', response);
-          this.message.success('Message sent successfully!');
+          this.message.success('Az üzenet sikeresen elküldve!');
           this.newMessageContent = '';
 
           this.refreshForum(forumId);
         },
         error: (error) => {
           console.error('Error sending message:', error);
-          this.message.error('Failed to send message. Please try again.');
+          this.message.error('Nem sikerült elküldeni az üzenetet. Próbáld újra.');
         },
       });
   }

@@ -1,7 +1,7 @@
 <nz-layout class="app-layout">
   @if (isLoading) {
     <div class="loading-container">
-      <nz-spin nzSimple [nzSize]="'large'" nzTip="Loading profession data...">
+      <nz-spin nzSimple [nzSize]="'large'" nzTip="Szakma adatainak betöltése...">
         <div class="loading-content"></div>
       </nz-spin>
     </div>
@@ -9,10 +9,15 @@
     <div class="error-container">
       <nz-icon nzType="exclamation-circle" nzTheme="outline" class="error-icon"></nz-icon>
       <h2>{{ loadError }}</h2>
-      <p>Please check your connection and try again.</p>
+      <p>Kérlek ellenőrizd a kapcsolatot, majd próbáld újra.</p>
     </div>
   } @else {
-    <nz-sider nzCollapsible nzWidth="350px" [(nzCollapsed)]="isCollapsed" [nzTrigger]="null">
+    <nz-sider
+      nzCollapsible
+      [nzWidth]="isMobileView ? '280px' : '350px'"
+      [(nzCollapsed)]="isCollapsed"
+      [nzTrigger]="null"
+    >
       <div class="logo"></div>
       <ul nz-menu nzTheme="dark" nzMode="inline">
         @for (subject of professionSubjects(); track subject.id) {
@@ -32,7 +37,7 @@
                     nzTheme="outline"
                     class="edit-icon"
                     (click)="openEditSubjectModal(subject); $event.stopPropagation()"
-                    nz-tooltip="Edit Subject"
+                    nz-tooltip="Tantárgy szerkesztése"
                   ></span>
                   <span
                     nz-icon
@@ -40,7 +45,7 @@
                     nzTheme="outline"
                     class="unlink-icon"
                     (click)="unlinkSubjectFromProfession(subject, $event)"
-                    nz-tooltip="Unlink from Profession"
+                    nz-tooltip="Leválasztás a szakmáról"
                   ></span>
                   <span
                     nz-icon
@@ -48,7 +53,7 @@
                     nzTheme="outline"
                     class="delete-icon"
                     (click)="deleteSubject(subject, $event)"
-                    nz-tooltip="Delete Subject"
+                    nz-tooltip="Tantárgy törlése"
                   ></span>
                 </span>
               }
@@ -122,7 +127,7 @@
               @if (isEditMode() && canEdit()) {
                 <li nz-menu-item (click)="openAddModuleModal(subject)" class="add-module-item">
                   <span nz-icon nzType="plus"></span>
-                  Add Module
+                  Modul hozzáadása
                 </li>
               }
             </ul>
@@ -143,19 +148,29 @@
             nz-button
             [nzType]="isEditMode() ? 'primary' : 'default'"
             (click)="toggleEditMode()"
-            class="ml-4 mr-2"
+            class="ml-4 mr-2 edit-mode-button"
           >
             <span nz-icon [nzType]="isEditMode() ? 'check' : 'edit'"></span>
-            {{ isEditMode() ? 'Done' : 'Edit' }}
+            {{ isEditMode() ? 'Kész' : 'Szerkesztés' }}
           </button>
           @if (isEditMode()) {
-            <button nz-button nzType="primary" (click)="openAddSubjectModal()" class="mr-2">
+            <button
+              nz-button
+              nzType="primary"
+              (click)="openAddSubjectModal()"
+              class="mr-2 add-subject-button"
+            >
               <span nz-icon nzType="plus"></span>
-              Add Subject
+              Tantárgy hozzáadása
             </button>
-            <button nz-button nzType="default" (click)="openLinkSubjectModal()">
+            <button
+              nz-button
+              nzType="default"
+              (click)="openLinkSubjectModal()"
+              class="link-subject-button"
+            >
               <span nz-icon nzType="link"></span>
-              Link Existing Subject
+              Meglévő tantárgy kapcsolása
             </button>
           }
         }
@@ -163,10 +178,10 @@
         <ul nz-menu class="top-nav" nzTheme="dark" nzMode="horizontal">
           <li nz-menu-item (click)="navigateToHome()">
             <span nz-icon nzType="home" nzTheme="outline"></span>
-            Home
+            Főoldal
           </li>
         </ul>
-        <p class="w-full text-center text-lg font-bold !my-auto text-white">
+        <p class="w-full text-center text-lg font-bold !my-auto text-white profession-title">
           {{ selectedProfession()?.name }}
         </p>
         <app-avatar class="ml-auto flex flex-row justify-end items-center gap-4"></app-avatar>
@@ -181,22 +196,22 @@
 <!-- Link Subject Modal -->
 <nz-modal
   [nzVisible]="isLinkSubjectModalVisible()"
-  nzTitle="Link Existing Subject to Profession"
+  nzTitle="Meglévő tantárgy kapcsolása szakmához"
   (nzOnCancel)="handleLinkSubjectCancel()"
   (nzOnOk)="handleLinkSubjectSubmit()"
-  nzOkText="Link Subject"
+  nzOkText="Kapcsolás"
   [nzWidth]="500"
 >
   <ng-container *nzModalContent>
     <div class="link-subject-content">
       <p class="mb-4">
-        Select a subject to link to <strong>{{ selectedProfession()?.name }}</strong
+        Válassz tantárgyat ehhez: <strong>{{ selectedProfession()?.name }}</strong
         >:
       </p>
 
       <nz-select
         [(ngModel)]="selectedSubjectToLink"
-        nzPlaceHolder="Select a subject"
+        nzPlaceHolder="Válassz tantárgyat"
         nzShowSearch
         nzAllowClear
         class="w-full"
@@ -213,7 +228,7 @@
 
       @if (availableSubjects().length === 0) {
         <p class="mt-4 text-gray-400 italic">
-          No available subjects to link. All subjects are already linked to this profession.
+          Nincs kapcsolható tantárgy. Minden tantárgy már hozzá van rendelve ehhez a szakmához.
         </p>
       }
     </div>
@@ -223,76 +238,77 @@
 <!-- Module Modal -->
 <nz-modal
   [nzVisible]="isModuleModalVisible()"
-  [nzTitle]="isEditingModule() ? 'Edit Module' : 'Add New Module'"
+  [nzTitle]="isEditingModule() ? 'Modul szerkesztése' : 'Új modul hozzáadása'"
   (nzOnCancel)="handleModuleCancel()"
   (nzOnOk)="handleModuleSubmit()"
-  [nzOkText]="isEditingModule() ? 'Update' : 'Add'"
+  [nzOkText]="isEditingModule() ? 'Mentés' : 'Hozzáadás'"
   [nzWidth]="900"
 >
   <ng-container *nzModalContent>
     <form nz-form [formGroup]="moduleForm" nzLayout="vertical">
       <nz-form-item>
-        <nz-form-label nzRequired>Module Title</nz-form-label>
-        <nz-form-control nzErrorTip="Please enter a module title (min 3 characters)">
-          <input nz-input formControlName="title" placeholder="e.g., Introduction to Algebra" />
+        <nz-form-label nzRequired>Modul címe</nz-form-label>
+        <nz-form-control nzErrorTip="Add meg a modul címét (min. 3 karakter)">
+          <input nz-input formControlName="title" placeholder="pl.: Bevezetés az algebrába" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label nzRequired>Module Type</nz-form-label>
-        <nz-form-control nzErrorTip="Please select a module type">
-          <nz-select formControlName="moduleType" nzPlaceHolder="Select module type">
+        <nz-form-label nzRequired>Modul típusa</nz-form-label>
+        <nz-form-control nzErrorTip="Válassz modultípust">
+          <nz-select formControlName="moduleType" nzPlaceHolder="Válassz modultípust">
             <nz-option nzValue="MD" nzLabel="Markdown (MD)"></nz-option>
-            <nz-option nzValue="PDF" nzLabel="PDF Document"></nz-option>
+            <nz-option nzValue="PDF" nzLabel="PDF dokumentum"></nz-option>
           </nz-select>
         </nz-form-control>
       </nz-form-item>
 
       @if (moduleForm.get('moduleType')?.value === 'MD') {
         <nz-form-item>
-          <nz-form-label nzRequired>Content</nz-form-label>
-          <nz-form-control nzErrorTip="Please enter module content">
+          <nz-form-label nzRequired>Tartalom</nz-form-label>
+          <nz-form-control nzErrorTip="Add meg a modul tartalmát">
             <nz-tabset nzType="card" class="markdown-editor-tabs">
-              <nz-tab nzTitle="✏️ Editor">
+              <nz-tab nzTitle="✏️ Szerkesztő">
                 <div class="markdown-editor-container">
                   <div class="markdown-toolbar">
                     <span class="toolbar-hint">
                       <span nz-icon nzType="info-circle" nzTheme="outline"></span>
-                      Quick syntax: <code># H1</code> <code>## H2</code> <code>**bold**</code>
-                      <code>*italic*</code> <code>[link](url)</code> <code>- list</code>
+                      Gyors szintaxis: <code># H1</code> <code>## H2</code>
+                      <code>**félkövér**</code> <code>*italic*</code> <code>[link](url)</code>
+                      <code>- list</code>
                     </span>
                   </div>
                   <textarea
                     nz-input
                     formControlName="content"
-                    placeholder="Enter markdown content here...
+                    placeholder="Írd ide a markdown tartalmat...
 
-# Example Heading
-## Subheading
+# Példa címsor
+## Alcím
 
-**Bold text** and *italic text*
+**Félkövér szöveg** és *dőlt szöveg*
 
-- List item 1
-- List item 2
+- Listaelem 1
+- Listaelem 2
 
 ```javascript
-// Code block
-console.log('Hello World');
+// Kódrészlet
+console.log('Helló világ');
 ```
 
-[Link text](https://example.com)"
+[Link szövege](https://example.com)"
                     class="markdown-textarea"
                     rows="15"
                   ></textarea>
                 </div>
               </nz-tab>
-              <nz-tab nzTitle="👁️ Preview">
+              <nz-tab nzTitle="👁️ Előnézet">
                 <div class="markdown-preview">
                   @if (modulePreviewContent()) {
                     <markdown [data]="modulePreviewContent()"></markdown>
                   } @else {
                     <p class="empty-preview">
-                      No content to preview. Start writing in the Editor tab.
+                      Nincs megjeleníthető tartalom. Kezdj írni a Szerkesztő fülön.
                     </p>
                   }
                 </div>
@@ -302,8 +318,8 @@ console.log('Hello World');
         </nz-form-item>
       } @else if (moduleForm.get('moduleType')?.value === 'PDF') {
         <nz-form-item>
-          <nz-form-label nzRequired>PDF File</nz-form-label>
-          <nz-form-control nzErrorTip="Please upload a PDF file">
+          <nz-form-label nzRequired>PDF fájl</nz-form-label>
+          <nz-form-control nzErrorTip="Tölts fel egy PDF fájlt">
             <input
               type="file"
               accept=".pdf,application/pdf"
@@ -321,7 +337,7 @@ console.log('Hello World');
             }
             <p class="upload-hint">
               <span nz-icon nzType="info-circle" nzTheme="outline"></span>
-              Upload a PDF file (max 10MB)
+              PDF fájl feltöltése (max. 10MB)
             </p>
           </nz-form-control>
         </nz-form-item>
@@ -333,27 +349,27 @@ console.log('Hello World');
 <!-- Subject Modal -->
 <nz-modal
   [nzVisible]="isSubjectModalVisible()"
-  [nzTitle]="isEditingSubject() ? 'Edit Subject' : 'Add New Subject'"
+  [nzTitle]="isEditingSubject() ? 'Tantárgy szerkesztése' : 'Új tantárgy hozzáadása'"
   (nzOnCancel)="handleSubjectCancel()"
   (nzOnOk)="handleSubjectSubmit()"
-  [nzOkText]="isEditingSubject() ? 'Update' : 'Add'"
+  [nzOkText]="isEditingSubject() ? 'Mentés' : 'Hozzáadás'"
 >
   <ng-container *nzModalContent>
     <form nz-form [formGroup]="subjectForm" nzLayout="vertical">
       <nz-form-item>
-        <nz-form-label nzRequired>Subject Name</nz-form-label>
-        <nz-form-control nzErrorTip="Please enter a subject name (min 3 characters)">
-          <input nz-input formControlName="name" placeholder="e.g., Matematika - 1" />
+        <nz-form-label nzRequired>Tantárgy neve</nz-form-label>
+        <nz-form-control nzErrorTip="Add meg a tantárgy nevét (min. 3 karakter)">
+          <input nz-input formControlName="name" placeholder="pl.: Matematika - 1" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label nzRequired>Description</nz-form-label>
-        <nz-form-control nzErrorTip="Please enter a description (min 10 characters)">
+        <nz-form-label nzRequired>Leírás</nz-form-label>
+        <nz-form-control nzErrorTip="Add meg a leírást (min. 10 karakter)">
           <textarea
             nz-input
             formControlName="description"
-            placeholder="Enter subject description"
+            placeholder="Add meg a tantárgy leírását"
             [nzAutosize]="{ minRows: 3, maxRows: 6 }"
           ></textarea>
         </nz-form-control>
@@ -362,11 +378,11 @@ console.log('Hello World');
       <nz-form-item *ngIf="!isEditingSubject()">
         <nz-form-control>
           <label nz-checkbox formControlName="createForum">
-            <span>Create a forum for this subject</span>
+            <span>Fórum létrehozása ehhez a tantárgyhoz</span>
           </label>
           <div class="forum-hint">
             <span nz-icon nzType="info-circle" nzTheme="outline"></span>
-            <span>Students can discuss and ask questions about this subject in the forum</span>
+            <span>A hallgatók itt beszélgethetnek és kérdezhetnek a tantárgyról</span>
           </div>
         </nz-form-control>
       </nz-form-item>

@@ -59,9 +59,9 @@ export interface ModuleFormData {
   template: `
     <nz-modal
       [nzVisible]="visible"
-      [nzTitle]="isEditing ? 'Edit Module' : 'Add New Module'"
-      [nzOkText]="isEditing ? 'Update' : 'Create'"
-      nzCancelText="Cancel"
+      [nzTitle]="isEditing ? 'Modul szerkesztése' : 'Új modul hozzáadása'"
+      [nzOkText]="isEditing ? 'Mentés' : 'Létrehozás'"
+      nzCancelText="Mégse"
       [nzWidth]="800"
       (nzOnCancel)="handleCancel()"
       (nzOnOk)="handleSubmit()"
@@ -70,18 +70,18 @@ export interface ModuleFormData {
       <ng-container *nzModalContent>
         <form nz-form [formGroup]="moduleForm" nzLayout="vertical">
           <nz-form-item>
-            <nz-form-label nzRequired>Module Title</nz-form-label>
-            <nz-form-control nzErrorTip="Please enter module title (min 3 characters)">
-              <input nz-input formControlName="title" placeholder="e.g., Introduction to Algebra" />
+            <nz-form-label nzRequired>Modul címe</nz-form-label>
+            <nz-form-control nzErrorTip="Add meg a modul címét (min. 3 karakter)">
+              <input nz-input formControlName="title" placeholder="pl.: Bevezetés az algebrába" />
             </nz-form-control>
           </nz-form-item>
 
           <nz-form-item>
-            <nz-form-label nzRequired>Module Type</nz-form-label>
+            <nz-form-label nzRequired>Modul típusa</nz-form-label>
             <nz-form-control>
               <nz-select formControlName="moduleType" [nzDisabled]="isEditing">
-                <nz-option nzValue="MD" nzLabel="Markdown (Text Content)"></nz-option>
-                <nz-option nzValue="PDF" nzLabel="PDF Document"></nz-option>
+                <nz-option nzValue="MD" nzLabel="Markdown (szöveges tartalom)"></nz-option>
+                <nz-option nzValue="PDF" nzLabel="PDF dokumentum"></nz-option>
               </nz-select>
             </nz-form-control>
           </nz-form-item>
@@ -89,20 +89,20 @@ export interface ModuleFormData {
           <!-- Markdown Content -->
           <div *ngIf="moduleType === 'MD'">
             <nz-tabset>
-              <nz-tab nzTitle="Edit">
+              <nz-tab nzTitle="Szerkesztés">
                 <nz-form-item>
-                  <nz-form-label nzRequired>Content (Markdown)</nz-form-label>
-                  <nz-form-control nzErrorTip="Please enter content">
+                  <nz-form-label nzRequired>Tartalom (Markdown)</nz-form-label>
+                  <nz-form-control nzErrorTip="Add meg a tartalmat">
                     <textarea
                       nz-input
                       formControlName="content"
                       [nzAutosize]="{ minRows: 10, maxRows: 20 }"
-                      placeholder="# Title&#10;&#10;Write your content in markdown format..."
+                      placeholder="# Cím&#10;&#10;Írd meg a tartalmat markdown formátumban..."
                     ></textarea>
                   </nz-form-control>
                 </nz-form-item>
               </nz-tab>
-              <nz-tab nzTitle="Preview">
+              <nz-tab nzTitle="Előnézet">
                 <div class="markdown-preview">
                   <markdown [data]="previewContent()"></markdown>
                 </div>
@@ -113,7 +113,7 @@ export interface ModuleFormData {
           <!-- PDF Upload -->
           <div *ngIf="moduleType === 'PDF'">
             <nz-form-item>
-              <nz-form-label [nzRequired]="!isEditing">PDF File</nz-form-label>
+              <nz-form-label [nzRequired]="!isEditing">PDF fájl</nz-form-label>
               <nz-form-control>
                 <div class="file-upload">
                   <input
@@ -125,7 +125,7 @@ export interface ModuleFormData {
                   />
                   <button nz-button nzType="default" (click)="fileInput.click()">
                     <span nz-icon nzType="upload"></span>
-                    Choose PDF File
+                    PDF fájl kiválasztása
                   </button>
                   <span class="file-name" *ngIf="selectedFileName()">
                     {{ selectedFileName() }}
@@ -133,7 +133,7 @@ export interface ModuleFormData {
                       <span nz-icon nzType="close"></span>
                     </button>
                   </span>
-                  <span class="file-hint" *ngIf="!selectedFileName()"> Max file size: 10MB </span>
+                  <span class="file-hint" *ngIf="!selectedFileName()"> Max. fájlméret: 10MB </span>
                 </div>
               </nz-form-control>
             </nz-form-item>
@@ -247,7 +247,7 @@ export class ModuleModalComponent implements OnInit, OnChanges {
       this.moduleForm.patchValue({ content: this.module.content });
       this.previewContent.set(this.module.content);
     } else if (this.module.moduleType === 'PDF') {
-      this.selectedFileName.set('Existing PDF file');
+      this.selectedFileName.set('Meglévő PDF fájl');
     }
   }
 

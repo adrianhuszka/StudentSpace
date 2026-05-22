@@ -92,7 +92,7 @@ export class Profile implements OnInit {
     const user = this.authService.getUser();
 
     if (!user) {
-      this.message.error('User not found');
+      this.message.error('A felhasználó nem található');
       this.router.navigate(['/login']);
       return;
     }
@@ -159,13 +159,13 @@ export class Profile implements OnInit {
       })
       .subscribe({
         next: (response) => {
-          this.message.success('Profile updated successfully!');
+          this.message.success('A profil sikeresen frissítve!');
           this.isEditMode.set(false);
           this.loadUserProfile();
         },
         error: (error) => {
           console.error('Error updating profile:', error);
-          this.message.error('Failed to update profile. Please try again.');
+          this.message.error('Nem sikerült frissíteni a profilt. Próbáld újra.');
         },
       });
   }
@@ -201,13 +201,13 @@ export class Profile implements OnInit {
       })
       .subscribe({
         next: (response) => {
-          this.message.success('Password changed successfully!');
+          this.message.success('A jelszó sikeresen módosítva!');
           this.passwordForm.reset();
           this.isChangingPassword.set(false);
         },
         error: (error) => {
           console.error('Error changing password:', error);
-          this.message.error('Failed to change password. Please check your current password.');
+          this.message.error('Nem sikerült módosítani a jelszót. Ellenőrizd a jelenlegi jelszót.');
         },
       });
   }
