@@ -9,9 +9,21 @@ import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
+const defaultAllowedHosts = [
+  'localhost',
+  '127.0.0.1',
+  'student-space.pollak.info',
+  'api-student-space.pollak.info',
+];
+
+const allowedHosts = (process.env['FRONTEND_ALLOWED_HOSTS'] || defaultAllowedHosts.join(','))
+  .split(',')
+  .map((host) => host.trim())
+  .filter((host) => host.length > 0);
+
 const app = express();
 const angularApp = new AngularNodeAppEngine({
-  allowedHosts: ['localhost', '127.0.0.1'],
+  allowedHosts,
 });
 
 app.use(
