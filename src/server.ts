@@ -28,7 +28,8 @@ const angularApp = new AngularNodeAppEngine({
 
 app.get('/runtime-config.js', (_req, res) => {
   const apiUrl = process.env['API_URL'] || 'http://localhost:8080/api/v1';
-  const runtimeConfig = { apiUrl };
+  const geminiApiKey = process.env['GEMINI_API_KEY'] || '';
+  const runtimeConfig = { apiUrl, geminiApiKey };
 
   res
     .type('application/javascript')

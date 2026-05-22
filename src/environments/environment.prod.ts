@@ -1,11 +1,11 @@
 // Production environment configuration
 
-import { runtimeApiUrl } from './runtime-config';
+import { runtimeApiUrl, runtimeGeminiApiKey } from './runtime-config';
 
 export const environment = {
   production: true,
   apiUrl: runtimeApiUrl ?? 'https://api-student-space.pollak.info/api/v1',
-  geminiApiKey: '',
+  geminiApiKey: runtimeGeminiApiKey ?? '',
   keycloakEnabled: false,
   keycloakBaseUrl: 'https://keycloak.pollak.info',
   keycloakRealm: 'master',
